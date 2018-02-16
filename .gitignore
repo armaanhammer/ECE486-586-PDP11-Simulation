@@ -1,0 +1,7 @@
+
+*.swp
+.DS_Store
+*.json
+Test/traceFileCase8.txt
+Code_CPlusPlus/src/CacheSim.o
+Test/traceFileCase10.txt
