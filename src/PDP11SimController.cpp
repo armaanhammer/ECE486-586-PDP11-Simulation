@@ -99,161 +99,161 @@ void PDP11SimController::SCC()
 }
 	
 // Double Operand Instructions
-void PDP11SimController::MOV()
+void PDP11SimController::MOV(int dest, int src)
 {
 }
 
-void PDP11SimController::CMP()
+void PDP11SimController::CMP(int dest, int src)
 {
 }
 
-void PDP11SimController::BIT()
+void PDP11SimController::BIT(int dest, int src)
 {
 }
 
-void PDP11SimController::BIC()
+void PDP11SimController::BIC(int dest, int src)
 {
 }
 
-void PDP11SimController::BIS()
+void PDP11SimController::BIS(int dest, int src)
 {
 }
 
-void PDP11SimController::ADD()
+void PDP11SimController::ADD(int dest, int src)
 {
 }
 
-void PDP11SimController::SUB()
+void PDP11SimController::SUB(int dest, int src)
 {
 }
 
 
 // Single Operand Instructions
-void PDP11SimController::SWAB()
+void PDP11SimController::SWAB(int src)
 {
 }
 
-void PDP11SimController::JSR()
+void PDP11SimController::JSR(int src)
 {
 }
 
-void PDP11SimController::EMT()
+void PDP11SimController::EMT(int src)
 {
 }
 
-void PDP11SimController::CLR()
+void PDP11SimController::CLR(int src)
 {
 }
 
-void PDP11SimController::COM()
+void PDP11SimController::COM(int src)
 {
 }
 
-void PDP11SimController::INC()
+void PDP11SimController::INC(int src)
 {
 }
 
-void PDP11SimController::DEC()
+void PDP11SimController::DEC(int src)
 {
 }
 
-void PDP11SimController::NEG()
+void PDP11SimController::NEG(int src)
 {
 }
 
-void PDP11SimController::ADC()
+void PDP11SimController::ADC(int src)
 {
 }
 
-void PDP11SimController::SBC()
+void PDP11SimController::SBC(int src)
 {
 }
 
-void PDP11SimController::TST()
+void PDP11SimController::TST(int src)
 {
 }
 
-void PDP11SimController::ROR()
+void PDP11SimController::ROR(int src)
 {
 }
 
-void PDP11SimController::ROL()
+void PDP11SimController::ROL(int src)
 {
 }
 
-void PDP11SimController::ASR()
+void PDP11SimController::ASR(int src)
 {
 }
 
-void PDP11SimController::ASL()
+void PDP11SimController::ASL(int src)
 {
 }
 
-void PDP11SimController::SXT()
+void PDP11SimController::SXT(int src)
 {
 }
 
 // Branch Instructions
-void PDP11SimController::BR(Word address)
+void PDP11SimController::BR(int src)
 {
 }
 
-void PDP11SimController::BNE(Word address)
+void PDP11SimController::BNE(int src)
 {
 }
 
-void PDP11SimController::BEQ(Word address)
+void PDP11SimController::BEQ(int src)
 {
 }
 
-void PDP11SimController::BPL(Word address)
+void PDP11SimController::BPL(int src)
 {
 }
 
-void PDP11SimController::BMI(Word address)
+void PDP11SimController::BMI(int src)
 {
 }
 
-void PDP11SimController::BVC(Word address)
+void PDP11SimController::BVC(int src)
 {
 }
 
-void PDP11SimController::BHIS(Word address)
+void PDP11SimController::BHIS(int src)
 {
 }
 
-void PDP11SimController::BCC(Word address)
+void PDP11SimController::BCC(int src)
 {
 }
 
-void PDP11SimController::BLO(Word address)
+void PDP11SimController::BLO(int src)
 {
 }
 
-void PDP11SimController::BCS(Word address)
+void PDP11SimController::BCS(int src)
 {
 }
 
-void PDP11SimController::BGE(Word address)
+void PDP11SimController::BGE(int src)
 {
 }
 
-void PDP11SimController::BLT(Word address)
+void PDP11SimController::BLT(int src)
 {
 }
 
-void PDP11SimController::BGT(Word address)
+void PDP11SimController::BGT(int src)
 {
 }
 
-void PDP11SimController::BLE(Word address)
+void PDP11SimController::BLE(int src)
 {
 }
 
-void PDP11SimController::BHI(Word address)
+void PDP11SimController::BHI(int src)
 {
 }
 
-void PDP11SimController::BLOS(Word address)
+void PDP11SimController::BLOS(int src)
 {
 }
