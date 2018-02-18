@@ -11,7 +11,7 @@ public:
 	int getTotalCount();
 	int getReadCount();
 	int getWriteCount();
-	int getInstructionCount;
+	int getInstructionCount();
 	
 	// Processor Status Word Instructions
 	void SPL();
