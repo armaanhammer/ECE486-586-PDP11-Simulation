@@ -6,18 +6,24 @@
 using namespace std;
 
 PDP11SimController::PDP11SimController()
-{
-	sp. = 0;
-	pc.regVal = 0;
-	
-	status;
-	
-	memory = new Memory();
-	
+{	
 	totalCount = 0;
 	readCount = 0;
 	writeCount = 0;
 	instructionCount = 0;
+	
+	/*void(*procStatusWordInstructions[])() = {
+		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
+	};
+	void(*singleOperandInstructions[])(int src) = {
+		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
+	};
+	void(*doubleOperandInstructions[])(int dest, int src) = {
+		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
+	};
+	void(*branchInstructions[])(int src) = {
+		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
+	};*/
 }
 
 PDP11SimController::~PDP11SimController()
