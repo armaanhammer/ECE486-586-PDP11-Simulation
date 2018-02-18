@@ -1,6 +1,11 @@
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
+#include <string>
+#include <iomanip>
+#include <sstream>
+#include "types.h"
+#include "PDP11SimController.h"
 
 using namespace std;
 
@@ -10,12 +15,11 @@ bool linuxOp = true;
 bool linuxOp = false;
 #endif
 
-#define MEMORYLENGTH 0x800000000
-
 bool checkFlags(char* arg, string flag);
 
-int main(int argc, char* argv)
+int main(int argc, char* argv[])
 {
+	PDP11SimController* pdp = new PDP11SimController();
 	string line;
 	ifstream file;
 	bool debug = false;
