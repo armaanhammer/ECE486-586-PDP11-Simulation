@@ -1,11 +1,11 @@
-#define <Memory.h>
-#define <types.h>
+#include <stdio.h>
+#include "Memory.h"
+#include "types.h"
 
 class PDP11SimController 
 {
 public:
 	PDP11SimController();
-	PDP11SimController(int memLength);
 	~PDP11SimController();
 	
 	void decode();
@@ -73,25 +73,25 @@ private:
 	void BHI(int src);
 	void BLOS(int src);
 	
-	Register r[];
+	Register r[NUMGENERALREGISTERS];
 	Register sp;
 	Register pc;
-	StatusRegister;
+	StatusRegister status;
 	Memory memory;
 	int totalCount;
 	int readCount;
 	int writeCount;
 	int instructionCount;
-	void (*procStatusWordInstructions [])() = {
+	void (*procStatusWordInstructions[])() = {
 		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
 	};
-	void (*singleOperandInstructions [])(int src) = {
+	void (*singleOperandInstructions[])(int src) = {
 		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
 	};
-	void (*doubleOperandInstructions [])(int dest, int src) = {
+	void (*doubleOperandInstructions[])(int dest, int src) = {
 		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
 	};
-	void (*branchInstructions [])(int src) = {
+	void (*branchInstructions[])(int src) = {
 		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
 	};
-}
+};
