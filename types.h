@@ -15,7 +15,7 @@ typedef struct Register
     int regVal:16;
 };
 
-typedef struct Address
+typedef struct Word
 {
     int b:16;
 }
