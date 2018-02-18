@@ -5,6 +5,7 @@ class PDP11SimController
 {
 public:
 	PDP11SimController();
+	PDP11SimController(int memLength);
 	~PDP11SimController();
 	
 	void decode();
@@ -13,6 +14,7 @@ public:
 	int getWriteCount();
 	int getInstructionCount();
 	
+private:
 	// Processor Status Word Instructions
 	void SPL();
 	void CLC();
@@ -26,52 +28,51 @@ public:
 	void CCC();
 	void SCC();
 	
-	// Double Operand Instructions
-	void MOV();
-	void CMP();
-	void BIT();
-	void BIC();
-	void BIS();
-	void ADD();
-	void SUB();
-	
 	// Single Operand Instructions
-	void SWAB();		// is this a byte operation?
-	void JSR();
-	void EMT();
-	void CLR();
-	void COM();
-	void INC();
-	void DEC();
-	void NEG();
-	void ADC();
-	void SBC();
-	void TST();
-	void ROR();
-	void ROL();
-	void ASR();
-	void ASL();
-	void SXT();			// is this a byte operation?
+	void SWAB(int src);		// is this a byte operation?
+	void JSR(int src);
+	void EMT(int src);
+	void CLR(int src);
+	void COM(int src);
+	void INC(int src);
+	void DEC(int src);
+	void NEG(int src);
+	void ADC(int src);
+	void SBC(int src);
+	void TST(int src);
+	void ROR(int src);
+	void ROL(int src);
+	void ASR(int src);
+	void ASL(int src);
+	void SXT(int src);		// is this a byte operation?
+	
+	// Double Operand Instructions
+	void MOV(int dest, int src);
+	void CMP(int dest, int src);
+	void BIT(int dest, int src);
+	void BIC(int dest, int src);
+	void BIS(int dest, int src);
+	void ADD(int dest, int src);
+	void SUB(int dest, int src);
 	
 	// Branch Instructions
-	void BR();
-	void BNE();
-	void BEQ();
-	void BPL();
-	void BMI();
-	void BVC();
-	void BHIS();
-	void BCC();
-	void BLO();
-	void BCS();
-	void BGE();
-	void BLT();
-	void BGT();
-	void BLE();
-	void BHI();
-	void BLOS();
+	void BR(int src);
+	void BNE(int src);
+	void BEQ(int src);
+	void BPL(int src);
+	void BMI(int src);
+	void BVC(int src);
+	void BHIS(int src);
+	void BCC(int src);
+	void BLO(int src);
+	void BCS(int src);
+	void BGE(int src);
+	void BLT(int src);
+	void BGT(int src);
+	void BLE(int src);
+	void BHI(int src);
+	void BLOS(int src);
 	
-private:
 	Register r[];
 	Register sp;
 	Register pc;
@@ -81,4 +82,16 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
+	void (*procStatusWordInstructions [])() = {
+		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
+	};
+	void (*singleOperandInstructions [])(int src) = {
+		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
+	};
+	void (*doubleOperandInstructions [])(int dest, int src) = {
+		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
+	};
+	void (*branchInstructions [])(int src) = {
+		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
+	};
 }
