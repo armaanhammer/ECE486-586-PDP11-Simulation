@@ -17,5 +17,5 @@ typedef struct Register
 
 typedef struct Address
 {
-    int b:16 = 0;
+    int b:16;
 }
