@@ -10,6 +10,8 @@ bool linuxOp = true;
 bool linuxOp = false;
 #endif
 
+#define MEMORYLENGTH 
+
 bool checkFlags(char* arg, string flag);
 
 int main(int argc, char* argv)
@@ -21,6 +23,8 @@ int main(int argc, char* argv)
 	int count = 0;
 	
 	// determine operation ie is debug mode or verbose mode etc
+	// easy to use:
+	// boolean variable = checkFlags(char* of the thing you want to check, "" string of the thing to check against)
 	for (int i = 0; i < argc; i++)
 	{
 		debug = debug | checkFlags(argv[i], "-D");
