@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "types.h"
+#include "Register.h"
 
 class PDP11SimController 
 {
@@ -72,6 +73,10 @@ private:
 	void BLE(int src);
 	void BHI(int src);
 	void BLOS(int src);
+
+	void NULLFUNC();
+	void NULLFUNC(int src);
+	void NULLFUNC(int dest, int src);
 	
 	Register r[NUMGENERALREGISTERS];
 	Register sp;
@@ -82,16 +87,24 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
-	void (*procStatusWordInstructions[])() = {
-		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
+	Table<AddressMode> AM;
+	Table<SingleOperand> SO;
+	Table<DoubleOperand> DO;
+	Table<Branch> BI;
+	Table<ProcStatusWordInstruct> PSWI;
+
+	AddressMode AM[] = {
 	};
-	void (*singleOperandInstructions[])(int src) = {
+	SingleOperand SO[] = {
 		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
-	};
-	void (*doubleOperandInstructions[])(int dest, int src) = {
+	};;
+	DoubleOperand DO[] = {
 		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
-	};
-	void (*branchInstructions[])(int src) = {
+	};;
+	Branch BI[] = {
 		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
+	};
+	ProcStatusWordInstruct PSWI[] = {
+		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
 	};
 };
