@@ -1,23 +1,18 @@
-#define <Memory.h>
-#define <types.h>
+#include "Memory.h"
+#include "types.h"
+#include "PDP11SimController.h"
+#include "Register.h"
 
 using namespace std;
 
 PDP11SimController::PDP11SimController()
 {
-	r = new Register[6];
-	
-	for (int i=0; i < 6; i++)
-	{
-		r[i].regVal = 0;
-	}
-	
-	sp.regVal = 0;
+	sp. = 0;
 	pc.regVal = 0;
 	
 	status;
 	
-	memory = new Memory(std::pow(2,16));
+	memory = new Memory();
 	
 	totalCount = 0;
 	readCount = 0;
