@@ -10,12 +10,10 @@ typedef struct StatusRegister
     unsigned int C:1;
 };
 
-typedef struct Register
-{
-    int regVal:16;
-};
-
 typedef struct Word
 {
-    int b:16;
-}
+    int value:16;
+};
+
+#define MEMORYLENGTH 36000
+#define NUMGENERALREGISTERS 6

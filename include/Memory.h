@@ -1,14 +1,16 @@
-#include <types.h>
+#include "types.h"
 
+#ifndef MEMORY_H_20180218
+#define MEMORY_H_20180218
 class Memory
 {
 public:
 	Memory();
 	~Memory();
 	Word get(Word address);
-	bool set(Word address, Word value);
+	void set(Word address, Word value);
 	
 private:
-	int length;
-	Word memory[];
-}
+	Word memory[MEMORYLENGTH];
+};
+#endif
