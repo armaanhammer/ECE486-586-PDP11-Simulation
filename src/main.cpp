@@ -10,7 +10,7 @@ bool linuxOp = true;
 bool linuxOp = false;
 #endif
 
-#define MEMORYLENGTH 
+#define MEMORYLENGTH 0x800000000
 
 bool checkFlags(char* arg, string flag);
 
