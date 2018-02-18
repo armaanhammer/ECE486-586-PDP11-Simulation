@@ -36,6 +36,12 @@ int main(int argc, char* argv)
 		verbose = verbose | checkFlags(argv[i], "-a");
 	}
 	
+	
+	/*******************************************************************
+	// prompt the user here if no command line flag
+	*******************************************************************/
+	
+	
 	if (verbose) cout << "Opening file\n";
 
 	try
