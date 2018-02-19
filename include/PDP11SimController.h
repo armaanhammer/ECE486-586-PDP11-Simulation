@@ -14,7 +14,7 @@ public:
 	int getReadCount();
 	int getWriteCount();
 	int getInstructionCount();
-	
+
 private:
 	// Processor Status Word Instructions
 	void SPL();
@@ -92,9 +92,14 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
-	Table<int, AddressMode> AM;
-	Table<int, SingleOperand> SO;
-	Table<int, DoubleOperand> DO;
-	Table<int, Branch> BI;
-	Table<int, ProcStatusWordInstruct> PSWI;
+
+	typedef void(*NoParamFunc)();
+	typedef void(*OneParamFunc)(int);
+	typedef void(*TwoParamFunc)(int, int);
+
+	Table<int, OneParamFunc>* AM;
+	Table<int, OneParamFunc>* SO;
+	Table<int, TwoParamFunc>* DO;
+	Table<int, OneParamFunc>* BI;
+	Table<int, NoParamFunc>* PSWI;
 };

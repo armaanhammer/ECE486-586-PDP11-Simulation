@@ -48,33 +48,33 @@ int PDP11SimController::getInstructionCount()
 
 void PDP11SimController::createSingleOpTable()
 {
-	SO.add(SWAB_OPCODE, &SWAB);
-	SO.add(JSR_OPCODE, &JSR);
-	SO.add(EMT_OPCODE, &EMT);
-	SO.add(CLR_OPCODE, &CLR);
-	SO.add(COM_OPCODE, &COM);
-	SO.add(INC_OPCODE, &INC);
-	SO.add(DEC_OPCODE, &DEC);
-	SO.add(NEG_OPCODE, &NEG);
-	SO.add(ADC_OPCODE, &ADC);
-	SO.add(SBC_OPCODE, &SBC);
-	SO.add(TST_OPCODE, &TST);
-	SO.add(ROR_OPCODE, &ROR);
-	SO.add(ROL_OPCODE, &ROL);
-	SO.add(ASR_OPCODE, &ASR);
-	SO.add(ASL_OPCODE, &ASL);
-	SO.add(SXT_OPCODE, &SXT);
+	SO->add(SWAB_OPCODE, this->SWAB);
+	SO->add(JSR_OPCODE, this->JSR);
+	SO->add(EMT_OPCODE, this->EMT);
+	SO->add(CLR_OPCODE, this->CLR);
+	SO->add(COM_OPCODE, this->COM);
+	SO->add(INC_OPCODE, this->INC);
+	SO->add(DEC_OPCODE, this->DEC);
+	SO->add(NEG_OPCODE, this->NEG);
+	SO->add(ADC_OPCODE, this->ADC);
+	SO->add(SBC_OPCODE, this->SBC);
+	SO->add(TST_OPCODE, this->TST);
+	SO->add(ROR_OPCODE, this->ROR);
+	SO->add(ROL_OPCODE, this->ROL);
+	SO->add(ASR_OPCODE, this->ASR);
+	SO->add(ASL_OPCODE, this->ASL);
+	SO->add(SXT_OPCODE, this->SXT);
 }
 
 void PDP11SimController::createDoubleOpTable()
 {
-	DO.add(MOV_OPCODE, &MOV); 
-	DO.add(CMP_OPCODE, &CMP); 
-	DO.add(BIT_OPCODE, &BIT); 
-	DO.add(BIC_OPCODE, &BIC); 
-	DO.add(BIS_OPCODE, &BIS);
-	DO.add(ADD_OPCODE, &ADD);
-	DO.add(SUB_OPCODE, &SUB);
+	DO->add(MOV_OPCODE, this->MOV);
+	DO->add(CMP_OPCODE, this->CMP);
+	DO->add(BIT_OPCODE, this->BIT);
+	DO->add(BIC_OPCODE, this->BIC);
+	DO->add(BIS_OPCODE, this->BIS);
+	DO->add(ADD_OPCODE, this->ADD);
+	DO->add(SUB_OPCODE, this->SUB);
 }
 
 void PDP11SimController::createAddressingModeTable()
@@ -83,37 +83,37 @@ void PDP11SimController::createAddressingModeTable()
 
 void PDP11SimController::createBranchTable()
 {
-	BI.add(BR_OPCODE, &BR);
-	BI.add(BNE_OPCODE, &BNE);
-	BI.add(BEQ_OPCODE, &BEQ);
-	BI.add(BPL_OPCODE, &BPL);
-	BI.add(BMI_OPCODE, &BMI);
-	BI.add(BVC_OPCODE, &BVC); 
-	BI.add(BHIS_OPCODE, &BHIS); 
-	BI.add(BCC_OPCODE, &BCC); 
-	BI.add(BLO_OPCODE, &BLO); 
-	BI.add(BCS_OPCODE, &BCS); 
-	BI.add(BGE_OPCODE, &BGE); 
-	BI.add(BLT_OPCODE, &BLT); 
-	BI.add(BGT_OPCODE, &BGT); 
-	BI.add(BLE_OPCODE, &BLE); 
-	BI.add(BHI_OPCODE, &BHI); 
-	BI.add(BLOS_OPCODE, &BLOS);
+	BI->add(BR_OPCODE, this->BR);
+	BI->add(BNE_OPCODE, this->BNE);
+	BI->add(BEQ_OPCODE, this->BEQ);
+	BI->add(BPL_OPCODE, this->BPL);
+	BI->add(BMI_OPCODE, this->BMI);
+	BI->add(BVC_OPCODE, this->BVC);
+	BI->add(BHIS_OPCODE, this->BHIS);
+	BI->add(BCC_OPCODE, this->BCC);
+	BI->add(BLO_OPCODE, this->BLO);
+	BI->add(BCS_OPCODE, this->BCS);
+	BI->add(BGE_OPCODE, this->BGE);
+	BI->add(BLT_OPCODE, this->BLT);
+	BI->add(BGT_OPCODE, this->BGT);
+	BI->add(BLE_OPCODE, this->BLE);
+	BI->add(BHI_OPCODE, this->BHI);
+	BI->add(BLOS_OPCODE, this->BLOS);
 }
 
 void PDP11SimController::createPSWITable()
 {
-	PSWI.add(SPL_OPCODE, &SPL); 
-	PSWI.add(CLC_OPCODE, &CLC); 
-	PSWI.add(CLV_OPCODE, &CLV); 
-	PSWI.add(CLZ_OPCODE, &CLZ); 
-	PSWI.add(CLN_OPCODE, &CLN); 
-	PSWI.add(SEC_OPCODE, &SEC); 
-	PSWI.add(SEV_OPCODE, &SEV); 
-	PSWI.add(SEZ_OPCODE, &SEZ); 
-	PSWI.add(SEN_OPCODE, &SEN); 
-	PSWI.add(CCC_OPCODE, &CCC); 
-	PSWI.add(SCC_OPCODE, &SCC);
+	PSWI->add(SPL_OPCODE, this->SPL);
+	PSWI->add(CLC_OPCODE, this->CLC);
+	PSWI->add(CLV_OPCODE, this->CLV);
+	PSWI->add(CLZ_OPCODE, this->CLZ);
+	PSWI->add(CLN_OPCODE, this->CLN);
+	PSWI->add(SEC_OPCODE, this->SEC);
+	PSWI->add(SEV_OPCODE, this->SEV);
+	PSWI->add(SEZ_OPCODE, this->SEZ);
+	PSWI->add(SEN_OPCODE, this->SEN);
+	PSWI->add(CCC_OPCODE, this->CCC);
+	PSWI->add(SCC_OPCODE, this->SCC);
 }
 
 void PDP11SimController::NULLFUNC()
