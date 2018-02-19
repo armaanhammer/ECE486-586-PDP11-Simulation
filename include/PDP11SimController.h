@@ -2,6 +2,7 @@
 #include "Memory.h"
 #include "types.h"
 #include "Register.h"
+#include <functional>
 
 class PDP11SimController 
 {
@@ -14,7 +15,7 @@ public:
 	int getReadCount();
 	int getWriteCount();
 	int getInstructionCount();
-	
+
 private:
 	// Processor Status Word Instructions
 	void SPL();
@@ -92,9 +93,19 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
-	Table<int, AddressMode> AM;
-	Table<int, SingleOperand> SO;
-	Table<int, DoubleOperand> DO;
-	Table<int, Branch> BI;
-	Table<int, ProcStatusWordInstruct> PSWI;
+
+	typedef void(*NoParamFunc)();
+	typedef void(*OneParamFunc)(int);
+	typedef void(*TwoParamFunc)(int, int);
+
+	NoParamFunc PSWI[NUM_PSW_INSTRUCTIONS] = { NULL };
+	OneParamFunc AM[NUM_ADDRESSING_MODES] = { NULL };
+	OneParamFunc SO[NUM_SINGLE_OP_INSTRUCTIONS] = { NULL };
+	OneParamFunc BI[NUM_BRANCH_INSTRUCTIONS] = { NULL };
+	TwoParamFunc DO[NUM_DOUBLE_OP_INSTRUCTIONS] = { NULL };
+	//Table<int, function<void(int)>>* AM;
+	//Table<int, function<void(int)>>* SO;
+	//Table<int, TwoParamFunc>* DO;
+	//Table<int, OneParamFunc>* BI;
+	//Table<int, NoParamFunc>* PSWI;
 };
