@@ -3,7 +3,6 @@
 
 // Processor Status Word Instructions Opcodes
 #define NUM_PSW_INSTRUCTIONS 0300
-#define SPL_OPCODE 00023
 #define CLC_OPCODE 000241
 #define CLV_OPCODE 000242
 #define CLZ_OPCODE 000244
@@ -64,7 +63,7 @@
 #define BLOS_OPCODE 0203
 
 // Addressing Modes
-#define NUM_ADDRESSING_MODES 8
+#define NUM_ADDRESSING_MODES 18
 #define REGISTER_CODE			00
 #define REGISTER_DEFERRED_CODE	01
 #define AUTOINC_CODE			02
@@ -73,11 +72,21 @@
 #define AUTODEC_DEFERRED_CODE	05
 #define INDEX_CODE				06
 #define INDEX_DEFFERRED_CODE	07
+#define PC_IMMEDIATE_CODE			027
+#define PC_ABSOLUTE_CODE			037
+#define PC_RELATIVE_CODE			067
+#define PC_RELATIVE_DEFERRED_CODE	077
+#define SP_DEFERRED_CODE			016
+#define SP_AUTOINC_CODE				026
+#define SP_AUTOINC_DEFERRED_CODE	036
+#define SP_AUTODEC_CODE				046
+#define SP_INDEX_CODE				066
+#define Sp_INDEX_DEFFERRED_CODE		076
 
 // cannot do unsigned int I:0 = 1;
 typedef struct StatusRegister
 {
-    unsigned int I:1;
+    unsigned int I:3;
     unsigned int T:1;
     unsigned int N:1;
     unsigned int Z:1;
@@ -85,16 +94,34 @@ typedef struct StatusRegister
     unsigned int C:1;
 };
 
+#define WORD_OCTAL_LENGTH 6
+#define MAX_OCTAL_VALUE 0177777
 typedef struct Word
 {
-    int value:18;
+    int value:WORD_OCTAL_LENGTH*3;
 };
 
-//typedef void(*NoParamFunc)();
-//typedef void (*OneParamFunc)(int);
-//typedef void (*TwoParamFunc)(int, int);
+typedef struct OctalBit
+{
+	int b : 3;
+};
 
-
+class OctalWord : public Word
+{
+public:
+	OctalWord() { value = 0; for (int i = 0; i < WORD_OCTAL_LENGTH; i++) { octbit[i].b = 0; } };
+	OctalWord(int val)
+	{
+		value = val;
+		for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
+		{
+			int leftshift = val << ((WORD_OCTAL_LENGTH - i - 1) * 3);
+			octbit[i].b = leftshift >> ((WORD_OCTAL_LENGTH - 1) * 3);
+		}
+	};
+	~OctalWord() {};
+	OctalBit octbit[6];
+};
 
 
 

@@ -12,6 +12,6 @@ public:
 	int getVal();
 	void setval(int value);
 private:
-	Word r;
+	OctalWord* r;
 };
 #endif

@@ -7,10 +7,10 @@ class Memory
 public:
 	Memory();
 	~Memory();
-	Word get(Word address);
-	void set(Word address, Word value);
+	OctalWord get(OctalWord address);
+	void set(OctalWord address, OctalWord value);
 	
 private:
-	Word memory[MEMORYLENGTH];
+	OctalWord* memory;
 };
 #endif

@@ -9,7 +9,7 @@ public:
 	PDP11SimController();
 	~PDP11SimController();
 	
-	void decode();
+	bool decode(int octalVA);
 	int getTotalCount();
 	int getReadCount();
 	int getWriteCount();
@@ -17,7 +17,10 @@ public:
 
 private:
 	// Processor Status Word Instructions
-	void SPL();
+	void doPSWI(int opcode);
+	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
+	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
+	void SPL(OctalBit bit);
 	void CLC();
 	void CLV();
 	void CLZ();
@@ -30,6 +33,8 @@ private:
 	void SCC();
 	
 	// Single Operand Instructions
+	bool checkForSO(OctalWord w);
+	void doSingleOpInstruction(OctalWord w);
 	void SWAB(int src);		// is this a byte operation?
 	void JSR(int src);
 	void EMT(int src);
@@ -48,6 +53,8 @@ private:
 	void SXT(int src);		// is this a byte operation?
 	
 	// Double Operand Instructions
+	bool checkForDO(OctalWord w);
+	void doDoubleOpInstruction(OctalWord w);
 	void MOV(int dest, int src);
 	void CMP(int dest, int src);
 	void BIT(int dest, int src);
@@ -57,6 +64,8 @@ private:
 	void SUB(int dest, int src);
 	
 	// Branch Instructions
+	void doBranchInstruction(int value);
+	bool checkForBranch(int value);
 	void BR(int src);
 	void BNE(int src);
 	void BEQ(int src);
