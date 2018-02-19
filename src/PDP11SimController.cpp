@@ -2,6 +2,7 @@
 #include "types.h"
 #include "PDP11SimController.h"
 #include "Register.h"
+#include <functional>
 
 using namespace std;
 
@@ -48,22 +49,35 @@ int PDP11SimController::getInstructionCount()
 
 void PDP11SimController::createSingleOpTable()
 {
-	SO.add(SWAB_OPCODE, &SWAB);
-	SO.add(JSR_OPCODE, &JSR);
-	SO.add(EMT_OPCODE, &EMT);
-	SO.add(CLR_OPCODE, &CLR);
-	SO.add(COM_OPCODE, &COM);
-	SO.add(INC_OPCODE, &INC);
-	SO.add(DEC_OPCODE, &DEC);
-	SO.add(NEG_OPCODE, &NEG);
-	SO.add(ADC_OPCODE, &ADC);
-	SO.add(SBC_OPCODE, &SBC);
-	SO.add(TST_OPCODE, &TST);
-	SO.add(ROR_OPCODE, &ROR);
-	SO.add(ROL_OPCODE, &ROL);
-	SO.add(ASR_OPCODE, &ASR);
-	SO.add(ASL_OPCODE, &ASL);
-	SO.add(SXT_OPCODE, &SXT);
+	for (int i = 0; i < NUM_SINGLE_OP_INSTRUCTIONS; i++)
+	{
+		switch (i)
+		{
+		case SWAB_OPCODE:
+			SO[i] = SWAB;
+		case JSR_OPCODE:
+		case EMT_OPCODE:
+		case CLR_OPCODE:
+		default:
+			break;
+		}
+	}
+	SO->add(SWAB_OPCODE, (f=SWAB));
+	SO->add(JSR_OPCODE, &JSR);
+	SO->add(EMT_OPCODE, &EMT);
+	SO->add(CLR_OPCODE, &CLR);
+	SO->add(COM_OPCODE, &COM);
+	SO->add(INC_OPCODE, &INC);
+	SO->add(DEC_OPCODE, &DEC);
+	SO->add(NEG_OPCODE, &NEG);
+	SO->add(ADC_OPCODE, &ADC);
+	SO->add(SBC_OPCODE, &SBC);
+	SO->add(TST_OPCODE, &TST);
+	SO->add(ROR_OPCODE, &ROR);
+	SO->add(ROL_OPCODE, &ROL);
+	SO->add(ASR_OPCODE, &ASR);
+	SO->add(ASL_OPCODE, &ASL);
+	SO->add(SXT_OPCODE, &SXT);
 }
 
 void PDP11SimController::createDoubleOpTable()
