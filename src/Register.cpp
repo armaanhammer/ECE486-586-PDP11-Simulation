@@ -2,19 +2,21 @@
 
 Register::Register()
 {
-	r.value = 0;
+	r = new OctalWord();
 }
 
 Register::~Register()
 {
+	delete r;
 }
 
 int Register::getVal()
 {
-	return r.value;
+	return r->value;
 }
 
 void Register::setval(int value)
 {
-	r.value = value;
+	delete r;
+	r = new OctalWord(value);
 }

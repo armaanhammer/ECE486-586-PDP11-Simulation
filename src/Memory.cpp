@@ -2,22 +2,20 @@
 
 Memory::Memory()
 {
-	for (int i = 0; i < MEMORYLENGTH; i++)
-	{
-		memory[i].value = 0;
-	}
+	memory = new OctalWord[MEMORYLENGTH]();
 }
 
 Memory::~Memory()
 {
+	delete[] memory;
 }
 
-Word Memory::get(Word address)
+OctalWord Memory::get(OctalWord address)
 {
 	return memory[address.value];
 }
 
-void Memory::set(Word address, Word value)
+void Memory::set(OctalWord address, OctalWord value)
 {
 	memory[address.value] = value;
 }

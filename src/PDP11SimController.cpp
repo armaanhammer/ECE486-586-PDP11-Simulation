@@ -21,10 +21,80 @@ PDP11SimController::PDP11SimController()
 PDP11SimController::~PDP11SimController()
 {
 }
-	
-void PDP11SimController::decode()
+
+
+
+
+
+
+bool PDP11SimController::decode(int octalVA)
+{
+	OctalWord* ow = new OctalWord(octalVA);
+
+	// check for too long of word
+	if (octalVA > MAX_OCTAL_VALUE) { return false; }
+	// check to see if op is SPL, if true exec op
+	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) { SPL(ow->octbit[0]); return true; }
+	// check to see if op is PSWI, if true exec op
+	if (checkForPSW(ow->octbit[3], ow->octbit[4], ow->octbit[5])){ doPSWI(ow->value); return true; }
+	// check to see if op is Branch Instruction, if true exec Instruction
+	if (checkForBranch(octalVA)) { doBranchInstruction(octalVA); return true; }
+	// check to see if single operand instruction, if true exec instruction
+	if (checkForSO(*ow)) { doSingleOpInstruction(*ow); return true; }
+	// check to see if double operand instruction, if true exec instruction
+	if (checkForDO(*ow)) { doDoubleOpInstruction(*ow); return true; }
+
+	delete ow;
+	return false;
+}
+
+bool PDP11SimController::checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5)
+{
+	if (b5.b == 0 && b4.b == 0 && b3.b == 0 && b2.b == 2 && b1.b == 3) return true;
+	return false;
+}
+
+bool PDP11SimController::checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5)
 {
 }
+
+void PDP11SimController::doPSWI(int opcode)
+{
+	//find and exec op by opcode
+	(*PSWI->find(opcode))();
+}
+
+bool PDP11SimController::checkForSO(OctalWord w)
+{
+}
+
+void PDP11SimController::doSingleOpInstruction(OctalWord w)
+{
+	int regNum, int regAddressMode, int opcode;
+}
+
+bool PDP11SimController::checkForDO(OctalWord w)
+{
+}
+
+void PDP11SimController::doDoubleOpInstruction(OctalWord w)
+{
+	int destNum, int destAddressMode, int srcNum, int srcAddressMode, int opcode;
+}
+
+bool PDP11SimController::checkForBranch(int value)
+{
+}
+
+void PDP11SimController::doBranchInstruction(int value)
+{
+}
+
+
+
+
+
+
 
 int PDP11SimController::getTotalCount()
 {
@@ -79,6 +149,7 @@ void PDP11SimController::createDoubleOpTable()
 
 void PDP11SimController::createAddressingModeTable()
 {
+	AM->add(REGISTER_CODE, this->/*function name no parenthesises*/);
 }
 
 void PDP11SimController::createBranchTable()
@@ -103,7 +174,6 @@ void PDP11SimController::createBranchTable()
 
 void PDP11SimController::createPSWITable()
 {
-	PSWI->add(SPL_OPCODE, this->SPL);
 	PSWI->add(CLC_OPCODE, this->CLC);
 	PSWI->add(CLV_OPCODE, this->CLV);
 	PSWI->add(CLZ_OPCODE, this->CLZ);
@@ -129,48 +199,65 @@ void PDP11SimController::NULLFUNC(int dest, int src)
 }
 
 // Processor Status Word Instructions
-void PDP11SimController::SPL()
+void PDP11SimController::SPL(OctalBit bit)
 {
+	status.I = bit.b;
 }
 
 void PDP11SimController::CLC()
 {
+	status.C = 0;
 }
 
 void PDP11SimController::CLV()
 {
+	status.V = 0;
 }
 
 void PDP11SimController::CLZ()
 {
+	status.Z = 0;
 }
 
 void PDP11SimController::CLN()
 {
+	status.N = 0;
 }
 
 void PDP11SimController::SEC()
 {
+	status.C = 1;
 }
 
 void PDP11SimController::SEV()
 {
+	status.V = 1;
 }
 
 void PDP11SimController::SEZ()
 {
+	status.Z = 1;
 }
 
 void PDP11SimController::SEN()
 {
+	status.N = 1;
 }
 
 void PDP11SimController::CCC()
 {
+	status.C = 0;
+	status.V = 0;
+	status.Z = 0;
+	status.N = 0;
 }
 
 void PDP11SimController::SCC()
 {
+	status.C = 1;
+	status.V = 1;
+	status.Z = 1;
+	status.N = 1;
 }
 	
 // Double Operand Instructions
