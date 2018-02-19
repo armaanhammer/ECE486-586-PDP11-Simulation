@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	bool debug = false;
 	bool verbose = false;
 	int count = 0;
-	
+
 	// determine operation ie is debug mode or verbose mode etc
 	// easy to use:
 	// boolean variable = checkFlags(char* of the thing you want to check, "" string of the thing to check against)
