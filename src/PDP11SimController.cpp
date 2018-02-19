@@ -11,19 +11,11 @@ PDP11SimController::PDP11SimController()
 	readCount = 0;
 	writeCount = 0;
 	instructionCount = 0;
-	
-	/*void(*procStatusWordInstructions[])() = {
-		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
-	};
-	void(*singleOperandInstructions[])(int src) = {
-		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
-	};
-	void(*doubleOperandInstructions[])(int dest, int src) = {
-		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
-	};
-	void(*branchInstructions[])(int src) = {
-		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
-	};*/
+	createAddressingModeTable();
+	createBranchTable();
+	createDoubleOpTable();
+	createPSWITable();
+	createSingleOpTable();
 }
 
 PDP11SimController::~PDP11SimController()
@@ -53,7 +45,89 @@ int PDP11SimController::getInstructionCount()
 {
 	return instructionCount;
 }
-	
+
+void PDP11SimController::createSingleOpTable()
+{
+	SO.add(SWAB_OPCODE, &SWAB);
+	SO.add(JSR_OPCODE, &JSR);
+	SO.add(EMT_OPCODE, &EMT);
+	SO.add(CLR_OPCODE, &CLR);
+	SO.add(COM_OPCODE, &COM);
+	SO.add(INC_OPCODE, &INC);
+	SO.add(DEC_OPCODE, &DEC);
+	SO.add(NEG_OPCODE, &NEG);
+	SO.add(ADC_OPCODE, &ADC);
+	SO.add(SBC_OPCODE, &SBC);
+	SO.add(TST_OPCODE, &TST);
+	SO.add(ROR_OPCODE, &ROR);
+	SO.add(ROL_OPCODE, &ROL);
+	SO.add(ASR_OPCODE, &ASR);
+	SO.add(ASL_OPCODE, &ASL);
+	SO.add(SXT_OPCODE, &SXT);
+}
+
+void PDP11SimController::createDoubleOpTable()
+{
+	DO.add(MOV_OPCODE, &MOV); 
+	DO.add(CMP_OPCODE, &CMP); 
+	DO.add(BIT_OPCODE, &BIT); 
+	DO.add(BIC_OPCODE, &BIC); 
+	DO.add(BIS_OPCODE, &BIS);
+	DO.add(ADD_OPCODE, &ADD);
+	DO.add(SUB_OPCODE, &SUB);
+}
+
+void PDP11SimController::createAddressingModeTable()
+{
+}
+
+void PDP11SimController::createBranchTable()
+{
+	BI.add(BR_OPCODE, &BR);
+	BI.add(BNE_OPCODE, &BNE);
+	BI.add(BEQ_OPCODE, &BEQ);
+	BI.add(BPL_OPCODE, &BPL);
+	BI.add(BMI_OPCODE, &BMI);
+	BI.add(BVC_OPCODE, &BVC); 
+	BI.add(BHIS_OPCODE, &BHIS); 
+	BI.add(BCC_OPCODE, &BCC); 
+	BI.add(BLO_OPCODE, &BLO); 
+	BI.add(BCS_OPCODE, &BCS); 
+	BI.add(BGE_OPCODE, &BGE); 
+	BI.add(BLT_OPCODE, &BLT); 
+	BI.add(BGT_OPCODE, &BGT); 
+	BI.add(BLE_OPCODE, &BLE); 
+	BI.add(BHI_OPCODE, &BHI); 
+	BI.add(BLOS_OPCODE, &BLOS);
+}
+
+void PDP11SimController::createPSWITable()
+{
+	PSWI.add(SPL_OPCODE, &SPL); 
+	PSWI.add(CLC_OPCODE, &CLC); 
+	PSWI.add(CLV_OPCODE, &CLV); 
+	PSWI.add(CLZ_OPCODE, &CLZ); 
+	PSWI.add(CLN_OPCODE, &CLN); 
+	PSWI.add(SEC_OPCODE, &SEC); 
+	PSWI.add(SEV_OPCODE, &SEV); 
+	PSWI.add(SEZ_OPCODE, &SEZ); 
+	PSWI.add(SEN_OPCODE, &SEN); 
+	PSWI.add(CCC_OPCODE, &CCC); 
+	PSWI.add(SCC_OPCODE, &SCC);
+}
+
+void PDP11SimController::NULLFUNC()
+{
+}
+
+void PDP11SimController::NULLFUNC(int src)
+{
+}
+
+void PDP11SimController::NULLFUNC(int dest, int src)
+{
+}
+
 // Processor Status Word Instructions
 void PDP11SimController::SPL()
 {
