@@ -77,6 +77,11 @@ private:
 	void NULLFUNC();
 	void NULLFUNC(int src);
 	void NULLFUNC(int dest, int src);
+	void createSingleOpTable();
+	void createDoubleOpTable();
+	void createAddressingModeTable();
+	void createBranchTable();
+	void createPSWITable();
 	
 	Register r[NUMGENERALREGISTERS];
 	Register sp;
@@ -87,24 +92,9 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
-	Table<AddressMode> AM;
-	Table<SingleOperand> SO;
-	Table<DoubleOperand> DO;
-	Table<Branch> BI;
-	Table<ProcStatusWordInstruct> PSWI;
-
-	AddressMode AM[] = {
-	};
-	SingleOperand SO[] = {
-		&SWAB, &JSR, &EMT, &CLR, &COM, &INC, &DEC, &NEG, &ADC, &SBC, &TST, &ROR, &ROL, &ASR, &ASL, &SXT
-	};;
-	DoubleOperand DO[] = {
-		&MOV, &CMP, &BIT, &BIC, &BIS, &ADD, &SUB
-	};;
-	Branch BI[] = {
-		&BR, &BNE, &BEQ, &BPL, &BMI, &BVC, &BHIS, &BCC, &BLO, &BCS, &BGE, &BLT, &BGT, &BLE, &BHI, &BLOS
-	};
-	ProcStatusWordInstruct PSWI[] = {
-		&SPL, &CLC, &CLV, &CLZ, &CLN, &SEC, &SEV, &SEZ, &SEN, &CCC, &SCC
-	};
+	Table<int, AddressMode> AM;
+	Table<int, SingleOperand> SO;
+	Table<int, DoubleOperand> DO;
+	Table<int, Branch> BI;
+	Table<int, ProcStatusWordInstruct> PSWI;
 };
