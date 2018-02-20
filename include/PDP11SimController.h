@@ -16,7 +16,7 @@ public:
 	int getInstructionCount();
 
 private:
-	// Processor Status Word Instructions
+#pragma region PSWI
 	void doPSWI(int opcode);
 	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
 	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
@@ -31,8 +31,8 @@ private:
 	void SEN();
 	void CCC();
 	void SCC();
-	
-	// Single Operand Instructions
+#pragma endregion
+#pragma region SOI
 	bool checkForSO(OctalWord w);
 	void doSingleOpInstruction(OctalWord w);
 	void SWAB(int src);		// is this a byte operation?
@@ -51,8 +51,8 @@ private:
 	void ASR(int src);
 	void ASL(int src);
 	void SXT(int src);		// is this a byte operation?
-	
-	// Double Operand Instructions
+#pragma endregion
+#pragma region DOI
 	bool checkForDO(OctalWord w);
 	void doDoubleOpInstruction(OctalWord w);
 	bool checkUnimplementedDoubleOp(OctalWord w);
@@ -63,8 +63,8 @@ private:
 	void BIS(int dest, int src);
 	void ADD(int dest, int src);
 	void SUB(int dest, int src);
-	
-	// Branch Instructions
+#pragma endregion
+#pragma region BI
 	void doBranchInstruction(int value);
 	bool checkForBranch(int value);
 	void BR(int src);
@@ -83,16 +83,25 @@ private:
 	void BLE(int src);
 	void BHI(int src);
 	void BLOS(int src);
-
+#pragma endregion
+#pragma region NULLFUNC
 	void NULLFUNC();
 	void NULLFUNC(int src);
 	void NULLFUNC(int dest, int src);
+#pragma endregion
+#pragma region TABLE
 	void createSingleOpTable();
 	void createDoubleOpTable();
 	void createAddressingModeTable();
 	void createBranchTable();
 	void createPSWITable();
-	
+#pragma endregion
+#pragma region TYPES
+	typedef void(*NoParamFunc)();
+	typedef void(*OneParamFunc)(int);
+	typedef void(*TwoParamFunc)(int, int);
+#pragma endregion
+#pragma region VARS
 	Register r[NUMGENERALREGISTERS];
 	Register sp;
 	Register pc;
@@ -102,14 +111,10 @@ private:
 	int readCount;
 	int writeCount;
 	int instructionCount;
-
-	typedef void(*NoParamFunc)();
-	typedef void(*OneParamFunc)(int);
-	typedef void(*TwoParamFunc)(int, int);
-
 	Table<int, OneParamFunc>* AM;
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;
 	Table<int, OneParamFunc>* BI;
 	Table<int, NoParamFunc>* PSWI;
+#pragma endregion
 };

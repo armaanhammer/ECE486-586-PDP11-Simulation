@@ -1,3 +1,4 @@
+#pragma region DEFINE_CONSTANTS
 #define MEMORYLENGTH 36000
 #define NUMGENERALREGISTERS 6
 
@@ -83,6 +84,8 @@
 #define SP_INDEX_CODE				066
 #define Sp_INDEX_DEFFERRED_CODE		076
 
+#pragma endregion
+
 // cannot do unsigned int I:0 = 1;
 typedef struct StatusRegister
 {
@@ -92,6 +95,7 @@ typedef struct StatusRegister
     unsigned int Z:1;
     unsigned int V:1;
     unsigned int C:1;
+	// overload =
 };
 
 #define WORD_OCTAL_LENGTH 6
@@ -121,10 +125,16 @@ public:
 	};
 	~OctalWord() {};
 	OctalBit octbit[6];
+	// overload =
+	// overload +
+	// overload -
+	// overload <<
+	// overload >>
+
 };
 
 
-
+#pragma region LIST_CLASS
 template <class T> class List
 {
 public:
@@ -147,6 +157,7 @@ private:
 	int size;
 };
 
+#pragma region LIST_FUNCTION_DEFINITIONS
 template<class T> List<T>::List()
 {
 	this->item = NULL;
@@ -317,11 +328,11 @@ template<class T> int List<T>::indexof(T item)
 	}
 	return count;
 }
+#pragma endregion
 
+#pragma endregion
 
-
-
-
+#pragma region TABLE_CLASS
 template <class KEY, class VALUE> class Table
 {
 public:
@@ -338,6 +349,7 @@ private:
 	int size;
 };
 
+#pragma region TABLE_FUNCTION_DEFINITIONS
 template<class KEY, class VALUE> Table<KEY, VALUE>::Table()
 {
 	size = 0;
@@ -375,3 +387,7 @@ template<class KEY, class VALUE> bool Table<KEY, VALUE>::clear()
 	value.clear();
 	size = 0;
 }
+
+#pragma endregion
+
+#pragma endregion
