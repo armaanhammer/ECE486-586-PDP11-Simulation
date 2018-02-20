@@ -3,7 +3,6 @@
 #define NUMGENERALREGISTERS 6
 
 // Processor Status Word Instructions Opcodes
-#define NUM_PSW_INSTRUCTIONS 0300
 #define CLC_OPCODE 000241
 #define CLV_OPCODE 000242
 #define CLZ_OPCODE 000244
@@ -16,9 +15,7 @@
 #define SCC_OPCODE 000277
 
 // Single Operand Instructions Opcodes
-#define NUM_SINGLE_OP_INSTRUCTIONS 0105
 #define JSR_OPCODE 004
-#define EMT_OPCODE 0104
 #define CLR_OPCODE 0050
 #define COM_OPCODE 0051
 #define INC_OPCODE 0052
@@ -34,7 +31,6 @@
 #define SXT_OPCODE 0067
 
 // Double Operand Instructions Opcodes
-#define NUM_DOUBLE_OP_INSTRUCTIONS 8
 #define MOV_OPCODE 01
 #define CMP_OPCODE 02
 #define BIT_OPCODE 03
@@ -54,7 +50,6 @@
 #define SOB_OPCODE 077
 
 // Branch Instructions Opcodes
-#define NUM_BRANCH_INSTRUCTIONS 0210
 #define BR_OPCODE 0001
 #define BNE_OPCODE 0002
 #define BEQ_OPCODE 0003
@@ -73,7 +68,6 @@
 #define BLOS_OPCODE 0203
 
 // Addressing Modes
-#define NUM_ADDRESSING_MODES 18
 #define REGISTER_CODE			00
 #define REGISTER_DEFERRED_CODE	01
 #define AUTOINC_CODE			02

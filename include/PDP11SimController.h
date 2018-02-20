@@ -31,7 +31,6 @@ private:
 #pragma endregion
 #pragma region SOI
 	void JSR(int src);
-	void EMT(int src);
 	void CLR(int src);
 	void COM(int src);
 	void INC(int src);
