@@ -2,6 +2,7 @@
 #include "types.h"
 #include "PDP11SimController.h"
 #include "Register.h"
+#include <iostream>
 
 using namespace std;
 
@@ -100,6 +101,18 @@ void PDP11SimController::createPSWITable()
 	PSWI->add(CCC_OPCODE, this->CCC);
 	PSWI->add(SCC_OPCODE, this->SCC);
 }
+
+void PDP11SimController::createEDOITable()
+{
+	EDO->add(MUL_OPCODE, this->MUL);
+	EDO->add(DIV_OPCODE, this->DIV);
+	EDO->add(ASH_OPCODE, this->ASH);
+	EDO->add(ASHC_OPCODE, this->ASHC);
+	EDO->add(XOR_OPCODE, this->XOR);
+	EDO->add(FLOATING_POINT_OPCODE, this->FPO);
+	EDO->add(SYSTEM_NSTRUCTION_OPCODE, this->SYSINSTRUCTION);
+	EDO->add(SOB_OPCODE, this->SOB);
+}
 #pragma endregion
 
 #pragma region DECODE
@@ -111,19 +124,25 @@ bool PDP11SimController::decode(int octalVA)
 	OctalWord* ow = new OctalWord(octalVA);
 
 	// check for too long of word
-	if (octalVA > MAX_OCTAL_VALUE) { return false; }
+	if (octalVA > MAX_OCTAL_VALUE) { delete ow; return false; }
 	// check to see if op is SPL, if true exec op
-	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) { SPL(ow->octbit[0]); return true; }
+	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) 
+	{ 
+		SPL(ow->octbit[0]); 
+		delete ow; 
+		return true; 
+	}
 	// check to see if op is PSWI, if true exec op
-	if (checkForPSW(ow->octbit[3], ow->octbit[4], ow->octbit[5])){ doPSWI(ow->value); return true; }
+	if (checkForPSW(ow->octbit[3], ow->octbit[4], ow->octbit[5])){ doPSWI(ow->value); delete ow; return true; }
 	// check to see if op is Branch Instruction, if true exec Instruction
-	if (checkForBranch(octalVA)) { doBranchInstruction(octalVA); return true; }
+	if (checkForBranch(ow->value)) { doBranchInstruction(ow->value); delete ow; return true; }
 	// check to see if single operand instruction, if true exec instruction
-	if (checkForSO(*ow)) { doSingleOpInstruction(*ow); return true; }
+	if (checkForSO(*ow)) { doSingleOpInstruction(*ow); delete ow; return true; }
 	// check to see if double operand instruction, if true exec instruction
-	if (checkForDO(*ow)) { doDoubleOpInstruction(*ow); return true; }
-
+	if (checkForDO(*ow)) { doDoubleOpInstruction(*ow); delete ow; return true; }
+	if (checkUnimplementedDoubleOp(*ow)) { delete ow; return true; }
 	delete ow;
+	cerr << "un reachable code segment end of bool PDP11SimController::decode(int octalVA) reached\n";
 	return false;
 }
 
@@ -153,14 +172,19 @@ bool PDP11SimController::checkForDO(OctalWord w)
 
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
-	
-	if (/**/)
+	if (w.octbit[5].b == 7)
 	{
+		doUnimplementedDoubleOp(w.octbit[4].b);
+		return true;
 	}
+	return false;
 }
 
 bool PDP11SimController::checkForBranch(int value)
 {
+	int opcode = value >> 8;
+	
+	return (BI->find(opcode)) ? true : false;
 }
 
 #pragma endregion
@@ -172,7 +196,7 @@ bool PDP11SimController::checkForBranch(int value)
 void PDP11SimController::doPSWI(int opcode)
 {
 	//find and exec op by opcode
-	(*PSWI->find(opcode))();
+	(*(PSWI->find(opcode)))();
 }
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
@@ -187,6 +211,39 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 
 void PDP11SimController::doBranchInstruction(int value)
 {
+}
+
+void PDP11SimController::doUnimplementedDoubleOp(int opnum)
+{
+	switch (opnum)
+	{
+	case 0:
+		(*(EDO->find(MUL_OPCODE)))();
+		break;
+	case 1:
+		(*(EDO->find(DIV_OPCODE)))();
+		break;
+	case 2:
+		(*(EDO->find(ASH_OPCODE)))();
+		break;
+	case 3:
+		(*(EDO->find(ASHC_OPCODE)))();
+		break;
+	case 4:
+		(*(EDO->find(XOR_OPCODE)))();
+		break;
+	case 5:
+		(*(EDO->find(FLOATING_POINT_OPCODE)))();
+		break;
+	case 6:
+		(*(EDO->find(SYSTEM_NSTRUCTION_OPCODE)))();
+		break;
+	case 7:
+		(*(EDO->find(SOB_OPCODE)))();
+		break;
+	default:
+		break;
+	}
 }
 #pragma endregion
 
@@ -303,6 +360,32 @@ void PDP11SimController::SCC()
 ///-----------------------------------------------
 /// Addressing Mode Functions
 ///----------------------------------------------
+///
+/// The following are the defined constatns from types.h
+/// that are used in this section:
+///
+///#define NUM_ADDRESSING_MODES			18
+///#define REGISTER_CODE				00
+///#define REGISTER_DEFERRED_CODE		01
+///#define AUTOINC_CODE					02
+///#define AUTOINC_DEFERRED_CODE		03
+///#define AUTODEC_CODE					04
+///#define AUTODEC_DEFERRED_CODE		05
+///#define INDEX_CODE					06
+///#define INDEX_DEFFERRED_CODE			07
+///#define PC_IMMEDIATE_CODE			027
+///#define PC_ABSOLUTE_CODE				037
+///#define PC_RELATIVE_CODE				067
+///#define PC_RELATIVE_DEFERRED_CODE	077
+///#define SP_DEFERRED_CODE				016
+///#define SP_AUTOINC_CODE				026
+///#define SP_AUTOINC_DEFERRED_CODE		036
+///#define SP_AUTODEC_CODE				046
+///#define SP_INDEX_CODE				066
+///#define Sp_INDEX_DEFFERRED_CODE		076
+
+
+
 #pragma endregion
 
 #pragma region DOUBLE_OPERAND_INSTRUCTIONS
@@ -476,5 +559,50 @@ void PDP11SimController::BHI(int src)
 
 void PDP11SimController::BLOS(int src)
 {
+}
+#pragma endregion
+
+#pragma region EXTENDED_DOUBLE_OPERAND_INSTRUCTIONS
+///----------------------------------
+/// Extended Double Operand Instruction Functions
+///----------------------------------
+void PDP11SimController::MUL()
+{
+	cout << "a MUL instruction was detected\n";
+}
+
+void PDP11SimController::DIV()
+{
+	cout << "a DIV instruction was detected\n";
+}
+
+void PDP11SimController::ASH()
+{
+	cout << "a ASH instruction was detected\n";
+}
+
+void PDP11SimController::ASHC()
+{
+	cout << "a ASHC instruction was detected\n";
+}
+
+void PDP11SimController::XOR()
+{
+	cout << "a XOR instruction was detected\n";
+}
+
+void PDP11SimController::FPO()
+{
+	cout << "a floating point instruction was detected\n";
+}
+
+void PDP11SimController::SYSINSTRUCTION()
+{
+	cout << "a system instruction was detected\n";
+}
+
+void PDP11SimController::SOB()
+{
+	cout << "a SOB instruction was detected\n";
 }
 #pragma endregion
