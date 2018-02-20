@@ -55,6 +55,7 @@ private:
 	// Double Operand Instructions
 	bool checkForDO(OctalWord w);
 	void doDoubleOpInstruction(OctalWord w);
+	bool checkUnimplementedDoubleOp(OctalWord w);
 	void MOV(int dest, int src);
 	void CMP(int dest, int src);
 	void BIT(int dest, int src);
