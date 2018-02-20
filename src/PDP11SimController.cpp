@@ -34,7 +34,6 @@ PDP11SimController::~PDP11SimController()
 ///-----------------------------------------------
 void PDP11SimController::createSingleOpTable()
 {
-	SO->add(SWAB_OPCODE, this->SWAB);
 	SO->add(JSR_OPCODE, this->JSR);
 	SO->add(EMT_OPCODE, this->EMT);
 	SO->add(CLR_OPCODE, this->CLR);
@@ -427,10 +426,6 @@ void PDP11SimController::SUB(int dest, int src)
 ///-----------------------------------------------
 /// Single Operand Instruction Functions
 ///-----------------------------------------------
-void PDP11SimController::SWAB(int src)
-{
-}
-
 void PDP11SimController::JSR(int src)
 {
 }
