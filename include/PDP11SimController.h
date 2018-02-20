@@ -30,7 +30,6 @@ private:
 	void SCC();
 #pragma endregion
 #pragma region SOI
-	void SWAB(int src);		// is this a byte operation?
 	void JSR(int src);
 	void EMT(int src);
 	void CLR(int src);
