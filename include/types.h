@@ -17,7 +17,6 @@
 
 // Single Operand Instructions Opcodes
 #define NUM_SINGLE_OP_INSTRUCTIONS 0105
-#define SWAB_OPCODE 0003
 #define JSR_OPCODE 004
 #define EMT_OPCODE 0104
 #define CLR_OPCODE 0050
