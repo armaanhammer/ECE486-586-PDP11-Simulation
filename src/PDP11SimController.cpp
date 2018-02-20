@@ -56,6 +56,8 @@ bool PDP11SimController::checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, Octa
 
 bool PDP11SimController::checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5)
 {
+	if (b3.b == 0 && b4.b == 0 && b5.b == 0) return true;
+	return false;
 }
 
 void PDP11SimController::doPSWI(int opcode)
@@ -66,6 +68,8 @@ void PDP11SimController::doPSWI(int opcode)
 
 bool PDP11SimController::checkForSO(OctalWord w)
 {
+	if (w.octbit[4].b == 0) return true;
+	return false;
 }
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
@@ -75,11 +79,21 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 
 bool PDP11SimController::checkForDO(OctalWord w)
 {
+	if (w.octbit[4].b >= 1 && w.octbit[4].b <= 6) return true;
+	return false;
 }
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 {
 	int destNum, int destAddressMode, int srcNum, int srcAddressMode, int opcode;
+}
+
+bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
+{
+	
+	if (/**/)
+	{
+	}
 }
 
 bool PDP11SimController::checkForBranch(int value)
