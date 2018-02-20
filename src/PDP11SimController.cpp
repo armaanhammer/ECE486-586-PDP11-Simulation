@@ -35,7 +35,6 @@ PDP11SimController::~PDP11SimController()
 void PDP11SimController::createSingleOpTable()
 {
 	SO->add(JSR_OPCODE, this->JSR);
-	SO->add(EMT_OPCODE, this->EMT);
 	SO->add(CLR_OPCODE, this->CLR);
 	SO->add(COM_OPCODE, this->COM);
 	SO->add(INC_OPCODE, this->INC);
@@ -200,16 +199,24 @@ void PDP11SimController::doPSWI(int opcode)
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
-	int regNum, int regAddressMode, int opcode;
+	int regNum = w.octbit[0].b;
+	int regAddressMode = w.octbit[1].b;
+	int opcode = w.value >> 6;
 }
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 {
-	int destNum, int destAddressMode, int srcNum, int srcAddressMode, int opcode;
+	int destNum = w.octbit[0].b;
+	int destAddressMode = w.octbit[1].b;
+	int srcNum = w.octbit[2].b;
+	int srcAddressMode = w.octbit[3].b;
+	int opcode = w.value >> 12;
 }
 
 void PDP11SimController::doBranchInstruction(int value)
 {
+	int opcode = value >> 8;
+	int offset = (value << 8) >> 8;
 }
 
 void PDP11SimController::doUnimplementedDoubleOp(int opnum)
@@ -427,10 +434,6 @@ void PDP11SimController::SUB(int dest, int src)
 /// Single Operand Instruction Functions
 ///-----------------------------------------------
 void PDP11SimController::JSR(int src)
-{
-}
-
-void PDP11SimController::EMT(int src)
 {
 }
 
