@@ -17,9 +17,6 @@ public:
 
 private:
 #pragma region PSWI
-	void doPSWI(int opcode);
-	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
-	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 	void SPL(OctalBit bit);
 	void CLC();
 	void CLV();
@@ -33,8 +30,6 @@ private:
 	void SCC();
 #pragma endregion
 #pragma region SOI
-	bool checkForSO(OctalWord w);
-	void doSingleOpInstruction(OctalWord w);
 	void SWAB(int src);		// is this a byte operation?
 	void JSR(int src);
 	void EMT(int src);
@@ -53,9 +48,6 @@ private:
 	void SXT(int src);		// is this a byte operation?
 #pragma endregion
 #pragma region DOI
-	bool checkForDO(OctalWord w);
-	void doDoubleOpInstruction(OctalWord w);
-	bool checkUnimplementedDoubleOp(OctalWord w);
 	void MOV(int dest, int src);
 	void CMP(int dest, int src);
 	void BIT(int dest, int src);
@@ -64,9 +56,17 @@ private:
 	void ADD(int dest, int src);
 	void SUB(int dest, int src);
 #pragma endregion
+#pragma region EDOI
+	void MUL();
+	void DIV();
+	void ASH();
+	void ASHC();
+	void XOR();
+	void FPO();
+	void SYSINSTRUCTION();
+	void SOB();
+#pragma endregion
 #pragma region BI
-	void doBranchInstruction(int value);
-	bool checkForBranch(int value);
 	void BR(int src);
 	void BNE(int src);
 	void BEQ(int src);
@@ -89,12 +89,28 @@ private:
 	void NULLFUNC(int src);
 	void NULLFUNC(int dest, int src);
 #pragma endregion
+#pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
+	bool checkForBranch(int value);
+	bool checkForDO(OctalWord w);
+	bool checkUnimplementedDoubleOp(OctalWord w);
+	bool checkForSO(OctalWord w);
+	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
+	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
+#pragma endregion
+#pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
+	void doBranchInstruction(int value);
+	void doUnimplementedDoubleOp(int opnum);
+	void doDoubleOpInstruction(OctalWord w);
+	void doSingleOpInstruction(OctalWord w);
+	void doPSWI(int opcode);
+#pragma endregion
 #pragma region TABLE
 	void createSingleOpTable();
 	void createDoubleOpTable();
 	void createAddressingModeTable();
 	void createBranchTable();
 	void createPSWITable();
+	void createEDOITable();
 #pragma endregion
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
@@ -115,6 +131,7 @@ private:
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;
 	Table<int, OneParamFunc>* BI;
-	Table<int, NoParamFunc>* PSWI;
+	Table<int, NoParamFunc>*  PSWI;
+	Table<int, NoParamFunc>* EDO;
 #pragma endregion
 };

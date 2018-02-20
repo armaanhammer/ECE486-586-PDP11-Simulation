@@ -42,7 +42,17 @@
 #define BIC_OPCODE 04
 #define BIS_OPCODE 05
 #define ADD_OPCODE 06
-#define SUB_OPCODE 07
+#define SUB_OPCODE 016
+
+// Extended Double Operand Instruction Opcodes
+#define MUL_OPCODE 070
+#define DIV_OPCODE 071
+#define ASH_OPCODE 072
+#define ASHC_OPCODE 073
+#define XOR_OPCODE 074
+#define FLOATING_POINT_OPCODE 075
+#define SYSTEM_NSTRUCTION_OPCODE 076
+#define SOB_OPCODE 077
 
 // Branch Instructions Opcodes
 #define NUM_BRANCH_INSTRUCTIONS 0210
@@ -84,6 +94,8 @@
 #define SP_INDEX_CODE				066
 #define Sp_INDEX_DEFFERRED_CODE		076
 
+#define WORD_OCTAL_LENGTH 6
+#define MAX_OCTAL_VALUE 0177777
 #pragma endregion
 
 // cannot do unsigned int I:0 = 1;
@@ -98,16 +110,16 @@ typedef struct StatusRegister
 	// overload =
 };
 
-#define WORD_OCTAL_LENGTH 6
-#define MAX_OCTAL_VALUE 0177777
 typedef struct Word
 {
     int value:WORD_OCTAL_LENGTH*3;
+	// overload ==
 };
 
 typedef struct OctalBit
 {
 	int b : 3;
+	// overload ==
 };
 
 class OctalWord : public Word
