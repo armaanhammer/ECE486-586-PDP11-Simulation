@@ -1,5 +1,6 @@
 #include "Memory.h"
 #include "types.h"
+#include "constants.h"
 #include "PDP11SimController.h"
 #include "Register.h"
 #include <iostream>

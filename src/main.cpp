@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include "types.h"
+#include "constants.h"
 #include "PDP11SimController.h"
 
 using namespace std;

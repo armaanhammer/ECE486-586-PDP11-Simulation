@@ -1,4 +1,6 @@
 #include "Memory.h"
+#include "types.h"
+#include "constants.h"
 
 Memory::Memory()
 {
