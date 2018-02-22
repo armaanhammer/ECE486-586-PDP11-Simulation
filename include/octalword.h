@@ -13,19 +13,28 @@ public:
 	~OctalWord();
 	OctalBit octbit[6];
 
-	operator=();
-	OctalWord operator+(const OctalWord& b);
-	OctalWord operator-(const OctalWord& b);
-	operator*();
-	OctalWord operator--();
-	OctalWord operator--(int);
-	OctalWord operator++();
-	OctalWord operator++(int);
-	operator<<();
-	operator>>();
-	operator+=();
-	operator-=();
+	OctalWord& operator =(const OctalWord &newAssignment);
+	OctalWord operator +(const OctalWord& b);
+	OctalWord operator -(const OctalWord& b);
+	OctalWord operator ~();
+	OctalWord operator !();
+	OctalWord operator --();
+	OctalWord operator --(int);
+	OctalWord operator ++();
+	OctalWord operator ++(int);
+	OctalWord operator <<(const int shiftAmount);
+	OctalWord operator >>(const int shiftAmount);
+	OctalWord operator +=(const OctalWord& rhs);
+	OctalWord operator -=(const OctalWord& rhs);
+	bool operator <(const OctalWord& oneToCompareTo);
+	bool operator <=(const OctalWord& oneToCompareTo);
+	bool operator >(const OctalWord& oneToCompareTo);
+	bool operator >=(const OctalWord& oneToCompareTo);
+	bool operator ==(const OctalWord& oneToCompareTo);
+	bool operator !=(const OctalWord& oneToCompareTo);
+
 private:
 	void updateBits();
+	void updateBinary();
 };
 #endif
