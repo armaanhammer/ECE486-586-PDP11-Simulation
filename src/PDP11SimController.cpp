@@ -1,8 +1,8 @@
-#include "Memory.h"
+#include "memory.h"
 #include "types.h"
 #include "constants.h"
-#include "PDP11SimController.h"
-#include "Register.h"
+#include "pdp11simcontroller.h"
+#include "register.h"
 #include <iostream>
 
 using namespace std;
