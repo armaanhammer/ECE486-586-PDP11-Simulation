@@ -147,31 +147,31 @@ bool PDP11SimController::decode(int octalVA)
 
 bool PDP11SimController::checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5)
 {
-	if (b5.b == 0 && b4.b == 0 && b3.b == 0 && b2.b == 2 && b1.b == 3) return true;
+	if (b5 == 0 && b4 == 0 && b3 == 0 && b2 == 2 && b1 == 3) return true;
 	return false;
 }
 
 bool PDP11SimController::checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5)
 {
-	if (b3.b == 0 && b4.b == 0 && b5.b == 0) return true;
+	if (b3 == 0 && b4 == 0 && b5 == 0) return true;
 	return false;
 }
 
 bool PDP11SimController::checkForSO(OctalWord w)
 {
-	if (w.octbit[4].b == 0) return true;
+	if (w.octbit[4] == 0) return true;
 	return false;
 }
 
 bool PDP11SimController::checkForDO(OctalWord w)
 {
-	if (w.octbit[4].b >= 1 && w.octbit[4].b <= 6) return true;
+	if (w.octbit[4] >= 1 && w.octbit[4] <= 6) return true;
 	return false;
 }
 
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
-	if (w.octbit[5].b == 7)
+	if (w.octbit[5] == 7)
 	{
 		doUnimplementedDoubleOp(w.octbit[4].b);
 		return true;
@@ -285,14 +285,18 @@ int PDP11SimController::getInstructionCount()
 ///-----------------------------------------------
 void PDP11SimController::NULLFUNC()
 {
+	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
 }
 
 void PDP11SimController::NULLFUNC(int src)
 {
+	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src << " called\n";
 }
 
 void PDP11SimController::NULLFUNC(int dest, int src)
 {
+	cout << "some opcode has resulted in a NULLFUNC with two parameters:";
+	cout << dest << " and " << src << " called\n";
 }
 
 #pragma endregion
@@ -426,8 +430,6 @@ void PDP11SimController::ADD(int dest, int src)
 void PDP11SimController::SUB(int dest, int src)
 {
 }
-
-
 #pragma endregion
 
 #pragma region SINGLE_OPERAND_INSTRUCTIONS
