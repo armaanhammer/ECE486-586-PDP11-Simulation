@@ -1,3 +1,5 @@
+#pragma once
+
 #include "constants.h"
 
 #ifndef TYPES_LIB_20180221
