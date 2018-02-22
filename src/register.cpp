@@ -1,4 +1,5 @@
-#include "Register.h"
+#include "register.h"
+#include "octalword.h"
 
 Register::Register()
 {
