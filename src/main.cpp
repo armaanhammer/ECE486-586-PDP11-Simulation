@@ -6,7 +6,7 @@
 #include <sstream>
 #include "types.h"
 #include "constants.h"
-#include "PDP11SimController.h"
+#include "pdp11simcontroller.h"
 
 using namespace std;
 
