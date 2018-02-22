@@ -1,4 +1,5 @@
 #include "types.h"
+#include "OctalWord.h"
 
 #ifndef MEMORY_H_20180218
 #define MEMORY_H_20180218

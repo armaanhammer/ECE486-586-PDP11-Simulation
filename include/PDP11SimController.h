@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "types.h"
+#include "OctalWord.h"
+#include "Table.h"
 #include "constants.h"
 #include "Register.h"
 
+#ifndef PDP11SIMCONTROLLER_H_20180221
+#define PDP11SIMCONTROLLER_H_20180221
 class PDP11SimController 
 {
 public:
@@ -134,3 +138,4 @@ private:
 	Table<int, NoParamFunc>* EDO;
 #pragma endregion
 };
+#endif
