@@ -1,5 +1,7 @@
+#pragma once
+
 #include "types.h"
-#include "OctalWord.h"
+#include "octalword.h"
 
 #ifndef MEMORY_H_20180218
 #define MEMORY_H_20180218
