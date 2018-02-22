@@ -1,4 +1,4 @@
-#include "Table.h"
+#include "table.h"
 
 template<class KEY, class VALUE> Table<KEY, VALUE>::Table()
 {
