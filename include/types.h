@@ -111,7 +111,7 @@ typedef struct Word
 
 typedef struct OctalBit
 {
-	int b : 3;
+	unsigned int b : 3;
 	// overload ==
 };
 
