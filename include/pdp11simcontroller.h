@@ -1,10 +1,12 @@
+#pragma once
+
 #include <stdio.h>
-#include "Memory.h"
+#include "memory.h"
 #include "types.h"
-#include "OctalWord.h"
-#include "Table.h"
+#include "octalword.h"
+#include "table.h"
 #include "constants.h"
-#include "Register.h"
+#include "register.h"
 
 #ifndef PDP11SIMCONTROLLER_H_20180221
 #define PDP11SIMCONTROLLER_H_20180221
