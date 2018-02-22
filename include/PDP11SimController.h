@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "Memory.h"
 #include "types.h"
+#include "constants.h"
 #include "Register.h"
 
 class PDP11SimController 
