@@ -1,4 +1,4 @@
-#include "OctalWord.h"
+#include "octalword.h"
 #include "constants.h"
 #include "types.h"
 
