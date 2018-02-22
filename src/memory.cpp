@@ -1,6 +1,7 @@
-#include "Memory.h"
+#include "memory.h"
 #include "types.h"
 #include "constants.h"
+#include "octalword.h"
 
 Memory::Memory()
 {
