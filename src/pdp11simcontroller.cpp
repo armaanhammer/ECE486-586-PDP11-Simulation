@@ -203,6 +203,12 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regNum = w.octbit[0].b;
 	int regAddressMode = w.octbit[1].b;
 	int opcode = w.value >> 6;
+
+	OctalWord operand = (*(AM->find(regAddressMode))(r[regNum].getVal());
+
+	OctalWord result = (*(SO->find(opcode)))(operand);
+
+	WriteBack(regAddressMode, regNum, result);
 }
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
@@ -212,6 +218,58 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int srcNum = w.octbit[2].b;
 	int srcAddressMode = w.octbit[3].b;
 	int opcode = w.value >> 12;
+
+	OctalWord operandA = (*(AM->find(srcAddressMode))(r[srcNum].getVal());
+	OctalWord operandB = (*(AM->find(destAddressMode))(r[destNum].getVal());
+
+	OctalWord result = (*(DO->find(opcode)))(operandA, operandB);
+
+	WriteBack(destAddressMode, destNum, result);
+}
+
+void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
+{
+	switch (am)
+	{
+	case(00):
+		break;
+	case(01):
+		break;
+	case(02):
+		break;
+	case(03):
+		break;
+	case(04):
+		break;
+	case(05):
+		break;
+	case(06):
+		break;
+	case(07):
+		break;
+	case(027):
+		break;
+	case(037):
+		break;
+	case(067):
+		break;
+	case(077):
+		break;
+	case(016):
+		break;
+	case(026):
+		break;
+	case(036):
+		break;
+	case(046):
+		break;
+	case(066):
+		break;
+	case(076):
+		break;
+	default:
+		break;
+	}
 }
 
 void PDP11SimController::doBranchInstruction(int value)
@@ -283,20 +341,20 @@ int PDP11SimController::getInstructionCount()
 ///-----------------------------------------------
 /// NULL Functions
 ///-----------------------------------------------
-void PDP11SimController::NULLFUNC()
+OctalWord PDP11SimController::NULLFUNC()
 {
 	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
 }
 
-void PDP11SimController::NULLFUNC(int src)
+OctalWord PDP11SimController::NULLFUNC(OctalWord src)
 {
-	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src << " called\n";
+	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src.value << " called\n";
 }
 
-void PDP11SimController::NULLFUNC(int dest, int src)
+OctalWord PDP11SimController::NULLFUNC(OctalWord dest, OctalWord src)
 {
 	cout << "some opcode has resulted in a NULLFUNC with two parameters:";
-	cout << dest << " and " << src << " called\n";
+	cout << dest.value << " and " << src.value << " called\n";
 }
 
 #pragma endregion
@@ -403,31 +461,31 @@ void PDP11SimController::SCC()
 ///-----------------------------------------------
 /// Double Operand Instruction Functions
 ///-----------------------------------------------
-void PDP11SimController::MOV(int dest, int src)
+OctalWord PDP11SimController::MOV(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::CMP(int dest, int src)
+OctalWord PDP11SimController::CMP(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::BIT(int dest, int src)
+OctalWord PDP11SimController::BIT(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::BIC(int dest, int src)
+OctalWord PDP11SimController::BIC(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::BIS(int dest, int src)
+OctalWord PDP11SimController::BIS(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::ADD(int dest, int src)
+OctalWord PDP11SimController::ADD(OctalWord dest, OctalWord src)
 {
 }
 
-void PDP11SimController::SUB(int dest, int src)
+OctalWord PDP11SimController::SUB(OctalWord dest, OctalWord src)
 {
 }
 #pragma endregion
@@ -436,59 +494,59 @@ void PDP11SimController::SUB(int dest, int src)
 ///-----------------------------------------------
 /// Single Operand Instruction Functions
 ///-----------------------------------------------
-void PDP11SimController::JSR(int src)
+OctalWord PDP11SimController::JSR(OctalWord src)
 {
 }
 
-void PDP11SimController::CLR(int src)
+OctalWord PDP11SimController::CLR(OctalWord src)
 {
 }
 
-void PDP11SimController::COM(int src)
+OctalWord PDP11SimController::COM(OctalWord src)
 {
 }
 
-void PDP11SimController::INC(int src)
+OctalWord PDP11SimController::INC(OctalWord src)
 {
 }
 
-void PDP11SimController::DEC(int src)
+OctalWord PDP11SimController::DEC(OctalWord src)
 {
 }
 
-void PDP11SimController::NEG(int src)
+OctalWord PDP11SimController::NEG(OctalWord src)
 {
 }
 
-void PDP11SimController::ADC(int src)
+OctalWord PDP11SimController::ADC(OctalWord src)
 {
 }
 
-void PDP11SimController::SBC(int src)
+OctalWord PDP11SimController::SBC(OctalWord src)
 {
 }
 
-void PDP11SimController::TST(int src)
+OctalWord PDP11SimController::TST(OctalWord src)
 {
 }
 
-void PDP11SimController::ROR(int src)
+OctalWord PDP11SimController::ROR(OctalWord src)
 {
 }
 
-void PDP11SimController::ROL(int src)
+OctalWord PDP11SimController::ROL(OctalWord src)
 {
 }
 
-void PDP11SimController::ASR(int src)
+OctalWord PDP11SimController::ASR(OctalWord src)
 {
 }
 
-void PDP11SimController::ASL(int src)
+OctalWord PDP11SimController::ASL(OctalWord src)
 {
 }
 
-void PDP11SimController::SXT(int src)
+OctalWord PDP11SimController::SXT(OctalWord src)
 {
 }
 
@@ -498,67 +556,67 @@ void PDP11SimController::SXT(int src)
 ///-----------------------------------------------
 /// Branch Instruction Functions
 ///-----------------------------------------------
-void PDP11SimController::BR(int src)
+OctalWord PDP11SimController::BR(OctalWord src)
 {
 }
 
-void PDP11SimController::BNE(int src)
+OctalWord PDP11SimController::BNE(OctalWord src)
 {
 }
 
-void PDP11SimController::BEQ(int src)
+OctalWord PDP11SimController::BEQ(OctalWord src)
 {
 }
 
-void PDP11SimController::BPL(int src)
+OctalWord PDP11SimController::BPL(OctalWord src)
 {
 }
 
-void PDP11SimController::BMI(int src)
+OctalWord PDP11SimController::BMI(OctalWord src)
 {
 }
 
-void PDP11SimController::BVC(int src)
+OctalWord PDP11SimController::BVC(OctalWord src)
 {
 }
 
-void PDP11SimController::BHIS(int src)
+OctalWord PDP11SimController::BHIS(OctalWord src)
 {
 }
 
-void PDP11SimController::BCC(int src)
+OctalWord PDP11SimController::BCC(OctalWord src)
 {
 }
 
-void PDP11SimController::BLO(int src)
+OctalWord PDP11SimController::BLO(OctalWord src)
 {
 }
 
-void PDP11SimController::BCS(int src)
+OctalWord PDP11SimController::BCS(OctalWord src)
 {
 }
 
-void PDP11SimController::BGE(int src)
+OctalWord PDP11SimController::BGE(OctalWord src)
 {
 }
 
-void PDP11SimController::BLT(int src)
+OctalWord PDP11SimController::BLT(OctalWord src)
 {
 }
 
-void PDP11SimController::BGT(int src)
+OctalWord PDP11SimController::BGT(OctalWord src)
 {
 }
 
-void PDP11SimController::BLE(int src)
+OctalWord PDP11SimController::BLE(OctalWord src)
 {
 }
 
-void PDP11SimController::BHI(int src)
+OctalWord PDP11SimController::BHI(OctalWord src)
 {
 }
 
-void PDP11SimController::BLOS(int src)
+OctalWord PDP11SimController::BLOS(OctalWord src)
 {
 }
 #pragma endregion
@@ -567,42 +625,42 @@ void PDP11SimController::BLOS(int src)
 ///----------------------------------
 /// Extended Double Operand Instruction Functions
 ///----------------------------------
-void PDP11SimController::MUL()
+OctalWord PDP11SimController::MUL()
 {
 	cout << "a MUL instruction was detected\n";
 }
 
-void PDP11SimController::DIV()
+OctalWord PDP11SimController::DIV()
 {
 	cout << "a DIV instruction was detected\n";
 }
 
-void PDP11SimController::ASH()
+OctalWord PDP11SimController::ASH()
 {
 	cout << "a ASH instruction was detected\n";
 }
 
-void PDP11SimController::ASHC()
+OctalWord PDP11SimController::ASHC()
 {
 	cout << "a ASHC instruction was detected\n";
 }
 
-void PDP11SimController::XOR()
+OctalWord PDP11SimController::XOR()
 {
 	cout << "a XOR instruction was detected\n";
 }
 
-void PDP11SimController::FPO()
+OctalWord PDP11SimController::FPO()
 {
 	cout << "a floating point instruction was detected\n";
 }
 
-void PDP11SimController::SYSINSTRUCTION()
+OctalWord PDP11SimController::SYSINSTRUCTION()
 {
 	cout << "a system instruction was detected\n";
 }
 
-void PDP11SimController::SOB()
+OctalWord PDP11SimController::SOB()
 {
 	cout << "a SOB instruction was detected\n";
 }
