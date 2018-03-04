@@ -37,62 +37,62 @@ private:
 	void SCC();
 #pragma endregion
 #pragma region SOI
-	void JSR(int src);
-	void CLR(int src);
-	void COM(int src);
-	void INC(int src);
-	void DEC(int src);
-	void NEG(int src);
-	void ADC(int src);
-	void SBC(int src);
-	void TST(int src);
-	void ROR(int src);
-	void ROL(int src);
-	void ASR(int src);
-	void ASL(int src);
-	void SXT(int src);		// is this a byte operation?
+	OctalWord JSR(OctalWord src);
+	OctalWord CLR(OctalWord src);
+	OctalWord COM(OctalWord src);
+	OctalWord INC(OctalWord src);
+	OctalWord DEC(OctalWord src);
+	OctalWord NEG(OctalWord src);
+	OctalWord ADC(OctalWord src);
+	OctalWord SBC(OctalWord src);
+	OctalWord TST(OctalWord src);
+	OctalWord ROR(OctalWord src);
+	OctalWord ROL(OctalWord src);
+	OctalWord ASR(OctalWord src);
+	OctalWord ASL(OctalWord src);
+	OctalWord SXT(OctalWord src);		// is this a byte operation?
 #pragma endregion
 #pragma region DOI
-	void MOV(int dest, int src);
-	void CMP(int dest, int src);
-	void BIT(int dest, int src);
-	void BIC(int dest, int src);
-	void BIS(int dest, int src);
-	void ADD(int dest, int src);
-	void SUB(int dest, int src);
+	OctalWord MOV(OctalWord dest, OctalWord src);
+	OctalWord CMP(OctalWord dest, OctalWord src);
+	OctalWord BIT(OctalWord dest, OctalWord src);
+	OctalWord BIC(OctalWord dest, OctalWord src);
+	OctalWord BIS(OctalWord dest, OctalWord src);
+	OctalWord ADD(OctalWord dest, OctalWord src);
+	OctalWord SUB(OctalWord dest, OctalWord src);
 #pragma endregion
 #pragma region EDOI
-	void MUL();
-	void DIV();
-	void ASH();
-	void ASHC();
-	void XOR();
-	void FPO();
-	void SYSINSTRUCTION();
-	void SOB();
+	OctalWord MUL();
+	OctalWord DIV();
+	OctalWord ASH();
+	OctalWord ASHC();
+	OctalWord XOR();
+	OctalWord FPO();
+	OctalWord SYSINSTRUCTION();
+	OctalWord SOB();
 #pragma endregion
 #pragma region BI
-	void BR(int src);
-	void BNE(int src);
-	void BEQ(int src);
-	void BPL(int src);
-	void BMI(int src);
-	void BVC(int src);
-	void BHIS(int src);
-	void BCC(int src);
-	void BLO(int src);
-	void BCS(int src);
-	void BGE(int src);
-	void BLT(int src);
-	void BGT(int src);
-	void BLE(int src);
-	void BHI(int src);
-	void BLOS(int src);
+	OctalWord BR(OctalWord src);
+	OctalWord BNE(OctalWord src);
+	OctalWord BEQ(OctalWord src);
+	OctalWord BPL(OctalWord src);
+	OctalWord BMI(OctalWord src);
+	OctalWord BVC(OctalWord src);
+	OctalWord BHIS(OctalWord src);
+	OctalWord BCC(OctalWord src);
+	OctalWord BLO(OctalWord src);
+	OctalWord BCS(OctalWord src);
+	OctalWord BGE(OctalWord src);
+	OctalWord BLT(OctalWord src);
+	OctalWord BGT(OctalWord src);
+	OctalWord BLE(OctalWord src);
+	OctalWord BHI(OctalWord src);
+	OctalWord BLOS(OctalWord src);
 #pragma endregion
 #pragma region NULLFUNC
-	void NULLFUNC();
-	void NULLFUNC(int src);
-	void NULLFUNC(int dest, int src);
+	OctalWord NULLFUNC();
+	OctalWord NULLFUNC(OctalWord src);
+	OctalWord NULLFUNC(OctalWord dest, OctalWord src);
 #pragma endregion
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
 	bool checkForBranch(int value);
@@ -103,6 +103,7 @@ private:
 	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 #pragma endregion
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
+	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
 	void doBranchInstruction(int value);
 	void doUnimplementedDoubleOp(int opnum);
 	void doDoubleOpInstruction(OctalWord w);
@@ -119,8 +120,8 @@ private:
 #pragma endregion
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
-	typedef void(*OneParamFunc)(int);
-	typedef void(*TwoParamFunc)(int, int);
+	typedef OctalWord(*OneParamFunc)(OctalWord);
+	typedef OctalWord(*TwoParamFunc)(OctalWord, OctalWord);
 #pragma endregion
 #pragma region VARS
 	Register r[NUMGENERALREGISTERS];
