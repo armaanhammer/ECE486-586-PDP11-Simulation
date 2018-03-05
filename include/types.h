@@ -95,7 +95,7 @@ typedef struct OctalBit
 
 typedef struct Word
 {
-    int value:WORD_OCTAL_LENGTH*3;
+    int value:WORD_OCTAL_LENGTH*3-2;
 	bool overflow = false;
 	Bit binary[WORD_OCTAL_LENGTH * 3];
 	Word() {};

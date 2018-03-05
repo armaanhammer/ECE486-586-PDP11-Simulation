@@ -34,22 +34,20 @@ void OctalWord::updateBits()
 	}
 }
 
-void OctalWord::updateBinary()
-{
-}
-
 
 #pragma region UNARY_OP_OVERLOAD
-// negate
-OctalWord OctalWord::operator!()
+// twos compliment
+OctalWord OctalWord::operator-()
 {
-	return OctalWord();
+	OctalWord result = OctalWord(-(this->value));
+	return result;
 }
 
 // negate?
 OctalWord OctalWord::operator~()
 {
-	return OctalWord();
+	OctalWord result = OctalWord(~(this->value));
+	return result;
 }
 #pragma endregion
 
@@ -57,29 +55,44 @@ OctalWord OctalWord::operator~()
 OctalWord OctalWord::operator+(const OctalWord& b)
 {
 	int newValue = this->value + b.value;
-	this->overflow = (newValue > MAX_OCTAL_VALUE);
-	this->value = newValue;
-	this->updateBits();
-	return *this;
+	OctalWord sum = OctalWord(newValue);
+	sum.overflow = (newValue > MAX_OCTAL_VALUE);
+	return sum;
+}
+
+OctalWord OctalWord::operator+(const int b)
+{
+	return (*this + OctalWord(b));
 }
 
 OctalWord OctalWord::operator-(const OctalWord& b)
 {
-	int newValue = this->value - b.value;
-	this->overflow = (newValue > MAX_OCTAL_VALUE);
-	this->value = newValue;
-	this->updateBits();
-	return *this;
+	return (*this + (-b));
 }
 
-OctalWord OctalWord::operator+=(const OctalWord & rhs)
+OctalWord OctalWord::operator-(const int b)
 {
-	return OctalWord(*this + rhs);
+	return (*this + ( -( OctalWord(b) ) ) );
 }
 
-OctalWord OctalWord::operator-=(const OctalWord & rhs)
+OctalWord OctalWord::operator|(const OctalWord & rhs)
 {
-	return OctalWord();
+	return OctalWord(this->value | rhs.value);
+}
+
+OctalWord OctalWord::operator|(const int rhs)
+{
+	return OctalWord(this->value | rhs);
+}
+
+OctalWord OctalWord::operator&(const OctalWord & rhs)
+{
+	return OctalWord(this->value & rhs.value);
+}
+
+OctalWord OctalWord::operator&(const int rhs)
+{
+	return OctalWord(this->value & value);
 }
 #pragma endregion
 
@@ -97,14 +110,42 @@ OctalWord& OctalWord::operator=(const OctalWord &newAssignment)
 #pragma endregion
 
 #pragma region SHIFT_OP_OVERLOAD
+OctalWord OctalWord::operator<<(const OctalWord& shiftAmount)
+{
+	return this* << shiftAmount.value;
+}
+
 OctalWord OctalWord::operator<<(const int shiftAmount)
 {
-	return OctalWord();
+	int result = this->value;
+	bool overflowflag = false;
+	for (int i = 0; i < shiftAmount; i++)
+	{
+		overflowflag = ( OctalWord(result).octbit[5] > 0) ? true : false;
+		result = result << 1;
+	}
+	OctalWord ret = OctalWord(result);
+	ret.overflow = overflowflag;
+	return ret;
+}
+
+OctalWord OctalWord::operator>>(const OctalWord& shiftAmount)
+{
+	return this* >> shiftAmount.value;
 }
 
 OctalWord OctalWord::operator>>(const int shiftAmount)
 {
-	return OctalWord();
+	int result = this->value;
+	bool overflowflag = false;
+	for (int i = 0; i < shiftAmount; i++)
+	{
+		overflowflag = (OctalWord().octbit[0].b % 2 > 0) ? true : false;
+		result = result >> 1;
+	}
+	OctalWord ret = OctalWord(result);
+	ret.overflow = overflowflag;
+	return ret;
 }
 #pragma endregion
 
@@ -143,31 +184,21 @@ bool OctalWord::operator!=(const OctalWord& oneToCompareTo)
 #pragma region INC_DEC_OP_OVERLOAD
 OctalWord OctalWord::operator++()
 {
-	int newValue = this->value + 1;
-	this->overflow = (newValue > MAX_OCTAL_VALUE);
-	this->value = newValue;
-	this->updateBits();
-	return *this;
+	return *this + 1;
 }
 
 OctalWord OctalWord::operator++(int)
 {
-	int newValue = this->value + 1;
-	this->overflow = (newValue > MAX_OCTAL_VALUE);
-	this->value = newValue;
-	this->updateBits();
-	return *this;
+	return *this + 1;
 }
 
 OctalWord OctalWord::operator--()
 {
-	this->updateBits();
-	return *this;
+	return *this - 1;
 }
 
 OctalWord OctalWord::operator--(int)
 {
-	this->updateBits();
-	return *this;
+	return *this -1 ;
 }
 #pragma endregion

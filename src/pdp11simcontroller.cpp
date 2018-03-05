@@ -238,7 +238,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
-	//Basic addressing register mode
+  // basic addressing mode
 	case(REGISTER_CODE):
 		break;
 	//Indirect addressing register mode (deferred)
