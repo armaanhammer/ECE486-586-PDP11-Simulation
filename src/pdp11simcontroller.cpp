@@ -9,10 +9,11 @@ using namespace std;
 
 #pragma region CONSTRUCT_DESTRUCT
 ///-----------------------------------------------
-/// Constructor Destructor Functions
+/// Constructor Function
 ///-----------------------------------------------
 PDP11SimController::PDP11SimController()
 {	
+	//Initialize the PDP11SimController class
 	totalCount = 0;
 	readCount = 0;
 	writeCount = 0;
@@ -24,6 +25,9 @@ PDP11SimController::PDP11SimController()
 	createSingleOpTable();
 }
 
+///-----------------------------------------------
+/// Destructor Function
+///-----------------------------------------------
 PDP11SimController::~PDP11SimController()
 {
 }
@@ -33,6 +37,7 @@ PDP11SimController::~PDP11SimController()
 ///-----------------------------------------------
 /// Table Creation Functions
 ///-----------------------------------------------
+//Create a table of single operation instructions
 void PDP11SimController::createSingleOpTable()
 {
 	SO->add(JSR_OPCODE, this->JSR);
@@ -51,6 +56,7 @@ void PDP11SimController::createSingleOpTable()
 	SO->add(SXT_OPCODE, this->SXT);
 }
 
+//Create a table of double operation instructions
 void PDP11SimController::createDoubleOpTable()
 {
 	DO->add(MOV_OPCODE, this->MOV);
@@ -62,11 +68,13 @@ void PDP11SimController::createDoubleOpTable()
 	DO->add(SUB_OPCODE, this->SUB);
 }
 
+//Create a table for addressing modes
 void PDP11SimController::createAddressingModeTable()
 {
 	AM->add(REGISTER_CODE, this->/*function name no parenthesises*/);
 }
 
+//Create a table for the branch instructions
 void PDP11SimController::createBranchTable()
 {
 	BI->add(BR_OPCODE, this->BR);
@@ -101,6 +109,7 @@ void PDP11SimController::createPSWITable()
 	PSWI->add(SCC_OPCODE, this->SCC);
 }
 
+//Create a table for the extended double operation instructions
 void PDP11SimController::createEDOITable()
 {
 	EDO->add(MUL_OPCODE, this->MUL);
@@ -120,18 +129,12 @@ void PDP11SimController::createEDOITable()
 ///-----------------------------------------------
 bool PDP11SimController::decode(int octalVA)
 {
+	//Declare local octal word variable
 	OctalWord* ow = new OctalWord(octalVA);
-
-	totalCount++;
 
 	// check for too long of word
 	if (octalVA > MAX_OCTAL_VALUE) { delete ow; return false; }
 	// check to see if op is SPL, if true exec op
-	if (ow->value == HALT_OPCODE || ow->value == MOP_OPCODE) 
-	{
-		delete ow;
-		return true;
-	}
 	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) 
 	{ 
 		SPL(ow->octbit[0]); 
@@ -152,30 +155,60 @@ bool PDP11SimController::decode(int octalVA)
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkForSPL
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is SPL
+//Description: Function for opcode checking the prioity level
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5)
 {
 	if (b5 == 0 && b4 == 0 && b3 == 0 && b2 == 2 && b1 == 3) return true;
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkForPSW
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is PSW instruction
+//Description: Function for opcode checking the 
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5)
 {
 	if (b3 == 0 && b4 == 0 && b5 == 0) return true;
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkForSO
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is a single operation instruction
+//Description: Function for checking if the operation is a single operand
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForSO(OctalWord w)
 {
 	if (w.octbit[4] == 0) return true;
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkForDO
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is a double operation instruction
+//Description: Function for checking if the operation is a double operation
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForDO(OctalWord w)
 {
 	if (w.octbit[4] >= 1 && w.octbit[4] <= 6) return true;
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkUnimplementedDoubleOp
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is a unimlemented (extended) double instruction
+//Description: Function for checking if the operation is a unimplmented double operation
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
 	if (w.octbit[5] == 7)
@@ -186,6 +219,12 @@ bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 	return false;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: checkForBranch
+//Input: (OctalBit) specified address bits
+//Output: (bool) true if the instruction is a branch instruction
+//Description: Function for checking if the operation is a branch operation
+//----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForBranch(int value)
 {
 	int opcode = value >> 8;
@@ -238,8 +277,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
-  // basic addressing mode
-	case(REGISTER_CODE):
+	//Basic addressing register mode
+	case(00):
 		break;
 	//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
@@ -382,6 +421,7 @@ OctalWord PDP11SimController::NULLFUNC(OctalWord dest, OctalWord src)
 ///-----------------------------------------------
 /// Processor Status Word Instruction Functions
 ///-----------------------------------------------
+
 void PDP11SimController::SPL(OctalBit bit)
 {
 	status.I = bit.b;
@@ -480,30 +520,72 @@ void PDP11SimController::SCC()
 ///-----------------------------------------------
 /// Double Operand Instruction Functions
 ///-----------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//Function: MOV insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: returns source unmodified value and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::MOV(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: CMP insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination unmodified value and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CMP(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: BIT insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination unmodifeied value and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIT(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: BIC insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination unmodified value not(!) source unmodified value and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIC(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: BIS insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination unmodified value or(|) source unmodified value and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIS(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ADD insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination + source and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADD(OctalWord dest, OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SUB insturction (Double Operand Instruction)
+//Input: (OctalWord) destination & source register
+//Output: (OctalWord) Octal result of operation
+//Description: return destination - source and modify flags
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SUB(OctalWord dest, OctalWord src)
 {
 }
@@ -513,58 +595,142 @@ OctalWord PDP11SimController::SUB(OctalWord dest, OctalWord src)
 ///-----------------------------------------------
 /// Single Operand Instruction Functions
 ///-----------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//Function: JSR insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::JSR(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: CLR insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CLR(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: COM insturction (Single Operand Instruction)
+//Input: (OctalWord) ource register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::COM(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: INC insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INC(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: DEC insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::DEC(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: NEG insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ADC insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADC(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SBC insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SBC(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: TST insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::TST(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ROR insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROR(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ROL insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROL(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ASR insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASR(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: ASL insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASL(OctalWord src)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SUB insturction (Single Operand Instruction)
+//Input: (OctalWord) source register
+//Output: (OctalWord) Octal result of operation
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SXT(OctalWord src)
 {
 }

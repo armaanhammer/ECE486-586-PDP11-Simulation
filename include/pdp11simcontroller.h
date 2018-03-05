@@ -36,6 +36,7 @@ private:
 	void CCC();
 	void SCC();
 #pragma endregion
+//Single operation instructions
 #pragma region SOI
 	OctalWord JSR(OctalWord src);
 	OctalWord CLR(OctalWord src);
@@ -52,6 +53,7 @@ private:
 	OctalWord ASL(OctalWord src);
 	OctalWord SXT(OctalWord src);		// is this a byte operation?
 #pragma endregion
+//Double operation instructions
 #pragma region DOI
 	OctalWord MOV(OctalWord dest, OctalWord src);
 	OctalWord CMP(OctalWord dest, OctalWord src);
@@ -61,6 +63,7 @@ private:
 	OctalWord ADD(OctalWord dest, OctalWord src);
 	OctalWord SUB(OctalWord dest, OctalWord src);
 #pragma endregion
+//Extended double operation instruction
 #pragma region EDOI
 	OctalWord MUL();
 	OctalWord DIV();
@@ -89,11 +92,13 @@ private:
 	OctalWord BHI(OctalWord src);
 	OctalWord BLOS(OctalWord src);
 #pragma endregion
+//Null functions
 #pragma region NULLFUNC
 	OctalWord NULLFUNC();
 	OctalWord NULLFUNC(OctalWord src);
 	OctalWord NULLFUNC(OctalWord dest, OctalWord src);
 #pragma endregion
+//Functions to check the instruction types
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
 	bool checkForBranch(int value);
 	bool checkForDO(OctalWord w);
@@ -102,6 +107,7 @@ private:
 	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
 	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 #pragma endregion
+//Function to execute the intruction types
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
 	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
 	void doBranchInstruction(int value);
@@ -124,11 +130,11 @@ private:
 	typedef OctalWord(*TwoParamFunc)(OctalWord, OctalWord);
 #pragma endregion
 #pragma region VARS
-	Register r[NUMGENERALREGISTERS];
-	Register sp;
-	Register pc;
-	StatusRegister status;
-	Memory memory;
+	Register r[NUMGENERALREGISTERS]; //General purpose registers
+	Register sp; //Stack pointer register
+	Register pc; //Program counter register
+	StatusRegister status; //Status register
+	Memory memory; //Memory array
 	int totalCount;
 	int readCount;
 	int writeCount;
