@@ -13,31 +13,31 @@ public:
 	~OctalWord();
 	OctalBit octbit[6];
 
-	OctalWord& operator =(const OctalWord &newAssignment);
-	OctalWord operator ~();
-	OctalWord operator -();
-	OctalWord operator +(const OctalWord& b);
-	OctalWord operator +(const int b);
-	OctalWord operator -(const OctalWord& b);
-	OctalWord operator -(const int b);
-	OctalWord operator |(const OctalWord& rhs);
-	OctalWord operator |(const int rhs);
-	OctalWord operator &(const OctalWord& rhs);
-	OctalWord operator &(const int rhs);
-	OctalWord operator --();
-	OctalWord operator --(int);
-	OctalWord operator ++();
-	OctalWord operator ++(int);
-	OctalWord operator <<(const OctalWord& shiftAmount);
-	OctalWord operator <<(const int shiftAmount);
-	OctalWord operator >>(const OctalWord& shiftAmount);
-	OctalWord operator >>(const int shiftAmount);
-	bool operator <(const OctalWord& oneToCompareTo);
-	bool operator <=(const OctalWord& oneToCompareTo);
-	bool operator >(const OctalWord& oneToCompareTo);
-	bool operator >=(const OctalWord& oneToCompareTo);
-	bool operator ==(const OctalWord& oneToCompareTo);
-	bool operator !=(const OctalWord& oneToCompareTo);
+	OctalWord& operator =(const OctalWord &newAssignment);	//assignment
+	OctalWord operator ~();									//ones compliment
+	OctalWord operator -();									//twos compliment
+	OctalWord operator +(const OctalWord& b);				// returns result of operandA + operandB
+	OctalWord operator +(const int b);						// returns result of operandA + operandB
+	OctalWord operator -(const OctalWord& b);				// returns result of operandA - operandB
+	OctalWord operator -(const int b);						// returns result of operandA - operandB
+	OctalWord operator |(const OctalWord& rhs);				// returns result of operandA | operandB
+	OctalWord operator |(const int rhs);					// returns result of operandA | operandB
+	OctalWord operator &(const OctalWord& rhs);				// returns result of operandA & operandB
+	OctalWord operator &(const int rhs);					// returns result of operandA & operandB
+	OctalWord operator --();								// returns result of operandA--
+	OctalWord operator --(int);								// returns result of operandA--
+	OctalWord operator ++();								// returns result of operandA++
+	OctalWord operator ++(int);								// returns result of operandA++
+	OctalWord operator <<(const OctalWord& shiftAmount);	// returns result of operandA<<
+	OctalWord operator <<(const int shiftAmount);			// returns result of operandA<<
+	OctalWord operator >>(const OctalWord& shiftAmount);	// returns result of operandA>>
+	OctalWord operator >>(const int shiftAmount);			// returns result of operandA>>
+	bool operator <(const OctalWord& oneToCompareTo);		// returns result of operandA < operandB
+	bool operator <=(const OctalWord& oneToCompareTo);		// returns result of operandA <= operandB
+	bool operator >(const OctalWord& oneToCompareTo);		// returns result of operandA > operandB
+	bool operator >=(const OctalWord& oneToCompareTo);		// returns result of operandA >= operandB
+	bool operator ==(const OctalWord& oneToCompareTo);		// returns result of operandA == operandB
+	bool operator !=(const OctalWord& oneToCompareTo);		// returns result of operandA != operandB
 
 private:
 	void updateBits();
