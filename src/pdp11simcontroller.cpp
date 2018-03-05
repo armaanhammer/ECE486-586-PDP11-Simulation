@@ -122,9 +122,16 @@ bool PDP11SimController::decode(int octalVA)
 {
 	OctalWord* ow = new OctalWord(octalVA);
 
+	totalCount++;
+
 	// check for too long of word
 	if (octalVA > MAX_OCTAL_VALUE) { delete ow; return false; }
 	// check to see if op is SPL, if true exec op
+	if (ow->value == HALT_OPCODE || ow->value == MOP_OPCODE) 
+	{
+		delete ow;
+		return true;
+	}
 	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) 
 	{ 
 		SPL(ow->octbit[0]); 
