@@ -238,9 +238,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
-<<<<<<< HEAD
 	//Basic addressing register mode
-	case(00):
+	case(REGISTER_CODE):
 		break;
 	//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
@@ -274,31 +273,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
-=======
-	case(00):
-		break;
-	case(01):
-		break;
-	case(02):
-		break;
-	case(03):
-		break;
-	case(04):
-		break;
-	case(05):
-		break;
-	case(06):
-		break;
-	case(07):
-		break;
-	case(027):
-		break;
-	case(037):
-		break;
-	case(067):
-		break;
-	case(077):
->>>>>>> origin/master
 		break;
 	case(016):
 		break;
