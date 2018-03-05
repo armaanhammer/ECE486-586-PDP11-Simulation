@@ -231,7 +231,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
-	case(00):
+	case(REGISTER_CODE):
 		break;
 	case(01):
 		break;

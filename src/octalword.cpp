@@ -41,7 +41,7 @@ void OctalWord::updateBinary()
 
 #pragma region UNARY_OP_OVERLOAD
 // negate
-OctalWord OctalWord::operator!()
+OctalWord OctalWord::operator-()
 {
 	return OctalWord();
 }
@@ -78,6 +78,16 @@ OctalWord OctalWord::operator+=(const OctalWord & rhs)
 }
 
 OctalWord OctalWord::operator-=(const OctalWord & rhs)
+{
+	return OctalWord();
+}
+
+OctalWord OctalWord::operator|=(const OctalWord & rhs)
+{
+	return OctalWord();
+}
+
+OctalWord OctalWord::operator&=(const OctalWord & rhs)
 {
 	return OctalWord();
 }

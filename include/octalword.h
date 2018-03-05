@@ -17,7 +17,7 @@ public:
 	OctalWord operator +(const OctalWord& b);
 	OctalWord operator -(const OctalWord& b);
 	OctalWord operator ~();
-	OctalWord operator !();
+	OctalWord operator -();
 	OctalWord operator --();
 	OctalWord operator --(int);
 	OctalWord operator ++();
@@ -26,6 +26,8 @@ public:
 	OctalWord operator >>(const int shiftAmount);
 	OctalWord operator +=(const OctalWord& rhs);
 	OctalWord operator -=(const OctalWord& rhs);
+	OctalWord operator |=(const OctalWord& rhs);
+	OctalWord operator &=(const OctalWord& rhs);
 	bool operator <(const OctalWord& oneToCompareTo);
 	bool operator <=(const OctalWord& oneToCompareTo);
 	bool operator >(const OctalWord& oneToCompareTo);
