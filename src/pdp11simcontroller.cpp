@@ -122,9 +122,16 @@ bool PDP11SimController::decode(int octalVA)
 {
 	OctalWord* ow = new OctalWord(octalVA);
 
+	totalCount++;
+
 	// check for too long of word
 	if (octalVA > MAX_OCTAL_VALUE) { delete ow; return false; }
 	// check to see if op is SPL, if true exec op
+	if (ow->value == HALT_OPCODE || ow->value == MOP_OPCODE) 
+	{
+		delete ow;
+		return true;
+	}
 	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) 
 	{ 
 		SPL(ow->octbit[0]); 
@@ -231,29 +238,41 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
+  // basic addressing mode
 	case(REGISTER_CODE):
 		break;
-	case(01):
+	//Indirect addressing register mode (deferred)
+	case(REGISTER_DEFERRED_CODE):
 		break;
-	case(02):
+	//Basic addressing autoincrement mode
+	case(AUTOINC_CODE):
 		break;
-	case(03):
+	//Indirect addressing autoincrement mode (deferred)
+	case(AUTOINC_DEFERRED_CODE):
 		break;
-	case(04):
+	//Basic addressing autodecrement mode
+	case(AUTODEC_CODE):
 		break;
-	case(05):
+	//Indirect addressing autodecrement mode (deferred)
+	case(AUTODEC_DEFERRED_CODE):
 		break;
-	case(06):
+	//Basic addressing index
+	case(INDEX_CODE):
 		break;
-	case(07):
+	//Indirect addressing 
+	case(INDEX_DEFFERRED_CODE):
 		break;
-	case(027):
+	//PC register addressing immediate mode
+	case(PC_IMMEDIATE_CODE):
 		break;
-	case(037):
+	//PC register addressing absolute mode
+	case(PC_ABSOLUTE_CODE):
 		break;
-	case(067):
+	//PC register addressing relative mode
+	case(PC_RELATIVE_CODE):
 		break;
-	case(077):
+	//PC register addressing relative deferred mode
+	case(PC_RELATIVE_DEFERRED_CODE):
 		break;
 	case(016):
 		break;
