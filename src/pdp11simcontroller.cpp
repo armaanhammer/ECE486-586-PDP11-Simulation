@@ -122,9 +122,16 @@ bool PDP11SimController::decode(int octalVA)
 {
 	OctalWord* ow = new OctalWord(octalVA);
 
+	totalCount++;
+
 	// check for too long of word
 	if (octalVA > MAX_OCTAL_VALUE) { delete ow; return false; }
 	// check to see if op is SPL, if true exec op
+	if (ow->value == HALT_OPCODE || ow->value == MOP_OPCODE) 
+	{
+		delete ow;
+		return true;
+	}
 	if (checkForSPL(ow->octbit[1], ow->octbit[2], ow->octbit[3], ow->octbit[4], ow->octbit[5])) 
 	{ 
 		SPL(ow->octbit[0]); 
@@ -231,6 +238,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
 	switch (am)
 	{
+<<<<<<< HEAD
 	//Basic addressing register mode
 	case(00):
 		break;
@@ -266,6 +274,31 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
+=======
+	case(00):
+		break;
+	case(01):
+		break;
+	case(02):
+		break;
+	case(03):
+		break;
+	case(04):
+		break;
+	case(05):
+		break;
+	case(06):
+		break;
+	case(07):
+		break;
+	case(027):
+		break;
+	case(037):
+		break;
+	case(067):
+		break;
+	case(077):
+>>>>>>> origin/master
 		break;
 	case(016):
 		break;
