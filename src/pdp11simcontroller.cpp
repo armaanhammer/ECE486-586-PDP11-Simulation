@@ -404,12 +404,12 @@ OctalWord PDP11SimController::NULLFUNC()
 	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNC(OctalWord src)
+OctalWord PDP11SimController::NULLFUNC(const OctalWord& src)
 {
 	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src.value << " called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNC(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::NULLFUNC(const OctalWord& dest, const OctalWord& src)
 {
 	cout << "some opcode has resulted in a NULLFUNC with two parameters:";
 	cout << dest.value << " and " << src.value << " called\n";
@@ -526,7 +526,7 @@ void PDP11SimController::SCC()
 //Output: (OctalWord) Octal result of operation
 //Description: returns source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::MOV(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -536,7 +536,7 @@ OctalWord PDP11SimController::MOV(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::CMP(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -546,7 +546,7 @@ OctalWord PDP11SimController::CMP(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodifeied value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIT(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -556,7 +556,7 @@ OctalWord PDP11SimController::BIT(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value not(!) source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIC(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -566,7 +566,7 @@ OctalWord PDP11SimController::BIC(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value or(|) source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIS(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -576,7 +576,7 @@ OctalWord PDP11SimController::BIS(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination + source and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ADD(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 {
 }
 
@@ -586,7 +586,7 @@ OctalWord PDP11SimController::ADD(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination - source and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::SUB(OctalWord dest, OctalWord src)
+OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 {
 }
 #pragma endregion
@@ -601,7 +601,7 @@ OctalWord PDP11SimController::SUB(OctalWord dest, OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::JSR(OctalWord src)
+OctalWord PDP11SimController::JSR(const OctalWord& src)
 {
 }
 
@@ -611,7 +611,7 @@ OctalWord PDP11SimController::JSR(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::CLR(OctalWord src)
+OctalWord PDP11SimController::CLR(const OctalWord& src)
 {
 }
 
@@ -621,7 +621,7 @@ OctalWord PDP11SimController::CLR(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::COM(OctalWord src)
+OctalWord PDP11SimController::COM(const OctalWord& src)
 {
 }
 
@@ -631,7 +631,7 @@ OctalWord PDP11SimController::COM(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::INC(OctalWord src)
+OctalWord PDP11SimController::INC(const OctalWord& src)
 {
 }
 
@@ -641,7 +641,7 @@ OctalWord PDP11SimController::INC(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::DEC(OctalWord src)
+OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
 }
 
@@ -651,7 +651,7 @@ OctalWord PDP11SimController::DEC(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::NEG(OctalWord src)
+OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
 }
 
@@ -661,7 +661,7 @@ OctalWord PDP11SimController::NEG(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ADC(OctalWord src)
+OctalWord PDP11SimController::ADC(const OctalWord& src)
 {
 }
 
@@ -671,7 +671,7 @@ OctalWord PDP11SimController::ADC(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::SBC(OctalWord src)
+OctalWord PDP11SimController::SBC(const OctalWord& src)
 {
 }
 
@@ -681,7 +681,7 @@ OctalWord PDP11SimController::SBC(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::TST(OctalWord src)
+OctalWord PDP11SimController::TST(const OctalWord& src)
 {
 }
 
@@ -691,7 +691,7 @@ OctalWord PDP11SimController::TST(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ROR(OctalWord src)
+OctalWord PDP11SimController::ROR(const OctalWord& src)
 {
 }
 
@@ -701,7 +701,7 @@ OctalWord PDP11SimController::ROR(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ROL(OctalWord src)
+OctalWord PDP11SimController::ROL(const OctalWord& src)
 {
 }
 
@@ -711,7 +711,7 @@ OctalWord PDP11SimController::ROL(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ASR(OctalWord src)
+OctalWord PDP11SimController::ASR(const OctalWord& src)
 {
 }
 
@@ -721,7 +721,7 @@ OctalWord PDP11SimController::ASR(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ASL(OctalWord src)
+OctalWord PDP11SimController::ASL(const OctalWord& src)
 {
 }
 
@@ -731,7 +731,7 @@ OctalWord PDP11SimController::ASL(OctalWord src)
 //Output: (OctalWord) Octal result of operation
 //Description: 
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::SXT(OctalWord src)
+OctalWord PDP11SimController::SXT(const OctalWord& src)
 {
 }
 
@@ -741,67 +741,67 @@ OctalWord PDP11SimController::SXT(OctalWord src)
 ///-----------------------------------------------
 /// Branch Instruction Functions
 ///-----------------------------------------------
-OctalWord PDP11SimController::BR(OctalWord src)
+OctalWord PDP11SimController::BR(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BNE(OctalWord src)
+OctalWord PDP11SimController::BNE(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BEQ(OctalWord src)
+OctalWord PDP11SimController::BEQ(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BPL(OctalWord src)
+OctalWord PDP11SimController::BPL(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BMI(OctalWord src)
+OctalWord PDP11SimController::BMI(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BVC(OctalWord src)
+OctalWord PDP11SimController::BVC(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BHIS(OctalWord src)
+OctalWord PDP11SimController::BHIS(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BCC(OctalWord src)
+OctalWord PDP11SimController::BCC(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BLO(OctalWord src)
+OctalWord PDP11SimController::BLO(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BCS(OctalWord src)
+OctalWord PDP11SimController::BCS(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BGE(OctalWord src)
+OctalWord PDP11SimController::BGE(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BLT(OctalWord src)
+OctalWord PDP11SimController::BLT(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BGT(OctalWord src)
+OctalWord PDP11SimController::BGT(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BLE(OctalWord src)
+OctalWord PDP11SimController::BLE(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BHI(OctalWord src)
+OctalWord PDP11SimController::BHI(const OctalWord& src)
 {
 }
 
-OctalWord PDP11SimController::BLOS(OctalWord src)
+OctalWord PDP11SimController::BLOS(const OctalWord& src)
 {
 }
 #pragma endregion
