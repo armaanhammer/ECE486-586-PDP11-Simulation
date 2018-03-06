@@ -95,8 +95,8 @@ private:
 //Null functions
 #pragma region NULLFUNC
 	OctalWord NULLFUNC();
-	OctalWord NULLFUNC(OctalWord src);
-	OctalWord NULLFUNC(OctalWord dest, OctalWord src);
+	OctalWord NULLFUNC(const OctalWord& src);
+	OctalWord NULLFUNC(const OctalWord& dest, const OctalWord& src);
 #pragma endregion
 //Functions to check the instruction types
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
