@@ -38,30 +38,30 @@ private:
 #pragma endregion
 //Single operation instructions
 #pragma region SOI
-	OctalWord JSR(OctalWord src);
-	OctalWord CLR(OctalWord src);
-	OctalWord COM(OctalWord src);
-	OctalWord INC(OctalWord src);
-	OctalWord DEC(OctalWord src);
-	OctalWord NEG(OctalWord src);
-	OctalWord ADC(OctalWord src);
-	OctalWord SBC(OctalWord src);
-	OctalWord TST(OctalWord src);
-	OctalWord ROR(OctalWord src);
-	OctalWord ROL(OctalWord src);
-	OctalWord ASR(OctalWord src);
-	OctalWord ASL(OctalWord src);
-	OctalWord SXT(OctalWord src);		// is this a byte operation?
+	OctalWord JSR(const OctalWord& src);
+	OctalWord CLR(const OctalWord& src);
+	OctalWord COM(const OctalWord& src);
+	OctalWord INC(const OctalWord& src);
+	OctalWord DEC(const OctalWord& src);
+	OctalWord NEG(const OctalWord& src);
+	OctalWord ADC(const OctalWord& src);
+	OctalWord SBC(const OctalWord& src);
+	OctalWord TST(const OctalWord& src);
+	OctalWord ROR(const OctalWord& src);
+	OctalWord ROL(const OctalWord& src);
+	OctalWord ASR(const OctalWord& src);
+	OctalWord ASL(const OctalWord& src);
+	OctalWord SXT(const OctalWord& src);		// is this a byte operation?
 #pragma endregion
 //Double operation instructions
 #pragma region DOI
-	OctalWord MOV(OctalWord dest, OctalWord src);
-	OctalWord CMP(OctalWord dest, OctalWord src);
-	OctalWord BIT(OctalWord dest, OctalWord src);
-	OctalWord BIC(OctalWord dest, OctalWord src);
-	OctalWord BIS(OctalWord dest, OctalWord src);
-	OctalWord ADD(OctalWord dest, OctalWord src);
-	OctalWord SUB(OctalWord dest, OctalWord src);
+	OctalWord MOV(const OctalWord& dest, const OctalWord& src);
+	OctalWord CMP(const OctalWord& dest, const OctalWord& src);
+	OctalWord BIT(const OctalWord& dest, const OctalWord& src);
+	OctalWord BIC(const OctalWord& dest, const OctalWord& src);
+	OctalWord BIS(const OctalWord& dest, const OctalWord& src);
+	OctalWord ADD(const OctalWord& dest, const OctalWord& src);
+	OctalWord SUB(const OctalWord& dest, const OctalWord& src);
 #pragma endregion
 //Extended double operation instruction
 #pragma region EDOI
@@ -75,22 +75,22 @@ private:
 	OctalWord SOB();
 #pragma endregion
 #pragma region BI
-	OctalWord BR(OctalWord src);
-	OctalWord BNE(OctalWord src);
-	OctalWord BEQ(OctalWord src);
-	OctalWord BPL(OctalWord src);
-	OctalWord BMI(OctalWord src);
-	OctalWord BVC(OctalWord src);
-	OctalWord BHIS(OctalWord src);
-	OctalWord BCC(OctalWord src);
-	OctalWord BLO(OctalWord src);
-	OctalWord BCS(OctalWord src);
-	OctalWord BGE(OctalWord src);
-	OctalWord BLT(OctalWord src);
-	OctalWord BGT(OctalWord src);
-	OctalWord BLE(OctalWord src);
-	OctalWord BHI(OctalWord src);
-	OctalWord BLOS(OctalWord src);
+	OctalWord BR(const OctalWord& src);
+	OctalWord BNE(const OctalWord& src);
+	OctalWord BEQ(const OctalWord& src);
+	OctalWord BPL(const OctalWord& src);
+	OctalWord BMI(const OctalWord& src);
+	OctalWord BVC(const OctalWord& src);
+	OctalWord BHIS(const OctalWord& src);
+	OctalWord BCC(const OctalWord& src);
+	OctalWord BLO(const OctalWord& src);
+	OctalWord BCS(const OctalWord& src);
+	OctalWord BGE(const OctalWord& src);
+	OctalWord BLT(const OctalWord& src);
+	OctalWord BGT(const OctalWord& src);
+	OctalWord BLE(const OctalWord& src);
+	OctalWord BHI(const OctalWord& src);
+	OctalWord BLOS(const OctalWord& src);
 #pragma endregion
 //Null functions
 #pragma region NULLFUNC
@@ -126,8 +126,8 @@ private:
 #pragma endregion
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
-	typedef OctalWord(*OneParamFunc)(OctalWord);
-	typedef OctalWord(*TwoParamFunc)(OctalWord, OctalWord);
+	typedef OctalWord(*OneParamFunc)(const OctalWord&);
+	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
 #pragma endregion
 #pragma region VARS
 	Register r[NUMGENERALREGISTERS]; //General purpose registers
