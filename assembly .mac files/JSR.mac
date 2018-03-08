@@ -1,0 +1,25 @@
+; performs an unconditional jump to a subroutine
+
+
+A:	.WORD 1
+B:	.WORD 2
+
+.BLKW 50
+
+
+START:
+		CLN
+		CLZ
+		CLV
+		CLC
+		JSR R1 LABEL1
+		SEN
+		SEZ
+		SEV
+		SEC
+		HALT
+LABEL1:	MOV A, R2
+		MOV B, R3
+		ADD R1, R2
+		RTS R1
+		.END START

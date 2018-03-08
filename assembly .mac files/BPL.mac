@@ -1,0 +1,14 @@
+; tests the state of the N bit and causes a branch if
+; the bit is clear. 
+
+START:
+		CLN
+		CLZ
+		BPL LABEL
+		CLV
+		CLC
+LABEL:	
+		SEN
+		SEZ
+		HALT
+		.END START

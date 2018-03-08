@@ -1,0 +1,16 @@
+; tests the state of the Z bit and causes a branch if
+; the bit is set. 
+
+START:
+		SEN
+		SEZ
+		BEQ LABEL
+		SEV
+		SEC
+LABEL:	
+		CLN
+		CLV
+		CLZ
+		CLC
+		HALT
+		.END START

@@ -1,0 +1,14 @@
+A:	.WORD 2.
+B:	.WORD 4.
+
+START:
+		SEN
+		CLZ
+		SEV
+		SEC
+		MOV A, R1
+		MOV B, R2
+		CLR R1
+		CLR R2
+		HALT
+		.END START

@@ -1,0 +1,16 @@
+A:	.WORD 000000.
+B:	.WORD 100001. 
+C:	.WORD 000001.
+
+START:
+		MOV A, R1
+		MOV B, R2
+		MOV C, R3
+		CLN
+		CLV
+		CLZ
+		DEC R1 ;set the N flag
+		DEC R2 ;set the V flag
+		DEC R3 ;set the Z flag
+		HALT
+		.END START

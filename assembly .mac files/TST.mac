@@ -1,0 +1,20 @@
+;sets the condition codes N and Z according to
+;the contents of the destination operand
+
+A:	.WORD 100001.
+B:	.WORD 000010.
+C:	.WORD 000000.
+
+START:
+		MOV A, R1
+		MOV B, R2
+		MOV C, R3
+		CLN
+		CLZ
+		SEV
+		SEC
+		TST R1 ; NZVC =1011
+		TST R2 ; NZVC =0011
+		TST R3 ; NZVC =0100
+		HALT
+		.END START

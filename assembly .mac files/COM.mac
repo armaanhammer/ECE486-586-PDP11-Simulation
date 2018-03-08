@@ -1,0 +1,11 @@
+A:	.WORD 013333.
+
+START:
+		CLN
+		SEZ
+		SEV
+		CLC
+		MOV A, R1
+		COM R1
+		HALT
+		.END START

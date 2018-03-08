@@ -1,0 +1,17 @@
+; transfers program control to label 
+
+A:	.WORD 000001.
+B:	.WORD 000002.
+C:	.WORD 000003.
+
+START:
+		SEN
+		SEZ
+		SEV
+		BR LABEL
+		SEC
+LABEL:	CLN
+		CLZ
+		CLV
+	`	HALT
+		.END START

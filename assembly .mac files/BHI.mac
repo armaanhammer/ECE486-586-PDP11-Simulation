@@ -1,0 +1,22 @@
+; tests the state of the C and Z bit and causes a branch
+; if C OR Z = 0 
+
+
+A:	.WORD 1
+B:	.WORD 2
+
+START:
+		SEN
+		SEZ
+		CLC
+		BHI LABEL1 ;not taken (0, 1)
+		SEC
+		CLZ
+		BHI LABEL1 ; not taken (1, 0)
+		CLC
+		BHI LABEL2 ; taken (0, 0)
+		MOV A, R1
+LABEL1: HALT
+LABEL2:	MOV B, R2
+		HALT
+		.END START

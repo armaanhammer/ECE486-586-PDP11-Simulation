@@ -1,0 +1,17 @@
+; clears each bit in the destination operand that corresponds
+; to a bit that is set in the source operand
+
+
+A:	.WORD 001234 ;0 000 001 010 011 100
+B:	.WORD 001111 ;0 000 001 001 001 001
+
+START:
+		SEN
+		SEZ
+		SEV
+		SEC
+		MOV A, R3
+		MOV B, R4
+		BIC R3, R4 ;B = 0 000 000 001 000 001
+		HALT
+		.END START

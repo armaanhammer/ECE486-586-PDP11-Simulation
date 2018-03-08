@@ -1,0 +1,19 @@
+; tests the state of the N and V bit and causes a branch if
+; the both are either set or clear. 
+
+
+A:	.WORD 1
+B:	.WORD 2
+
+START:
+		SEN
+		SEZ
+		CLV
+		BGE LABEL1 ;not taken
+		SEV
+		BGE LABEL2 ;taken
+		MOV A, R1
+LABEL1: HALT
+LABEL2:	MOV B, R2
+		HALT
+		.END START

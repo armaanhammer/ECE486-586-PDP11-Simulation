@@ -1,0 +1,14 @@
+; exchanges the high order with low order
+; byte of the destination word
+
+A:	.WORD 077777.
+
+START:
+		MOV A, R1
+		SEN
+		SEZ
+		SEV
+		SEC
+		SWAB R1 ; NZVC = 0000
+		HALT
+		.END START

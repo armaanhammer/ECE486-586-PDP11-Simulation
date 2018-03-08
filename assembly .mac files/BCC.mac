@@ -1,0 +1,16 @@
+; tests the state of the C bit and causes a branch if
+; the bit is clear. 
+
+START:
+		CLN
+		CLZ
+		CLV
+		CLC
+		BCC LABEL	
+		SEN
+		SEZ
+LABEL:
+		SEV
+		SEC
+		HALT
+		.END START

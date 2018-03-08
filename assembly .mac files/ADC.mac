@@ -1,0 +1,10 @@
+; adds the C bit to the destination 
+
+A:	.WORD 012345.
+
+START:
+		MOV A, R1
+		SEC
+		ADC	R1 ;
+		HALT
+		.END START

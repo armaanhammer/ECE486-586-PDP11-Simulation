@@ -1,0 +1,14 @@
+; rotates all bits of destination to the left by 1
+; place. MSB gets loaded into the C bit and C bits gets
+; shifted to the LSB. 
+
+A:	.WORD 000000.
+B:	.WORD 001234.
+
+START:
+		MOV A, R1
+		MOV B, R2
+		ROL	R1 ; Z = 0
+		ROL R2
+		HALT
+		.END START

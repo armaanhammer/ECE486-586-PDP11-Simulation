@@ -1,0 +1,10 @@
+; subtracts the C bit from the destination;  
+
+A:	.WORD 000001.
+
+START:
+		MOV A, R1
+		CLZ
+		SBC	R1 ; Z = 0
+		HALT
+		.END START

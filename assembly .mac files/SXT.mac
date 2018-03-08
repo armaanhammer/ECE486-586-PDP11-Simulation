@@ -1,0 +1,13 @@
+; replicates the N bit through the destination
+; destination is -1 if N is set and 0 if clear
+
+A:	.WORD 012345.
+
+START:
+		MOV A, R1
+		SEN
+		SXT	R1 ; N = 1
+		CLN
+		SXT R1 ; N = 0
+		HALT
+		.END START

@@ -1,0 +1,13 @@
+A:	.WORD 012345.
+B:	.WORD 001234.
+
+START:	
+	MOV #10, R1 
+	MOV #0, R2
+	MOV R1, R2
+	MOV A, R3
+	MOV R2, A
+	MOV A, B
+	
+	HALT
+	.END START

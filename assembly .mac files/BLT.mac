@@ -1,0 +1,27 @@
+; causes a branch if the XOR of the N and V bits are 1. 
+
+
+A:	.WORD 1
+B:	.WORD 2
+C:	.WORD 3
+
+START:
+		SEN
+		SEZ
+		SEV
+		BLT LABEL1 ;not taken
+		CLV
+		BLT LABEL2 ;taken
+		CLZ
+		CLC
+LABEL1: HALT
+LABEL2: SEC
+		SEV
+		CLN
+		BLT LABEL3 ;taken
+		HALT
+LABEL3: MOV A, R1
+		MOV B, R2
+		MOV C, R3
+		HALT
+		.END START

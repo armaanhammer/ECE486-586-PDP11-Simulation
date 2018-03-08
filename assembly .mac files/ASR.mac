@@ -1,0 +1,15 @@
+; shifts all bits of the destination operand to
+; the right by one place. the MSB is replicated
+
+A:	.WORD 012345.
+B:	.WORD 000000.
+
+START:
+		MOV A, R1
+		MOV B, R2
+		SEN
+		CLZ
+		ASR	R1 ; N = 0
+		ASR R2 ; Z = 1
+		HALT
+		.END START

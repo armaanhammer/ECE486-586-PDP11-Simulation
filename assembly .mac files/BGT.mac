@@ -1,0 +1,21 @@
+; tests the state of the Z, N and V bit and causes a branch
+; if Z OR (N XOR V) = 0 
+
+
+A:	.WORD 1
+B:	.WORD 2
+
+START:
+		SEN
+		SEZ
+		CLV
+		BGT LABEL1 ;not taken (1, 1)
+		SEV
+		BGT LABEL1 ; not taken (1, 0)
+		CLN
+		BGT LABEL2 ; taken (0, 0)
+		MOV A, R1
+LABEL1: HALT
+LABEL2:	MOV B, R2
+		HALT
+		.END START

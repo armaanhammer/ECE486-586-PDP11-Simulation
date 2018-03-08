@@ -1,0 +1,16 @@
+; compares the source and destination operands.
+; and sets the condition flags accordingly
+
+
+A:	.WORD 1
+B:	.WORD 2
+
+
+START:
+		CMP #1, #3
+		CMP #-2, #5
+		CMP #-1, #-1
+		CMP #0, #-6 
+		CMP #-3, #-7
+		CMP #0, #0
+		.END START

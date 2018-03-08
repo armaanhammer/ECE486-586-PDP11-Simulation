@@ -1,0 +1,15 @@
+; shifts all bits of the destination operand to
+; the left by one place. the LSB is loaded with a 0
+
+A:	.WORD 100001.
+B:	.WORD 000000.
+
+START:
+		MOV A, R1
+		MOV B, R2
+		CLN
+		CLZ
+		ASL	R1 ; N = 1
+		ASL R2 ; Z = 1
+		HALT
+		.END START
