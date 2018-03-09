@@ -1,0 +1,18 @@
+       1                                ; tests the state of the V bit and causes a branch if
+       2                                ; the bit is clear. 
+       3                                
+       4                                START:
+       5 000000 000270                  		SEN
+       6 000002 000264                  		SEZ
+       7 000004 001003                  		BNE LABEL1
+       8 000006 000242                  		CLV
+       9 000010 000241                  		CLC
+      10 000012 102002                  		BVC LABEL2
+      11                                LABEL1:	
+      12 000014 000250                  		CLN
+      13 000016 000244                  		CLZ
+      14                                LABEL2:
+      15 000020 000262                  		SEV
+      16 000022 000261                  		SEC
+      17 000024 000000                  		HALT
+      17                                		.END START

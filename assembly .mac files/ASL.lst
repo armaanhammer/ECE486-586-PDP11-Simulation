@@ -1,0 +1,15 @@
+       1                                ; shifts all bits of the destination operand to
+       2                                ; the left by one place. the LSB is loaded with a 0
+       3                                
+       4 000000 103241                  A:	.WORD 100001.
+       5 000002 000000                  B:	.WORD 000000.
+       6                                
+       7                                START:
+       8 000004 016701  177770          		MOV A, R1
+       9 000010 016702  177766          		MOV B, R2
+      10 000014 000250                  		CLN
+      11 000016 000244                  		CLZ
+      12 000020 006301                  		ASL	R1 ; N = 1
+      13 000022 006302                  		ASL R2 ; Z = 1
+      14 000024 000000                  		HALT
+      14                                		.END START

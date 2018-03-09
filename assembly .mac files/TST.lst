@@ -1,0 +1,20 @@
+       1                                ;sets the condition codes N and Z according to
+       2                                ;the contents of the destination operand
+       3                                
+       4 000000 103241                  A:	.WORD 100001.
+       5 000002 000012                  B:	.WORD 000010.
+       6 000004 000000                  C:	.WORD 000000.
+       7                                
+       8                                START:
+       9 000006 016701  177766          		MOV A, R1
+      10 000012 016702  177764          		MOV B, R2
+      11 000016 016703  177762          		MOV C, R3
+      12 000022 000250                  		CLN
+      13 000024 000244                  		CLZ
+      14 000026 000262                  		SEV
+      15 000030 000261                  		SEC
+      16 000032 005701                  		TST R1 ; NZVC =1011
+      17 000034 005702                  		TST R2 ; NZVC =0011
+      18 000036 005703                  		TST R3 ; NZVC =0100
+      19 000040 000000                  		HALT
+      19                                		.END START

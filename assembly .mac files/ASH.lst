@@ -1,0 +1,20 @@
+       1                                ; the contents of the register are shifted right or left
+       2                                ; the number of times specified by the source operand.
+       3                                ; the shift count is gotten form the low-order 6 bits of 
+       4                                ; the source operand. -ve number is right shift while 
+       5                                ; +ve number is a left shift.
+       6                                
+       7                                
+       8 000000 001234                  A:	.WORD 001234
+       9 000002 000003                  B:	.WORD 000003
+      10                                
+      11                                START:
+      12 000004 000270                  		SEN
+      13 000006 000264                  		SEZ
+      14 000010 000262                  		SEV
+      15 000012 000261                  		SEC
+      16 000014 016701  177760          		MOV A, R1
+      17 000020 016702  177756          		MOV B, R2
+      18 000024 072102                  		ASH R2, R1 ;LEFT SHIFT 3 TMES, NZVC = 0000
+      19 000026 000000                  		HALT
+      19                                		.END START

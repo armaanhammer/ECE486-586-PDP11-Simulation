@@ -1,0 +1,21 @@
+       1                                ; tests the state of the Z, N and V bit and causes a branch
+       2                                ; if Z OR (N XOR V) = 0 
+       3                                
+       4                                
+       5 000000 000001                  A:	.WORD 1
+       6 000002 000002                  B:	.WORD 2
+       7                                
+       8                                START:
+       9 000004 000270                  		SEN
+      10 000006 000264                  		SEZ
+      11 000010 000242                  		CLV
+      12 000012 003006                  		BGT LABEL1 ;not taken (1, 1)
+      13 000014 000262                  		SEV
+      14 000016 003004                  		BGT LABEL1 ; not taken (1, 0)
+      15 000020 000250                  		CLN
+      16 000022 003003                  		BGT LABEL2 ; taken (0, 0)
+      17 000024 016701  177750          		MOV A, R1
+      18 000030 000000                  LABEL1: HALT
+      19 000032 016702  177744          LABEL2:	MOV B, R2
+      20 000036 000000                  		HALT
+      20                                		.END START

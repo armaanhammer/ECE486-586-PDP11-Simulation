@@ -1,0 +1,16 @@
+       1                                ; performs an XOR of the source and destination operands.
+       2                                
+       3                                
+       4 000000 001234                  A:	.WORD 001234
+       5 000002 001111                  B:	.WORD 001111
+       6                                
+       7                                START:
+       8 000004 000270                  		SEN
+       9 000006 000264                  		SEZ
+      10 000010 000262                  		SEV
+      11 000012 000261                  		SEC
+      12 000014 016701  177760          		MOV A, R1
+      13 000020 016702  177756          		MOV B, R2
+      14 000024 074201                  		XOR R2, R1 ; NZVC = 0001
+      15 000026 000000                  		HALT
+      15                                		.END START

@@ -1,0 +1,17 @@
+       1                                ; clears each bit in the destination operand that corresponds
+       2                                ; to a bit that is set in the source operand
+       3                                
+       4                                
+       5 000000 001234                  A:	.WORD 001234 ;0 000 001 010 011 100
+       6 000002 001111                  B:	.WORD 001111 ;0 000 001 001 001 001
+       7                                
+       8                                START:
+       9 000004 000270                  		SEN
+      10 000006 000264                  		SEZ
+      11 000010 000262                  		SEV
+      12 000012 000261                  		SEC
+      13 000014 016703  177760          		MOV A, R3
+      14 000020 016704  177756          		MOV B, R4
+      15 000024 040304                  		BIC R3, R4 ;B = 0 000 000 001 000 001
+      16 000026 000000                  		HALT
+      16                                		.END START
