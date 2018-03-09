@@ -37,3 +37,8 @@ template<class KEY, class VALUE> bool Table<KEY, VALUE>::clear()
 	value.clear();
 	size = 0;
 }
+
+template<class KEY, class VALUE> VALUE Table<KEY, VALUE>::operator[] (KEY k)
+{
+	return this->find(k);
+}

@@ -1,6 +1,9 @@
 #include "octalword.h"
 #include "constants.h"
 #include "types.h"
+#include <string>
+
+using namespace std;
 
 OctalWord::OctalWord()
 {
@@ -23,6 +26,18 @@ OctalWord::OctalWord(int val)
 
 OctalWord::~OctalWord()
 {
+}
+
+string OctalWord::asString()
+{
+	string bit[6];
+	string ret = "";
+	for (int i = 0; i < 6; i++)
+	{
+		bit[i] = to_string(octbit[i].b);
+	}
+	ret = bit[5] + bit[4] + bit[3] + bit[2] + bit[1] + bit[0];
+	return ret;
 }
 
 void OctalWord::updateBits()
@@ -67,7 +82,7 @@ OctalWord OctalWord::operator+(const int b)
 
 OctalWord OctalWord::operator-(const OctalWord& b)
 {
-	return (*this + (-b));
+	return ( *this + ( -(b.value) ) );
 }
 
 OctalWord OctalWord::operator-(const int b)
@@ -103,7 +118,6 @@ OctalWord& OctalWord::operator=(const OctalWord &newAssignment)
 	{
 		this->value = newAssignment.value;
 		this->updateBits();
-		this->updateBinary();
 	}
 	return *this;
 }
@@ -112,7 +126,7 @@ OctalWord& OctalWord::operator=(const OctalWord &newAssignment)
 #pragma region SHIFT_OP_OVERLOAD
 OctalWord OctalWord::operator<<(const OctalWord& shiftAmount)
 {
-	return this* << shiftAmount.value;
+	return *this << shiftAmount.value;
 }
 
 OctalWord OctalWord::operator<<(const int shiftAmount)
@@ -131,7 +145,7 @@ OctalWord OctalWord::operator<<(const int shiftAmount)
 
 OctalWord OctalWord::operator>>(const OctalWord& shiftAmount)
 {
-	return this* >> shiftAmount.value;
+	return *this >> shiftAmount.value;
 }
 
 OctalWord OctalWord::operator>>(const int shiftAmount)

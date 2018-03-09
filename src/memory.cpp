@@ -1,24 +1,41 @@
-#include "memory.h"
 #include "types.h"
 #include "constants.h"
 #include "octalword.h"
+#include <string>
+#include "table.h"
+#include "memory.h"
+
+using namespace std;
 
 Memory::Memory()
 {
-	memory = new OctalWord[MEMORYLENGTH]();
+	memory = new Table<OctalWord, MemSpot>();
 }
 
 Memory::~Memory()
 {
-	delete[] memory;
+	delete memory;
 }
 
-OctalWord Memory::get(OctalWord address)
+OctalWord Memory::getWord(OctalWord address)
 {
-	return memory[address.value];
+	return memory[address];
 }
 
-void Memory::set(OctalWord address, OctalWord value)
+bool Memory::isTouched(OctalWord address)
 {
-	memory[address.value] = value;
+	return memory[address].touched;
+}
+
+void Memory::setWord(OctalWord address, OctalWord value)
+{
+	memory[address] = value;
+}
+
+void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction)
+{
+}
+
+bool Memory::loadProgramIntoMem(string lines[])
+{
 }

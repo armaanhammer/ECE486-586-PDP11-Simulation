@@ -13,6 +13,8 @@ public:
 	bool remove(KEY key);
 	bool clear();
 
+	VALUE &operator[] (KEY k);
+
 private:
 	List<KEY> key;
 	List<VALUE> value;

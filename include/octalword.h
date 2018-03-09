@@ -2,17 +2,23 @@
 
 #include "types.h"
 #include "constants.h"
+#include <string>
 
 #ifndef OCTALWORD_H_20180221
 #define OCTALWORD_H_20180221
 class OctalWord : public Word
 {
 public:
+	// public member functions
 	OctalWord();
 	OctalWord(int val);
 	~OctalWord();
+	std::string asString();
+
+	// public member variables
 	OctalBit octbit[6];
 
+	// operator overloads
 	OctalWord& operator =(const OctalWord &newAssignment);	//assignment
 	OctalWord operator ~();									//ones compliment
 	OctalWord operator -();									//twos compliment

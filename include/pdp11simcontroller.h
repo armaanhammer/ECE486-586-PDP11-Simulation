@@ -36,6 +36,7 @@ private:
 	void CCC();
 	void SCC();
 #pragma endregion
+
 //Single operation instructions
 #pragma region SOI
 	OctalWord JSR(const OctalWord& src);
@@ -53,6 +54,7 @@ private:
 	OctalWord ASL(const OctalWord& src);
 	OctalWord SXT(const OctalWord& src);		// is this a byte operation?
 #pragma endregion
+
 //Double operation instructions
 #pragma region DOI
 	OctalWord MOV(const OctalWord& dest, const OctalWord& src);
@@ -63,6 +65,7 @@ private:
 	OctalWord ADD(const OctalWord& dest, const OctalWord& src);
 	OctalWord SUB(const OctalWord& dest, const OctalWord& src);
 #pragma endregion
+
 //Extended double operation instruction
 #pragma region EDOI
 	OctalWord MUL();
@@ -74,6 +77,7 @@ private:
 	OctalWord SYSINSTRUCTION();
 	OctalWord SOB();
 #pragma endregion
+
 #pragma region BI
 	OctalWord BR(const OctalWord& src);
 	OctalWord BNE(const OctalWord& src);
@@ -92,12 +96,14 @@ private:
 	OctalWord BHI(const OctalWord& src);
 	OctalWord BLOS(const OctalWord& src);
 #pragma endregion
+
 //Null functions
 #pragma region NULLFUNC
 	OctalWord NULLFUNC();
 	OctalWord NULLFUNC(const OctalWord& src);
 	OctalWord NULLFUNC(const OctalWord& dest, const OctalWord& src);
 #pragma endregion
+
 //Functions to check the instruction types
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
 	bool checkForBranch(int value);
@@ -107,6 +113,7 @@ private:
 	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
 	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 #pragma endregion
+
 //Function to execute the intruction types
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
 	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
@@ -116,6 +123,7 @@ private:
 	void doSingleOpInstruction(OctalWord w);
 	void doPSWI(int opcode);
 #pragma endregion
+
 #pragma region TABLE
 	void createSingleOpTable();
 	void createDoubleOpTable();
@@ -124,11 +132,13 @@ private:
 	void createPSWITable();
 	void createEDOITable();
 #pragma endregion
+
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
 #pragma endregion
+
 #pragma region VARS
 	Register r[NUMGENERALREGISTERS]; //General purpose registers
 	Register sp; //Stack pointer register
