@@ -1,0 +1,13 @@
+       1                                ; rotates all bits of destination to the right by 1
+       2                                ; place. LSB gets loaded into the C bit and C bits gets
+       3                                ; shifted to the MSB. 
+       4                                
+       5 000000 000001                  A:	.WORD 000001.
+       6                                
+       7                                START:
+       8 000002 016701  177772          		MOV A, R1
+       9 000006 016702  000000G         		MOV B, R2
+      10 000012 000241                  		CLC
+      11 000014 006001                  		ROR	R1 ; C = 1
+      12 000016 000000                  		HALT
+      12                                		.END START

@@ -1,0 +1,19 @@
+       1                                ; tests the state of the N and V bit and causes a branch if
+       2                                ; the both are either set or clear. 
+       3                                
+       4                                
+       5 000000 000001                  A:	.WORD 1
+       6 000002 000002                  B:	.WORD 2
+       7                                
+       8                                START:
+       9 000004 000270                  		SEN
+      10 000006 000264                  		SEZ
+      11 000010 000242                  		CLV
+      12 000012 002004                  		BGE LABEL1 ;not taken
+      13 000014 000262                  		SEV
+      14 000016 002003                  		BGE LABEL2 ;taken
+      15 000020 016701  177754          		MOV A, R1
+      16 000024 000000                  LABEL1: HALT
+      17 000026 016702  177750          LABEL2:	MOV B, R2
+      18 000032 000000                  		HALT
+      18                                		.END START

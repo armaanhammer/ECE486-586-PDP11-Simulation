@@ -1,0 +1,14 @@
+       1                                ; tests the state of the N bit and causes a branch if
+       2                                ; the bit is clear. 
+       3                                
+       4                                START:
+       5 000000 000250                  		CLN
+       6 000002 000244                  		CLZ
+       7 000004 100002                  		BPL LABEL
+       8 000006 000242                  		CLV
+       9 000010 000241                  		CLC
+      10                                LABEL:	
+      11 000012 000270                  		SEN
+      12 000014 000264                  		SEZ
+      13 000016 000000                  		HALT
+      13                                		.END START

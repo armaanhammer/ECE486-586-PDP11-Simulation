@@ -1,0 +1,10 @@
+       1                                ; subtracts the C bit from the destination;  
+       2                                
+       3 000000 000001                  A:	.WORD 000001.
+       4                                
+       5                                START:
+       6 000002 016701  177772          		MOV A, R1
+       7 000006 000244                  		CLZ
+       8 000010 005601                  		SBC	R1 ; Z = 0
+       9 000012 000000                  		HALT
+       9                                		.END START

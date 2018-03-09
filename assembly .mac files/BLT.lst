@@ -1,0 +1,27 @@
+       1                                ; causes a branch if the XOR of the N and V bits are 1. 
+       2                                
+       3                                
+       4 000000 000001                  A:	.WORD 1
+       5 000002 000002                  B:	.WORD 2
+       6 000004 000003                  C:	.WORD 3
+       7                                
+       8                                START:
+       9 000006 000270                  		SEN
+      10 000010 000264                  		SEZ
+      11 000012 000262                  		SEV
+      12 000014 002404                  		BLT LABEL1 ;not taken
+      13 000016 000242                  		CLV
+      14 000020 002403                  		BLT LABEL2 ;taken
+      15 000022 000244                  		CLZ
+      16 000024 000241                  		CLC
+      17 000026 000000                  LABEL1: HALT
+      18 000030 000261                  LABEL2: SEC
+      19 000032 000262                  		SEV
+      20 000034 000250                  		CLN
+      21 000036 002401                  		BLT LABEL3 ;taken
+      22 000040 000000                  		HALT
+      23 000042 016701  177732          LABEL3: MOV A, R1
+      24 000046 016702  177730          		MOV B, R2
+      25 000052 016703  177726          		MOV C, R3
+      26 000056 000000                  		HALT
+      26                                		.END START

@@ -1,0 +1,13 @@
+       1                                ; replicates the N bit through the destination
+       2                                ; destination is -1 if N is set and 0 if clear
+       3                                
+       4 000000 030071                  A:	.WORD 012345.
+       5                                
+       6                                START:
+       7 000002 016701  177772          		MOV A, R1
+       8 000006 000270                  		SEN
+       9 000010 006701                  		SXT	R1 ; N = 1
+      10 000012 000250                  		CLN
+      11 000014 006701                  		SXT R1 ; N = 0
+      12 000016 000000                  		HALT
+      12                                		.END START

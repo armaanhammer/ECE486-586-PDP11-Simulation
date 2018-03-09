@@ -1,0 +1,16 @@
+       1                                ; compares the source with the destination operand and modifies the 
+       2                                ; condition codes accordingly. It is used to check if any of the bits
+       3                                ; set in the destination are also set or cleared in the source operand.
+       4                                
+       5                                
+       6 000000 000142                  A:	.WORD 142 ;0 000 00 001 100 010
+       7                                
+       8                                START:
+       9 000002 000250                  		CLN
+      10 000004 000244                  		CLZ
+      11 000006 000242                  		CLV
+      12 000010 000241                  		CLC
+      13 000012 016703  177762          		MOV A, R3
+      14 000016 032703  000030          		BIT #30, R3 
+      15 000022 000000                  		HALT
+      15                                		.END START
