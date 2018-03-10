@@ -3,7 +3,11 @@
 #define MEMORYLENGTH 36000
 #define NUMGENERALREGISTERS 6
 
+#define HALT_OPCODE 0000000
+#define NOP_OPCODE 000240
+
 // Processor Status Word Instructions Opcodes
+#define SPL_OPCODE 000230
 #define CLC_OPCODE 000241
 #define CLV_OPCODE 000242
 #define CLZ_OPCODE 000244
@@ -51,13 +55,15 @@
 #define SOB_OPCODE 077
 
 // Branch Instructions Opcodes
+#define BRANCH_OFFSET_MASK 0x000000FF
 #define BR_OPCODE 0001
 #define BNE_OPCODE 0002
 #define BEQ_OPCODE 0003
 #define BPL_OPCODE 0200
 #define BMI_OPCODE 0201
 #define BVC_OPCODE 0204
-#define BHIS_OPCODE 0205
+#define BVS_OPCODE 0205
+#define BHIS_OPCODE 0206
 #define BCC_OPCODE 0206
 #define BLO_OPCODE 0207
 #define BCS_OPCODE 0207

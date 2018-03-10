@@ -15,16 +15,16 @@ class PDP11SimController
 public:
 	PDP11SimController();
 	~PDP11SimController();
-	
-	bool decode(int octalVA);
-	int getTotalCount();
-	int getReadCount();
-	int getWriteCount();
+	void run();
+	void loadProgram();
+	void fetch();
+	bool decode();
 	int getInstructionCount();
 
 private:
+//processor status word instructions
 #pragma region PSWI
-	void SPL(OctalBit bit);
+	void SPL();
 	void CLC();
 	void CLV();
 	void CLZ();
@@ -85,6 +85,7 @@ private:
 	OctalWord BPL(const OctalWord& src);
 	OctalWord BMI(const OctalWord& src);
 	OctalWord BVC(const OctalWord& src);
+	OctalWord BVS(const OctalWord& src);
 	OctalWord BHIS(const OctalWord& src);
 	OctalWord BCC(const OctalWord& src);
 	OctalWord BLO(const OctalWord& src);
@@ -118,10 +119,11 @@ private:
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
 	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
 	void doBranchInstruction(OctalWord w);
-	void doUnimplementedDoubleOp(int opnum);
+	void doUnimplementedDoubleOp(OctalWord w);
 	void doDoubleOpInstruction(OctalWord w);
 	void doSingleOpInstruction(OctalWord w);
-	void doPSWI(int opcode);
+	void doPSWI(OctalWord w);
+	void WriteBack(int am, int destReg, OctalWord writenVal);
 #pragma endregion
 
 #pragma region TABLE
@@ -135,6 +137,7 @@ private:
 
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
+	typedef void(*executeFunction)(const OctalWord&);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
 	typedef OctalWord(*AddressModeFunc)(const int);
@@ -147,8 +150,10 @@ private:
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
 	int instructionCount;
-	OctalWord currentInstruction;
+
 	Table<int, AddressModeFunc>* AM;
+	OctalWord ci;
+	executeFunction execute;
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;
 	Table<int, OneParamFunc>* BI;
