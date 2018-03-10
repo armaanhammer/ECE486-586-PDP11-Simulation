@@ -4,6 +4,7 @@
 #define NUMGENERALREGISTERS 6
 
 // Processor Status Word Instructions Opcodes
+#define SPL_OPCODE 000230
 #define CLC_OPCODE 000241
 #define CLV_OPCODE 000242
 #define CLZ_OPCODE 000244

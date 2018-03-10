@@ -15,16 +15,15 @@ class PDP11SimController
 public:
 	PDP11SimController();
 	~PDP11SimController();
-	
+	void run();
+	void loadProgram();
+	void fetch();
 	bool decode(int octalVA);
-	int getTotalCount();
-	int getReadCount();
-	int getWriteCount();
 	int getInstructionCount();
 
 private:
 #pragma region PSWI
-	void SPL(OctalBit bit);
+	void SPL();
 	void CLC();
 	void CLV();
 	void CLZ();
@@ -118,10 +117,11 @@ private:
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
 	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
 	void doBranchInstruction(OctalWord w);
-	void doUnimplementedDoubleOp(int opnum);
+	void doUnimplementedDoubleOp(OctalWord w);
 	void doDoubleOpInstruction(OctalWord w);
 	void doSingleOpInstruction(OctalWord w);
-	void doPSWI(int opcode);
+	void doPSWI(OctalWord w);
+	void WriteBack(int am, int destReg, OctalWord writenVal);
 #pragma endregion
 
 #pragma region TABLE
@@ -135,6 +135,7 @@ private:
 
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
+	typedef void(*executeFunction)(const OctalWord&);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
 #pragma endregion
@@ -147,6 +148,7 @@ private:
 	Memory memory; //Memory array
 	int instructionCount;
 	OctalWord currentInstruction;
+	executeFunction execute;
 	Table<int, OneParamFunc>* AM;
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;
