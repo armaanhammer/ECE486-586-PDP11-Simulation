@@ -92,6 +92,7 @@ void PDP11SimController::createBranchTable()
 	BI->add(BPL_OPCODE, this->BPL);
 	BI->add(BMI_OPCODE, this->BMI);
 	BI->add(BVC_OPCODE, this->BVC);
+	BI->add(BVS_OPCODE, this->BVS)
 	BI->add(BHIS_OPCODE, this->BHIS);
 	BI->add(BCC_OPCODE, this->BCC);
 	BI->add(BLO_OPCODE, this->BLO);
@@ -770,68 +771,253 @@ OctalWord PDP11SimController::SXT(const OctalWord& src)
 ///-----------------------------------------------
 /// Branch Instruction Functions
 ///-----------------------------------------------
+/* Description:Provides a way of transferring program control within a 
+   range of -128 to +127 words with a one word instruction.
+   0 000 000 1xx xxx xxx BR
+   PC = PC + (2 * offset)
+*/
 OctalWord PDP11SimController::BR(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	offset<<1;
+	OctalWord pcvalue = pc.getVal() + offset;
+	cout <<"BR\n"; 
+	WriteBack(0, 7, pcvalue);
 }
 
-OctalWord PDP11SimController::BNE(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BEQ(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BPL(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BMI(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BVC(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BHIS(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BCC(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BLO(const OctalWord& src)
-{
-}
-
-OctalWord PDP11SimController::BCS(const OctalWord& src)
-{
-}
-
+/* Description: Causes a branch if N and V are either both clear or both set.
+   0 000 010 0xx xxx xxx BGE
+   PC = PC + (2 * offset) if N or V = 0 */
 OctalWord PDP11SimController::BGE(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.V == 0 || status.N == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BGE\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
 }
 
+/* Description:	Tests the state of the Z-bit and causes a branch if the Z-bit is clear.
+   0 000 001 0xx xxx xxx  BNE
+   PC = PC + (2 * offset) if Z = 0 */
+OctalWord PDP11SimController::BNE(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.Z == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BNE\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description: Tests the state of the Z-bit and causes a branch if Z is set.
+0 000 001 1xx xxx xxx  BEQ
+PC = PC + (2 * offset) if Z = 1 */
+OctalWord PDP11SimController::BEQ(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.Z == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BEQ\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description:Tests the state of the N-bit and causes a branch if N is clear. 
+   BPL is the complementary operation of BMI.
+   1 000 000 0xx xxx xxx  BPL
+   PC = PC + (2 * offset) if N = 0 */
+OctalWord PDP11SimController::BPL(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.N == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BPL\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description: Tests the state of the N-bit and causes a branch if N is set. 
+   It is used to test the sign (most significant bit) of the result of the 
+   previous operation, branching if negative.
+   1 000 000 1xx xxx xxx BMI
+   PC = PC + (2 * offset) if N = 0 */
+OctalWord PDP11SimController::BMI(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.N == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BMI\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description:Tests the state of the V bit and causes a branch if the V bit is clear. 
+   BVC is complementary operation to BVS.
+   1 000 010 0xx xxx xxx BVC
+   PC = PC + (2 * offset) if V = 0 */
+OctalWord PDP11SimController::BVC(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.V == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BVC\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description: BHIS is the same instruction as BCC. 
+   This mnemonic is included only for convenience, 
+   used instead of BCC when performing unsigned comparisons, for documentation purposes.
+   1 000 011 0xx xxx xxx BHIS
+   PC = PC + (2 * offset) if C = 0 */
+OctalWord PDP11SimController::BHIS(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.C == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BHIS\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description: Causes a branch if the "Exclusive Or" of the N and V bits are 1.
+   0 000 010 1xx xxx xxx BLT
+   PC = PC + (2 * offset) if N or V = 1 */
 OctalWord PDP11SimController::BLT(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.N == 1 || status.V == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BLT\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
 }
 
+/* Description:Operation of BGT is similar to BGE, 
+   except BGT will not cause a branch on a zero result.
+   0 000 011 0xx xxx xxx BGT
+   PC = PC + (2 * offset) if Z or(N xor V) = 0 */
 OctalWord PDP11SimController::BGT(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.N == status.V)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BGT\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+
 }
 
+/* Description:Operation is similar to BLT but in addition will 
+   cause a branch if the resul of the previous operation was zero.
+   0 000 011 1xx xxx xxx BLE
+   PC = PC + (2 * offset) if Z or(N xor V) = 1 */
 OctalWord PDP11SimController::BLE(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.N != status.V)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BLE\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
 }
 
-OctalWord PDP11SimController::BHI(const OctalWord& src)
+/* Description: Tests the state of V bit (overflow) and causes a branch 
+   if the V bit is set. BVS is used to detect signed arithmetic overflow in the previous operation.
+   1 000 010 1xx xxx xxx   BVS */
+OctalWord PDP11SimController::BVS(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.V == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BVS\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
 }
 
+/* Description:Causes a branch if the previous operation caused either a carry or a zero result.
+   1 000 001 1xx xxx xxx BLOS
+   PC = PC + (2 * offset) if C or Z = 1 */
 OctalWord PDP11SimController::BLOS(const OctalWord& src)
 {
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.Z == 1 || status.C == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BLOS\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description:Tests the state of the C-bit and causes a branch if C is clear. 
+   BCC is the complementary operation to BCS
+   1 000 011 0xx xxx xxx BCC */
+OctalWord PDP11SimController::BCC(const OctalWord& src)
+{   
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.C == 0)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BCC\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
+}
+
+/* Description: Tests the state of the C-bit and causes a branch if C is set. 
+   It is used to test for a carry in the result of a previous operation.
+   1 000 011 1xx xxx xxx BCS
+   PC = PC + (2 * offset) if C = 1 */
+OctalWord PDP11SimController::BCS(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+
+	if(status.C == 1)
+	{
+		offset<<1;
+		OctalWord pcvalue = pc.getVal() + offset;
+		cout <<"BCS\n"; 
+		WriteBack(0, 7, pcvalue);
+	}
 }
 #pragma endregion
 

@@ -52,13 +52,15 @@
 #define SOB_OPCODE 077
 
 // Branch Instructions Opcodes
+#define BRANCH_OFFSET_MASK 0x000000FF
 #define BR_OPCODE 0001
 #define BNE_OPCODE 0002
 #define BEQ_OPCODE 0003
 #define BPL_OPCODE 0200
 #define BMI_OPCODE 0201
 #define BVC_OPCODE 0204
-#define BHIS_OPCODE 0205
+#define BVS_OPCODE 0205
+#define BHIS_OPCODE 0206
 #define BCC_OPCODE 0206
 #define BLO_OPCODE 0207
 #define BCS_OPCODE 0207

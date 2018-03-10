@@ -22,6 +22,7 @@ public:
 	int getInstructionCount();
 
 private:
+//processor status word instructions
 #pragma region PSWI
 	void SPL();
 	void CLC();
@@ -84,6 +85,7 @@ private:
 	OctalWord BPL(const OctalWord& src);
 	OctalWord BMI(const OctalWord& src);
 	OctalWord BVC(const OctalWord& src);
+	OctalWord BVS(const OctalWord& src);
 	OctalWord BHIS(const OctalWord& src);
 	OctalWord BCC(const OctalWord& src);
 	OctalWord BLO(const OctalWord& src);
