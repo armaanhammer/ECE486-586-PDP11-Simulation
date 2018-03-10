@@ -11,12 +11,12 @@ Register::~Register()
 	delete r;
 }
 
-int Register::getVal()
+OctalWord Register::getVal()
 {
 	return r->value;
 }
 
-void Register::setval(int value)
+void Register::setval(OctalWord value)
 {
 	delete r;
 	r = new OctalWord(value);

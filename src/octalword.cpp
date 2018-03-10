@@ -49,6 +49,10 @@ void OctalWord::updateBits()
 	}
 }
 
+OctalBit& OctalWord::operator[] (int index)
+{
+	return this->octbit[index];
+}
 
 #pragma region UNARY_OP_OVERLOAD
 // twos compliment
