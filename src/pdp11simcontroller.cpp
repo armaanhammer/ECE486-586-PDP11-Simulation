@@ -90,7 +90,15 @@ void PDP11SimController::createDoubleOpTable()
 //Create a table for addressing modes
 void PDP11SimController::createAddressingModeTable()
 {
-	AM->add(REGISTER_CODE, this->/*function name no parenthesises*/);
+
+	AM->add(REGISTER_CODE, this->REGISTER);
+	AM->add(REGISTER_CODE, this->REGISTER_DEFERRED);
+	AM->add(REGISTER_CODE, this->AUTOINC);
+	AM->add(REGISTER_CODE, this->AUTOINC_DEFERRED);
+	AM->add(REGISTER_CODE, this->AUTODEC);
+	AM->add(REGISTER_CODE, this->AUTODEC_DEFERRED);
+	AM->add(REGISTER_CODE, this->INDEX);
+	AM->add(REGISTER_CODE, this->INDEX_DEFERRED);
 	AM->invalid = this->NULLFUNC;
 }
 
@@ -291,7 +299,7 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regAddressMode = w[1].b;
 	int opcode = w.value >> 6;
 
-	OctalWord operand = (*(AM->find(regAddressMode)))(r[regNum].getVal());
+	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal());
 
 	OctalWord result = (*(SO->find(opcode)))(operand);
 
@@ -300,18 +308,26 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 {
+	//Obtain the destination register octal value
 	int destNum = w[0].b;
+	//Obtain the destination addressing mode octal value
 	int destAddressMode = w[1].b;
+	//Obtain the source register octal value
 	int srcNum = w[2].b;
-	int srcAddressMode = w[3].b;
+	//Obtain the source addressing mode octal value
+	int srcAddressMode = w.[3].b;
+	//Obtain the opcode octal value
 	int opcode = w.value >> 12;
 
+	//Create octal word (6-bit value) for the source
 	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal());
-
+	//Create octal word (6-bit value) for the source
 	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal());
 
-	OctalWord result = (*(DO->find(opcode)))(operandA, operandB);
+	//Calculate the result octal word (6-bit value) for the result
+	OctalWord result = (*(DO->find(opcode))) (operandA, operandB);
 
+	//Write the value write back to the destination register
 	WriteBack(destAddressMode, destNum, result);
 }
 
@@ -320,7 +336,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	switch (am)
 	{
 	//Basic addressing register mode
-	case(00):
+	case(REGISTER_CODE):
 		break;
 	//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
@@ -543,8 +559,45 @@ void PDP11SimController::SCC()
 ///#define SP_INDEX_CODE				066
 ///#define Sp_INDEX_DEFFERRED_CODE		076
 
+OctalWord PDP11SimController::REGISTER(int AddrMode)
+{
 
+}
 
+OctalWord PDP11SimController::REGISTER_DEFERRED(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::AUTOINC(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::AUTOINC_DEFERRED(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::AUTODEC(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::AUTODEC_DEFERRED(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::INDEX(int AddrMode)
+{
+
+}
+
+OctalWord PDP11SimController::INDEX_DEFERRED(int AddrMode)
+{
+
+}
 #pragma endregion
 
 #pragma region DOUBLE_OPERAND_INSTRUCTIONS
