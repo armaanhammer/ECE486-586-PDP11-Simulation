@@ -18,7 +18,7 @@ public:
 	void run();
 	void loadProgram();
 	void fetch();
-	bool decode(int octalVA);
+	bool decode();
 	int getInstructionCount();
 
 private:
@@ -149,7 +149,7 @@ private:
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
 	int instructionCount;
-	OctalWord currentInstruction;
+	OctalWord ci;
 	executeFunction execute;
 	Table<int, OneParamFunc>* AM;
 	Table<int, OneParamFunc>* SO;

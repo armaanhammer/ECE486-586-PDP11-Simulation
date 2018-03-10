@@ -20,6 +20,7 @@ PDP11SimController::PDP11SimController()
 	createDoubleOpTable();
 	createPSWITable();
 	createSingleOpTable();
+	ci = OctalWord(0);
 }
 
 ///-----------------------------------------------
@@ -32,9 +33,12 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
-	while(currentInstruction != HALT_OPCODE)
+	while(ci != HALT_OPCODE)
 	{
-
+		fetch();
+		decode();
+		(*execute)(ci);
+		pc.setval(pc.getVal() + 2);
 	}
 }
 
@@ -148,57 +152,42 @@ void PDP11SimController::createEDOITable()
 ///-----------------------------------------------
 /// Decoding Functions
 ///-----------------------------------------------
-bool PDP11SimController::decode(int octalVA)
+bool PDP11SimController::decode()
 {
-	//Declare local octal word variable
-	OctalWord* ow = new OctalWord(octalVA);
-
 	// check for too long of word
-	if (octalVA > MAX_OCTAL_VALUE) 
+	if (ci > MAX_OCTAL_VALUE) 
 	{ 
-		delete ow; 
 		return false; 
 	}
 	// check to see if op is PSWI, if true exec op
-	if (checkForPSW(ow->octbit[3], ow->octbit[4], ow->octbit[5]))
-	{ 
-		currentInstruction = *ow;	
+	if (checkForPSW(ci[3], ci[4], ci[5]))
+	{ 	
 		execute = this->doPSWI; 
-		delete ow; 
 		return true; 
 	}
 	// check to see if op is Branch Instruction, if true exec Instruction
-	if (checkForBranch(ow->value)) 
+	if (checkForBranch(ci.value)) 
 	{ 
-		currentInstruction = *ow;	
 		execute = this->doBranchInstruction; 
-		delete ow; 
 		return true; 
 	}
 	// check to see if single operand instruction, if true exec instruction
-	if (checkForSO(*ow)) 
-	{ 
-		currentInstruction = *ow;	
-		execute = this->doSingleOpInstruction; 
-		delete ow; 
+	if (checkForSO(ci)) 
+	{ 	
+		execute = this->doSingleOpInstruction;
 		return true; 
 	}
 	// check to see if double operand instruction, if true exec instruction
-	if (checkForDO(*ow)) 
-	{ 
-		currentInstruction = *ow;	
+	if (checkForDO(ci)) 
+	{
 		execute = this->doDoubleOpInstruction; 
-		delete ow; 
 		return true; 
 	}
-	if (checkUnimplementedDoubleOp(*ow)) 
+	if (checkUnimplementedDoubleOp(ci)) 
 	{ 
-		currentInstruction = *ow;	
 		execute = this->doUnimplementedDoubleOp; 
-		delete ow; 
 		return true; 
 	}
-	delete ow;
 	cerr << "un reachable code segment end of bool PDP11SimController::decode(int octalVA) reached\n";
 	return false;
 }
@@ -288,7 +277,7 @@ bool PDP11SimController::checkForBranch(int value)
 void PDP11SimController::doPSWI(OctalWord w)
 {
 	int opcode = w.value;
-	if (w.octbit[5] == 0 && w.octbit[4] == 0 && w.octbit[3] == 0 && w.octbit[2] == 2 && w.octbit[1] == 3)
+	if (w[5] == 0 && w[4] == 0 && w[3] == 0 && w[2] == 2 && w[1] == 3)
 	{
 		opcode = SPL_OPCODE;
 	}
@@ -298,8 +287,8 @@ void PDP11SimController::doPSWI(OctalWord w)
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
-	int regNum = w.octbit[0].b;
-	int regAddressMode = w.octbit[1].b;
+	int regNum = w[0];
+	int regAddressMode = w[1];
 	int opcode = w.value >> 6;
 
 	OctalWord operand = (*(AM->find(regAddressMode)))(r[regNum].getVal());
@@ -388,7 +377,7 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 	int value = w.value;
 	int opcode = value >> 8;
 
-	(*(BI->find(opcode)))(currentInstruction);
+	(*(BI->find(opcode)))(ci);
 }
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
@@ -465,7 +454,7 @@ OctalWord PDP11SimController::NULLFUNC(const OctalWord& dest, const OctalWord& s
 
 void PDP11SimController::SPL()
 {
-	OctalBit bit = currentInstruction.octbit[0];
+	OctalBit bit = ci.octbit[0];
 	status.I = bit.b;
 }
 
