@@ -12,6 +12,8 @@ public:
 	void add(KEY key, VALUE value);
 	bool remove(KEY key);
 	bool clear();
+	
+	KEY invalid;
 
 	VALUE &operator[] (KEY k);
 

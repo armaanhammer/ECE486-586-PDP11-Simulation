@@ -9,8 +9,8 @@ class Register
 public:
 	Register();
 	~Register();
-	int getVal();
-	void setval(int value);
+	OctalWord getVal();
+	void setval(OctalWord value);
 private:
 	OctalWord* r;
 };
