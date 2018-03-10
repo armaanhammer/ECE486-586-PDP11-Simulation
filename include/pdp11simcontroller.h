@@ -117,7 +117,7 @@ private:
 //Function to execute the intruction types
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
 	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
-	void doBranchInstruction(int value);
+	void doBranchInstruction(OctalWord w);
 	void doUnimplementedDoubleOp(int opnum);
 	void doDoubleOpInstruction(OctalWord w);
 	void doSingleOpInstruction(OctalWord w);
@@ -145,10 +145,8 @@ private:
 	Register pc; //Program counter register
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
-	int totalCount;
-	int readCount;
-	int writeCount;
 	int instructionCount;
+	OctalWord currentInstruction;
 	Table<int, OneParamFunc>* AM;
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;

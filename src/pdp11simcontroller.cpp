@@ -14,9 +14,6 @@ using namespace std;
 PDP11SimController::PDP11SimController()
 {	
 	//Initialize the PDP11SimController class
-	totalCount = 0;
-	readCount = 0;
-	writeCount = 0;
 	instructionCount = 0;
 	createAddressingModeTable();
 	createBranchTable();
@@ -250,7 +247,7 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regAddressMode = w.octbit[1].b;
 	int opcode = w.value >> 6;
 
-	OctalWord operand = (*(AM->find(regAddressMode))(r[regNum].getVal());
+	OctalWord operand = (*(AM->find(regAddressMode)))(r[regNum].getVal());
 
 	OctalWord result = (*(SO->find(opcode)))(operand);
 
@@ -265,8 +262,8 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int srcAddressMode = w.octbit[3].b;
 	int opcode = w.value >> 12;
 
-	OctalWord operandA = (*(AM->find(srcAddressMode))(r[srcNum].getVal());
-	OctalWord operandB = (*(AM->find(destAddressMode))(r[destNum].getVal());
+	OctalWord operandA = (*(AM->find(srcAddressMode)))(r[srcNum].getVal());
+	OctalWord operandB = (*(AM->find(destAddressMode)))(r[destNum].getVal());
 
 	OctalWord result = (*(DO->find(opcode)))(operandA, operandB);
 
@@ -330,8 +327,9 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	}
 }
 
-void PDP11SimController::doBranchInstruction(int value)
+void PDP11SimController::doBranchInstruction(OctalWord w)
 {
+	int value = w.value;
 	int opcode = value >> 8;
 	int offset = (value << 8) >> 8;
 }
@@ -374,21 +372,6 @@ void PDP11SimController::doUnimplementedDoubleOp(int opnum)
 ///-----------------------------------------------
 /// Getters
 ///-----------------------------------------------
-int PDP11SimController::getTotalCount()
-{
-	return totalCount;
-}
-
-int PDP11SimController::getReadCount()
-{
-	return readCount;
-}
-
-int PDP11SimController::getWriteCount()
-{
-	return writeCount;
-}
-
 int PDP11SimController::getInstructionCount()
 {
 	return instructionCount;
