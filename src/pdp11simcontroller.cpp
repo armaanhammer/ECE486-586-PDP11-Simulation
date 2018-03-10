@@ -300,10 +300,10 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 {
-	int destNum = w.octbit[0].b;
-	int destAddressMode = w.octbit[1].b;
-	int srcNum = w.octbit[2].b;
-	int srcAddressMode = w.octbit[3].b;
+	int destNum = w[0].b;
+	int destAddressMode = w[1].b;
+	int srcNum = w[2].b;
+	int srcAddressMode = w[3].b;
 	int opcode = w.value >> 12;
 
 	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal());
