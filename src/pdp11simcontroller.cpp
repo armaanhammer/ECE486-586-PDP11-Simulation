@@ -39,15 +39,70 @@ void PDP11SimController::run()
 		decode();
 		(*execute)(ci);
 		pc.setval(pc.getVal() + 2);
+
+		if (pc.getVal().value % 2 != 0)
+		{
+			// ERROR!!!
+		}
 	}
 }
 
-void PDP11SimController::loadProgram()
+void PDP11SimController::loadProgram(std::string lines[], int count)
 {
+	memory.loadProgramIntoMem(lines, count);
+
+	char* c_string;		// used as an intermediate for converting string to octal
+
+	for (int i = 0; i < count; i++) {
+		// split each line
+		strcpy(c_string, lines[i].c_str());
+
+		if (c_string[0] != '*')
+		{
+			continue;
+		}
+		// convert the last part to an octal
+		int b[6] = {
+			(c_string[1] - '0'),
+			(c_string[2] - '0'),
+			(c_string[3] - '0'),
+			(c_string[4] - '0'),
+			(c_string[5] - '0'),
+			(c_string[6] - '0')
+		};
+		// turn the bits into an int
+		int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
+		pc.setval(OctalWord(num));
+		return;
+	}
+	
+	for (int i = 0; i < count; i++) {
+		// split each line
+		strcpy(c_string, lines[i].c_str());
+
+		if (c_string[0] != '@')
+		{
+			continue;
+		}
+		// convert the last part to an octal
+		int b[6] = {
+			(c_string[1] - '0'),
+			(c_string[2] - '0'),
+			(c_string[3] - '0'),
+			(c_string[4] - '0'),
+			(c_string[5] - '0'),
+			(c_string[6] - '0')
+		};
+		// turn the bits into an int
+		int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
+		pc.setval(OctalWord(num));
+		return;
+	}
 }
 
 void PDP11SimController::fetch()
 {
+	ci = pc.getVal();
 }
 
 #pragma region TABLE
@@ -319,7 +374,11 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int opcode = w.value >> 12;
 
 	//Create octal word (6-bit value) for the source
+<<<<<<< HEAD
 	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
+=======
+	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value);
+>>>>>>> 431c45defa8963997be6ae3b6d2893b24adfa352
 	//Create octal word (6-bit value) for the source
 	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value);
 
