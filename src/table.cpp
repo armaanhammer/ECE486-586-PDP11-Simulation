@@ -19,9 +19,16 @@ template<class KEY, class VALUE> VALUE Table<KEY, VALUE>::find(KEY key)
 
 template<class KEY, class VALUE> void Table<KEY, VALUE>::add(KEY key, VALUE value)
 {
-	this->key.add(key);
-	this->value.add(value);
-	size++;
+	if (this->key.find(key))
+	{
+		this->value = value;
+	}
+	else
+	{
+		this->key.add(key);
+		this->value.add(value);
+		size++;
+	}
 }
 
 template<class KEY, class VALUE> bool Table<KEY, VALUE>::remove(KEY keyToRemove)
