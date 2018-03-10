@@ -3,6 +3,9 @@
 #define MEMORYLENGTH 36000
 #define NUMGENERALREGISTERS 6
 
+#define HALT_OPCODE 0000000
+#define NOP_OPCODE 000240
+
 // Processor Status Word Instructions Opcodes
 #define SPL_OPCODE 000230
 #define CLC_OPCODE 000241

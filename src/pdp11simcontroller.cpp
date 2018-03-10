@@ -32,6 +32,10 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
+	while(currentInstruction != HALT_OPCODE)
+	{
+
+	}
 }
 
 void PDP11SimController::loadProgram()
@@ -63,6 +67,7 @@ void PDP11SimController::createSingleOpTable()
 	SO->add(ASR_OPCODE, this->ASR);
 	SO->add(ASL_OPCODE, this->ASL);
 	SO->add(SXT_OPCODE, this->SXT);
+	SO->invalid = this->NULLFUNC;
 }
 
 //Create a table of double operation instructions
@@ -75,12 +80,14 @@ void PDP11SimController::createDoubleOpTable()
 	DO->add(BIS_OPCODE, this->BIS);
 	DO->add(ADD_OPCODE, this->ADD);
 	DO->add(SUB_OPCODE, this->SUB);
+	DO->invalid = this->NULLFUNC;
 }
 
 //Create a table for addressing modes
 void PDP11SimController::createAddressingModeTable()
 {
 	AM->add(REGISTER_CODE, this->/*function name no parenthesises*/);
+	AM->invalid = this->NULLFUNC;
 }
 
 //Create a table for the branch instructions
@@ -92,7 +99,7 @@ void PDP11SimController::createBranchTable()
 	BI->add(BPL_OPCODE, this->BPL);
 	BI->add(BMI_OPCODE, this->BMI);
 	BI->add(BVC_OPCODE, this->BVC);
-	BI->add(BVS_OPCODE, this->BVS)
+	BI->add(BVS_OPCODE, this->BVS);
 	BI->add(BHIS_OPCODE, this->BHIS);
 	BI->add(BCC_OPCODE, this->BCC);
 	BI->add(BLO_OPCODE, this->BLO);
@@ -103,6 +110,7 @@ void PDP11SimController::createBranchTable()
 	BI->add(BLE_OPCODE, this->BLE);
 	BI->add(BHI_OPCODE, this->BHI);
 	BI->add(BLOS_OPCODE, this->BLOS);
+	BI->invalid = this->NULLFUNC;
 }
 
 void PDP11SimController::createPSWITable()
@@ -118,6 +126,7 @@ void PDP11SimController::createPSWITable()
 	PSWI->add(SEN_OPCODE, this->SEN);
 	PSWI->add(CCC_OPCODE, this->CCC);
 	PSWI->add(SCC_OPCODE, this->SCC);
+	PSWI->invalid = this->NULLFUNC;
 }
 
 //Create a table for the extended double operation instructions
@@ -131,6 +140,7 @@ void PDP11SimController::createEDOITable()
 	EDO->add(FLOATING_POINT_OPCODE, this->FPO);
 	EDO->add(SYSTEM_NSTRUCTION_OPCODE, this->SYSINSTRUCTION);
 	EDO->add(SOB_OPCODE, this->SOB);
+	EDO->invalid = this->NULLFUNC;
 }
 #pragma endregion
 
@@ -307,8 +317,9 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int srcAddressMode = w.octbit[3].b;
 	int opcode = w.value >> 12;
 
-	OctalWord operandA = (*(AM->find(srcAddressMode)))(r[srcNum].getVal());
-	OctalWord operandB = (*(AM->find(destAddressMode)))(r[destNum].getVal());
+	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal());
+
+	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal());
 
 	OctalWord result = (*(DO->find(opcode)))(operandA, operandB);
 
@@ -355,17 +366,17 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
 		break;
-	case(016):
+	case(SP_DEFERRED_CODE):
 		break;
-	case(026):
+	case(SP_AUTOINC_CODE):
 		break;
-	case(036):
+	case(SP_AUTOINC_DEFERRED_CODE):
 		break;
-	case(046):
+	case(SP_AUTODEC_CODE):
 		break;
-	case(066):
+	case(SP_INDEX_CODE):
 		break;
-	case(076):
+	case(Sp_INDEX_DEFFERRED_CODE):
 		break;
 	default:
 		break;
@@ -376,7 +387,8 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 {
 	int value = w.value;
 	int opcode = value >> 8;
-	int offset = (value << 8) >> 8;
+
+	(*(BI->find(opcode)))(currentInstruction);
 }
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
