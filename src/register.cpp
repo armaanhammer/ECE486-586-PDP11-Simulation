@@ -19,3 +19,7 @@ void Register::setval(OctalWord value)
 {
 	regVal = value;
 }
+
+void Register::print()
+{
+}

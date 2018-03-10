@@ -31,6 +31,7 @@ public:
 	bool isTouched(OctalWord address);
 	void setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = false);
 	bool loadProgramIntoMem(std::string lines[], int count);
+	void print();
 	
 private:
 	Table<OctalWord, MemSpot>* memory;

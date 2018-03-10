@@ -82,3 +82,7 @@ bool Memory::loadProgramIntoMem(string lines[], int count)
 		setWord(OctalWord(index), OctalWord(0));
 	}
 }
+
+void Memory::print()
+{
+}
