@@ -137,6 +137,7 @@ private:
 	typedef void(*NoParamFunc)();
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
+	typedef OctalWord(*AddressModeFunc)(const int);
 #pragma endregion
 
 #pragma region VARS
@@ -147,12 +148,23 @@ private:
 	Memory memory; //Memory array
 	int instructionCount;
 	OctalWord currentInstruction;
-	Table<int, OneParamFunc>* AM;
+	Table<int, AddressModeFunc>* AM;
 	Table<int, OneParamFunc>* SO;
 	Table<int, TwoParamFunc>* DO;
 	Table<int, OneParamFunc>* BI;
 	Table<int, NoParamFunc>*  PSWI;
 	Table<int, NoParamFunc>* EDO;
+#pragma endregion
+
+#pragma region AM
+	OctalWord REGISTER(int AddrMode);
+	OctalWord REGISTER_DEFERRED(int AddrMode);
+	OctalWord AUTOINC(int AddrMode);
+	OctalWord AUTOINC_DEFERRED(int AddrMode);
+	OctalWord AUTODEC(int AddrMode);
+	OctalWord AUTODEC_DEFERRED(int AddrMode);
+	OctalWord INDEX(int AddrMode);
+	OctalWord INDEX_DEFERRED(int AddrMode);
 #pragma endregion
 };
 #endif
