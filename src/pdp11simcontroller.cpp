@@ -39,70 +39,15 @@ void PDP11SimController::run()
 		decode();
 		(*execute)(ci);
 		pc.setval(pc.getVal() + 2);
-
-		if (pc.getVal().value % 2 != 0)
-		{
-			// ERROR!!!
-		}
 	}
 }
 
-void PDP11SimController::loadProgram(std::string lines[], int count)
+void PDP11SimController::loadProgram()
 {
-	memory.loadProgramIntoMem(lines, count);
-
-	char* c_string;		// used as an intermediate for converting string to octal
-
-	for (int i = 0; i < count; i++) {
-		// split each line
-		strcpy(c_string, lines[i].c_str());
-
-		if (c_string[0] != '*')
-		{
-			continue;
-		}
-		// convert the last part to an octal
-		int b[6] = {
-			(c_string[1] - '0'),
-			(c_string[2] - '0'),
-			(c_string[3] - '0'),
-			(c_string[4] - '0'),
-			(c_string[5] - '0'),
-			(c_string[6] - '0')
-		};
-		// turn the bits into an int
-		int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
-		pc.setval(OctalWord(num));
-		return;
-	}
-	
-	for (int i = 0; i < count; i++) {
-		// split each line
-		strcpy(c_string, lines[i].c_str());
-
-		if (c_string[0] != '@')
-		{
-			continue;
-		}
-		// convert the last part to an octal
-		int b[6] = {
-			(c_string[1] - '0'),
-			(c_string[2] - '0'),
-			(c_string[3] - '0'),
-			(c_string[4] - '0'),
-			(c_string[5] - '0'),
-			(c_string[6] - '0')
-		};
-		// turn the bits into an int
-		int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
-		pc.setval(OctalWord(num));
-		return;
-	}
 }
 
 void PDP11SimController::fetch()
 {
-	ci = pc.getVal();
 }
 
 #pragma region TABLE
@@ -369,12 +314,12 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	//Obtain the source register octal value
 	int srcNum = w[2].b;
 	//Obtain the source addressing mode octal value
-	int srcAddressMode = w.[3].b;
+	int srcAddressMode = w[3].b;
 	//Obtain the opcode octal value
 	int opcode = w.value >> 12;
 
 	//Create octal word (6-bit value) for the source
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value);
+	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
 	//Create octal word (6-bit value) for the source
 	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value);
 
@@ -613,44 +558,80 @@ void PDP11SimController::SCC()
 ///#define SP_INDEX_CODE				066
 ///#define Sp_INDEX_DEFFERRED_CODE		076
 
-OctalWord PDP11SimController::REGISTER(int AddrMode)
+OctalWord PDP11SimController::REGISTER(OctalWord regValue, int reg)
 {
-
+	//Obtain the value from the register
+	return regValue;
 }
 
-OctalWord PDP11SimController::REGISTER_DEFERRED(int AddrMode)
+OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 {
-
+	//Obtain the value from memory (pointer)
+	return memory.getWord(regValue);
 }
 
-OctalWord PDP11SimController::AUTOINC(int AddrMode)
+OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 {
+	//Increment the value of the register
+	r[reg].setval(regValue + 2);
 
+	//Obtain the value from memory (pointer)
+	return memory.getWord(regValue);
 }
 
-OctalWord PDP11SimController::AUTOINC_DEFERRED(int AddrMode)
+OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
+	//Declare pointer for memory
+	OctalWord p;
 
+	//Increment the value of the register
+	r[reg].setval(regValue + 2);
+
+	//Obtain the pointer value
+	p = memory.getWord(regValue);
+
+	//Obtain the value from memory (pointer)
+	return memory.getWord(p);
 }
 
-OctalWord PDP11SimController::AUTODEC(int AddrMode)
+OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 {
+	//Decrement the value of the register
+	r[reg].setval(regValue - 2);
 
+	//Obtain the value from memory (pointer)
+	return memory.getWord(regValue - 2);
 }
 
-OctalWord PDP11SimController::AUTODEC_DEFERRED(int AddrMode)
+OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 {
+	//Decrement the value of the register
+	r[reg].setval(regValue - 2);
 
+	//Obtain the pointer
+	OctalWord p = memory.getWord(regValue);
+
+	//Obtain the value from memory (pointer)
+	return memory.getWord(p);
 }
 
-OctalWord PDP11SimController::INDEX(int AddrMode)
+OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
+	//Obtain the value of the offset
 
+
+	//Obtain the value from memory (pointer)
 }
 
-OctalWord PDP11SimController::INDEX_DEFERRED(int AddrMode)
+OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
+	//Obtain the value of the register
 
+	//Obtain the value of the offset
+
+	//Obtain the pointer in memory
+
+	//Obtain the value from memory (pointer)
 }
 #pragma endregion
 
