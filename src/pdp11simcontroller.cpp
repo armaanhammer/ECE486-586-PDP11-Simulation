@@ -287,8 +287,8 @@ void PDP11SimController::doPSWI(OctalWord w)
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
-	int regNum = w[0];
-	int regAddressMode = w[1];
+	int regNum = w[0].b;
+	int regAddressMode = w[1].b;
 	int opcode = w.value >> 6;
 
 	OctalWord operand = (*(AM->find(regAddressMode)))(r[regNum].getVal());
