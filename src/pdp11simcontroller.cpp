@@ -811,7 +811,11 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 		status.V = false;
 	
 	++src;  // do the thing
-	if(src < 0)  // N: set if result < 0; cleared otherwise
+	
+	// N: set if result < 0; cleared otherwise
+	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
+	OctalWord MSBtest = src & MSBmask; // bitwise AND with src
+	if(MSBtest == MSBmask)  // test if MSB set
 		status.N = true;
 	else
 		status.N = false;
@@ -838,7 +842,11 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 		status.V = false;
 	
 	--src;  // do the thing
-	if(src < 0)  // N: set if result < 0; cleared otherwise
+	
+	// N: set if result < 0; cleared otherwise
+	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
+	OctalWord MSBtest = src & MSBmask; // bitwise AND with src
+	if(MSBtest == MSBmask)  // test if MSB set
 		status.N = true;
 	else
 		status.N = false;
@@ -862,7 +870,11 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
 	result = ~src;  // do the thing
-	if(result < 0) // N: set if the result is < 0; cleared otherwise
+	
+	// N: set if result < 0; cleared otherwise
+	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
+	OctalWord MSBtest = result & MSBmask; // bitwise AND with result
+	if(MSBtest == MSBmask)  // test if MSB set
 		status.N = true;
 	else
 		status.N = false;
@@ -882,7 +894,7 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 	else
 		status.C = true;
 	
-	if(src == 0100000)
+	if(src == 0100000)  // prevent two's compliment ambiguity for edge case
 		return src;  // word 100000 (or byte 200) is replaced by itself
 	else
 		return result;
@@ -916,7 +928,10 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::TST(const OctalWord& src)
 {
-	if(src < 0)// N: set if result is < 0; cleared otherwise
+	// N: set if result < 0; cleared otherwise
+	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
+	OctalWord MSBtest = src & MSBmask; // bitwise AND with src
+	if(MSBtest == MSBmask)  // test if MSB set
 		status.N = true;
 	else
 		status.N = false;
