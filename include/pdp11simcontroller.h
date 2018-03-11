@@ -140,7 +140,7 @@ private:
 	typedef void(*executeFunction)(const OctalWord&);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(const int);
+	typedef OctalWord(*AddressModeFunc)(const OctalWord&, const int);
 #pragma endregion
 
 #pragma region VARS
