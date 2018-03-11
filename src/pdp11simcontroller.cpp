@@ -758,7 +758,7 @@ OctalWord PDP11SimController::JSR(const OctalWord& src)
 //Function: CLR insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Contents of the destination operand are replaced with zeroes.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CLR(const OctalWord& src)
 {
@@ -804,7 +804,7 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 //Function: INC insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Add one to the contents of the destination operand.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
@@ -831,7 +831,7 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 //Function: DEC insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Subtract 1 from the contents of the destination operand.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
@@ -864,23 +864,25 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
+	if(src == 0100000){ // V: set if result is 100000; cleared otherwise
+		status.V = true;
+		return src;  // to account for word 100000 replacing itself
+	else
+		status.V = false;
+	
 	-src;  // do the thing
-	if(src < 0)// N: set if the result is < 0; cleared otherwise
+	
+	if(src < 0) // N: set if the result is < 0; cleared otherwise
 		status.N = true;
 	else
 		status.N = false;
 	
-	if(src == 0)// Z: set if result is 0; cleared otherwise
+	if(src == 0) // Z: set if result is 0; cleared otherwise
 		status.Z = true;
 	else
 		status.Z = false;
 	
-	if(src == 0100000)// V: set if result is 100000; cleared otherwise
-		status.V = true;
-	else
-		status.V = false;
-	
-	if(src == 0)// C: cleared if the result is 0; set otherwise
+	if(src == 0) // C: cleared if the result is 0; set otherwise
 		status.C = false;
 	else
 		status.C = true;
