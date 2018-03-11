@@ -787,6 +787,23 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
+	if(src == 077777)  // V: set if dest was 077777; cleared otherwise
+		status.V = true;
+	else
+		status.V = false;
+	
+	++src;  // do the thing
+	if(src < 0)  // N: set if result < 0; cleared otherwise
+		status.N = true;
+	else
+		status.N = false;
+	
+	if(src == 0)  // Z: set if result is 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;	
+	
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -797,7 +814,7 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
-	if(src == 01000000)  // V: set if dest was 100000; cleared otherwise
+	if(src == 0100000)  // V: set if dest was 100000; cleared otherwise
 		status.V = true;
 	else
 		status.V = false;
@@ -813,7 +830,7 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 	else
 		status.Z = false;	
 	
-	return ;
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
