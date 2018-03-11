@@ -773,10 +773,31 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 //Function: COM insturction (Single Operand Instruction)
 //Input: (OctalWord) ource register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Replaces the contents of the destination operand by their logical complement (each bit 
+//equal to 0 is set and each bit equal to 1 is cleared).
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::COM(const OctalWord& src)
 {
+	~src;  // do the thing
+	
+	// N: set if most significant bit of result is set; cleared otherwise
+	OctalWord tempVal = 0100000;  // create mask, MSB = 16th bit
+	tempVal = tempVal & src;  // bitwise AND with src
+	if(tempVal == 0100000)  // test if MSB set
+		status.N = true;
+	else
+		status.N = false;
+	
+	if(src == 0)  // Z: set if result is 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	
+	status.V = false;  // V: cleared
+	
+	status.C = true;  // C: set
+	
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -837,11 +858,13 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //Function: NEG insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Replaces the contents of the destination operand by its two's complement. Note that 
+//word 100000 (or byte 200) is replaced by itself (in two's complement notation the most negative 
+//number has no positive counterpart).
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
-	~src;  // do the thing
+	-src;  // do the thing
 	if(src < 0)// N: set if the result is < 0; cleared otherwise
 		status.N = true;
 	else
@@ -897,11 +920,14 @@ OctalWord PDP11SimController::TST(const OctalWord& src)
 		status.N = true;
 	else
 		status.N = false;
+	
 	if(src == 0)// Z: set if result is 0; cleared otherwise
 		status.Z = true;
 	else
 		status.Z = false;
+	
 	status.V = false; // V: cleared
+	
 	status.C = false; // C: cleared
 	
 	return src;
