@@ -843,9 +843,9 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
 	~src;  // do the thing
 	if(src < 0)// N: set if the result is < 0; cleared otherwise
-		status.Z = true;
+		status.N = true;
 	else
-		status.Z = false;
+		status.N = false;
 	
 	if(src == 0)// Z: set if result is 0; cleared otherwise
 		status.Z = true;
@@ -853,14 +853,14 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 		status.Z = false;
 	
 	if(src == 0100000)// V: set if result is 100000; cleared otherwise
-		status.Z = true;
+		status.V = true;
 	else
-		status.Z = false;
+		status.V = false;
 	
 	if(src == 0)// C: cleared if the result is 0; set otherwise
-		status.Z = false;
+		status.C = false;
 	else
-		status.Z = true;
+		status.C = true;
 	
 	return(src);
 }
@@ -893,6 +893,18 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::TST(const OctalWord& src)
 {
+	if(src < 0)// N: set if result is < 0; cleared otherwise
+		status.N = true;
+	else
+		status.N = false;
+	if(src == 0)// Z: set if result is 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	status.V = false; // V: cleared
+	status.C = false; // C: cleared
+	
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
