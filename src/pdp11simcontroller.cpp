@@ -957,10 +957,41 @@ OctalWord PDP11SimController::ROL(const OctalWord& src)
 //Function: ASR insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Shifts all bits of the destination operand right one place. The MSB is replicated. The 
+//C-bit is loaded from the LSB of the destination. ASR(B) performs signed division of the destination 
+//by two. 
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASR(const OctalWord& src)
 {
+	OctalWord tempMSB = 0100000;  // create mask, MSB = 16th bit
+	tempMSB = tempMSB & src;  // bitwise AND with src to capture state	
+	OctalWord tempLSB = 0000001;  // create mask, LSB = 1st bit
+	tempLSB = tempLSB & src;  // bitwise AND with src to capture state
+	
+	src >>= 1;  // shift right 1 bit
+	
+	// mitigate logical vs. arithmetic shift ambiguity
+	if(tempMSB == 0100000) // test if MSB was set in source
+		src = src | tempMSB; // if so, force MSB to be set in result
+	
+	if(tempMSB == 0100000) 	// N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+		status.N = true;
+	else
+		status.N = false;
+	
+	if(src == 0) // Z: set if the result = 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	
+	if(tempLSB == 0000001) // C: loaded from low-order bit of the destination
+		status.C = true;
+	else
+		status.C = false;
+
+	//V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	status.V = status.N ^ status.C;  
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
