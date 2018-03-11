@@ -779,7 +779,6 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 OctalWord PDP11SimController::COM(const OctalWord& src)
 {
 	~src;  // do the thing
-	
 	// N: set if most significant bit of result is set; cleared otherwise
 	OctalWord tempVal = 0100000;  // create mask, MSB = 16th bit
 	tempVal = tempVal & src;  // bitwise AND with src
@@ -794,9 +793,7 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 		status.Z = false;
 	
 	status.V = false;  // V: cleared
-	
 	status.C = true;  // C: set
-	
 	return src;
 }
 
@@ -864,30 +861,31 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
-	if(src == 0100000){ // V: set if result is 100000; cleared otherwise
-		status.V = true;
-		return src;  // to account for word 100000 replacing itself
-	else
-		status.V = false;
-	
-	-src;  // do the thing
-	
-	if(src < 0) // N: set if the result is < 0; cleared otherwise
+	result = ~src;  // do the thing
+	if(result < 0) // N: set if the result is < 0; cleared otherwise
 		status.N = true;
 	else
 		status.N = false;
 	
-	if(src == 0) // Z: set if result is 0; cleared otherwise
+	if(result == 0) // Z: set if result is 0; cleared otherwise
 		status.Z = true;
 	else
 		status.Z = false;
 	
-	if(src == 0) // C: cleared if the result is 0; set otherwise
+	if(result == 0100000)  // V: set if result is 100000; cleared otherwise
+		status.V = true;
+	else
+		status.V = false;
+	
+	if(result == 0) // C: cleared if the result is 0; set otherwise
 		status.C = false;
 	else
 		status.C = true;
 	
-	return(src);
+	if(src == 0100000)
+		return src;  // word 100000 (or byte 200) is replaced by itself
+	else
+		return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -914,7 +912,7 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 //Function: TST insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Sets the condition codes N and Z according to the contents of the destination operand.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::TST(const OctalWord& src)
 {
