@@ -16,7 +16,7 @@ public:
 	PDP11SimController();
 	~PDP11SimController();
 	void run();
-	void loadProgram(std::string lines[], int count);
+	void loadProgram();
 	void fetch();
 	bool decode();
 	int getInstructionCount();

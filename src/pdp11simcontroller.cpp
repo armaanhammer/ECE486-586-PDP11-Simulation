@@ -31,6 +31,8 @@ PDP11SimController::~PDP11SimController()
 }
 #pragma endregion
 
+
+//Run the loaded program
 void PDP11SimController::run()
 {
 	while(ci != HALT_OPCODE)
@@ -294,11 +296,15 @@ void PDP11SimController::doPSWI(OctalWord w)
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
+	//Obtain the registers octal value
 	int regNum = w[0].b;
+	//Obtain the addressing mode
 	int regAddressMode = w[1].b;
+	//Obtain the opcode octal value
 	int opcode = w.value >> 6;
 
-	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value);
+
+	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value, regNum);
 
 	OctalWord result = (*(SO->find(opcode)))(operand);
 
@@ -307,31 +313,23 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 
 void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 {
-	//Obtain the destination register octal value
+	//Obtain the destination registers octal value
 	int destNum = w[0].b;
-	//Obtain the destination addressing mode octal value
+	//Obtain the destination addressing mode
 	int destAddressMode = w[1].b;
-	//Obtain the source register octal value
+	//Obtain the source registers octal value
 	int srcNum = w[2].b;
-	//Obtain the source addressing mode octal value
+	//Obtain the source addressing mode
 	int srcAddressMode = w[3].b;
 	//Obtain the opcode octal value
 	int opcode = w.value >> 12;
 
-	//Create octal word (6-bit value) for the source
-<<<<<<< HEAD
-<<<<<<< HEAD
+	//Handle the addressing mode for the source operand
 	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
-=======
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value);
->>>>>>> 431c45defa8963997be6ae3b6d2893b24adfa352
-=======
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
-	//Create octal word (6-bit value) for the source
-	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value);
+	//Handle the addressing mode for the destination operand
+	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value, destNum);
 
-	//Calculate the result octal word (6-bit value) for the result
+	//Calculate the result of the double operation
 	OctalWord result = (*(DO->find(opcode))) (operandA, operandB);
 
 	//Write the value write back to the destination register
@@ -565,19 +563,41 @@ void PDP11SimController::SCC()
 ///#define SP_AUTODEC_CODE				046
 ///#define SP_INDEX_CODE				066
 ///#define Sp_INDEX_DEFFERRED_CODE		076
-
+//----------------------------------------------------------------------------------------------------
+//Function:		REGISTER (Addressing Mode)
+//Input:		OctalWord regValue: Octal word (16-bit) stored in specifed register
+//				int reg: The specified register
+//Output:		(OctalWord) Return the octal word value stored in the specified register
+//Description:	Addressing mode for Register addressing (mode 0) returning the operand contained in the
+//				register.
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::REGISTER(OctalWord regValue, int reg)
 {
-	//Obtain the value from the register
+	//Obtain the value from the specified register
 	return regValue;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function:		REGISTER_DEFERRED (Addressing Mode)
+//Input:		OctalWord regValue: Octal word (16-bit) stored in specifed register
+//				int reg: The specified register
+//Output:		(OctalWord) Return octal word value stored in the specified memory location
+//Description:	Addressing mode for Register Deferred addressing (mode 1) return the operand contained
+//				in memory that's pointed to by the register.
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 {
 	//Obtain the value from memory (pointer)
 	return memory.getWord(regValue);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function:		AUTOINC (Addressing Mode)
+//Input:		OctalWord regValue: Octal word (16-bit) stored in specifed register
+//				int reg: The specified register
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 {
 	//Increment the value of the register
@@ -587,31 +607,33 @@ OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 	return memory.getWord(regValue);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTOINC_DEFERRED (Addressing Mode)
+//Input: 
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
 	//Declare pointer for memory
 	OctalWord p;
-<<<<<<< HEAD
 
 	//Increment the value of the register
 	r[reg].setval(regValue + 2);
 
 	//Obtain the pointer value
-	p = memory.getWord(regValue);
+	OctalWord pointer = memory.getWord(regValue);
 
-=======
-
-	//Increment the value of the register
-	r[reg].setval(regValue + 2);
-
-	//Obtain the pointer value
-	p = memory.getWord(regValue);
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
 	//Obtain the value from memory (pointer)
-	return memory.getWord(p);
+	return memory.getWord(pointer);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTODEC (Addressing Mode)
+//Input: 
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
@@ -621,43 +643,50 @@ OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 	return memory.getWord(regValue - 2);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTODEC_DEFERRED (Addressing Mode)
+//Input: 
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
 	r[reg].setval(regValue - 2);
-<<<<<<< HEAD
 
 	//Obtain the pointer
-	OctalWord p = memory.getWord(regValue);
+	OctalWord pointer = memory.getWord(regValue);
 
-=======
-
-	//Obtain the pointer
-	OctalWord p = memory.getWord(regValue);
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
 	//Obtain the value from memory (pointer)
-	return memory.getWord(p);
+	return memory.getWord(pointer);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: INDEX (Addressing Mode)
+//Input: 
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
 	//Obtain the value of the offset
-<<<<<<< HEAD
+	OctalWord offset = pc.getVal() + 2;
 
-
-=======
-
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
-	//Obtain the value from memory (pointer)
+	//Obtain the offset value from memory (pointer)
+	return memory.getWord(regValue + offset);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: INDEX_DEFERRED (Addressing Mode)
+//Input: 
+//Output: 
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
-	//Obtain the value of the register
-
 	//Obtain the value of the offset
+	OctalWord offsetPointer = pc.getVal() + 2;
+
 
 	//Obtain the pointer in memory
 
