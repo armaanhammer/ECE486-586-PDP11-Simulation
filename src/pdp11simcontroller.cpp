@@ -841,6 +841,28 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
+	~src;  // do the thing
+	if(src < 0)// N: set if the result is < 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	
+	if(src == 0)// Z: set if result is 0; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	
+	if(src == 0100000)// V: set if result is 100000; cleared otherwise
+		status.Z = true;
+	else
+		status.Z = false;
+	
+	if(src == 0)// C: cleared if the result is 0; set otherwise
+		status.Z = false;
+	else
+		status.Z = true;
+	
+	return(src);
 }
 
 //----------------------------------------------------------------------------------------------------
