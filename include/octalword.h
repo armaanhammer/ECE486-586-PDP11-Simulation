@@ -45,6 +45,9 @@ public:
 	bool operator ==(const OctalWord& oneToCompareTo);		// returns result of operandA == operandB
 	bool operator !=(const OctalWord& oneToCompareTo);		// returns result of operandA != operandB
 
+	
+	OctalBit& operator[] (int index);
+
 private:
 	void updateBits();
 };

@@ -1,6 +1,5 @@
 #pragma once
 #include "types.h"
-#include "octalword.h"
 
 #ifndef REGISTER_H_20180218
 #define REGISTER_H_20180218
@@ -13,6 +12,6 @@ public:
 	OctalWord getVal();
 	void setval(OctalWord value);
 private:
-	OctalWord regVal;
+	OctalWord* r;
 };
 #endif
