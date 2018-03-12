@@ -342,27 +342,41 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	{
 	//Basic addressing register mode
 	case(REGISTER_CODE):
+		//Write the result to the destination register
+		r[destReg].setval(writenVal);
 		break;
 	//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(),writenVal);
 		break;
 	//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(), writenVal);
 		break;
 	//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
+		//Write to the location pointed to by the memory pointed to by the register
+		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
 		break;
 	//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(), writenVal);
 		break;
 	//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
+		//Write to the location pointed to by the memory pointed to by the register
+		memory.setWord(memory.getWord(r[destReg].getVal() - 2), writenVal);
 		break;
 	//Basic addressing index
 	case(INDEX_CODE):
+		//Write to the location pointed to by the sum of the register and the offset
 		break;
 	//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
+		//Write to the location pointer to by memory pointed to by the sum of the register and the offset
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
