@@ -344,27 +344,47 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	{
 	//Basic addressing register mode
 	case(REGISTER_CODE):
+		//Write the result to the destination register
+		r[destReg].setval(writenVal);
 		break;
 	//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(), writenVal);
 		break;
 	//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(), writenVal);
 		break;
 	//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
+		//Write to the location pointed to by the memory pointed to by the register
+		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
 		break;
 	//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
+		//Write to the location pointed to by the register
+		memory.setWord(r[destReg].getVal(), writenVal);
 		break;
 	//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
+		//Write to the location pointed to by the memory pointed to by the register
+		memory.setWord(memory.getWord(r[destReg].getVal() - 2), writenVal);
 		break;
 	//Basic addressing index
 	case(INDEX_CODE):
+		//Update the PC
+		pc.setval(pc.getVal() + 2);
+		//Write to the location pointed to by the sum of the register and the offset
+		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal);
 		break;
 	//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
+		//Update the PC
+		pc.setval(pc.getVal() + 2);
+		//Write to the location pointed to by the sum of the register and the offset
+		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal);
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
@@ -589,27 +609,11 @@ OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 
 OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
-	//Declare pointer for memory
-	OctalWord p;
-<<<<<<< HEAD
-
 	//Increment the value of the register
 	r[reg].setval(regValue + 2);
 
-	//Obtain the pointer value
-	p = memory.getWord(regValue);
-
-=======
-
-	//Increment the value of the register
-	r[reg].setval(regValue + 2);
-
-	//Obtain the pointer value
-	p = memory.getWord(regValue);
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
 	//Obtain the value from memory (pointer)
-	return memory.getWord(p);
+	return memory.getWord(memory.getWord(regValue));
 }
 
 OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
@@ -625,43 +629,42 @@ OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
 	r[reg].setval(regValue - 2);
-<<<<<<< HEAD
 
-	//Obtain the pointer
-	OctalWord p = memory.getWord(regValue);
-
-=======
-
-	//Obtain the pointer
-	OctalWord p = memory.getWord(regValue);
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
 	//Obtain the value from memory (pointer)
-	return memory.getWord(p);
+	return memory.getWord(memory.getWord(regValue));
 }
 
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
+	//Obtain the pointer to the memory address
+	OctalWord pointerToMemory = memory.getWord(regValue);
+
 	//Obtain the value of the offset
-<<<<<<< HEAD
+	OctalWord offset = pc.getVal() + 2;
 
+	//Add the offset to the memory address
+	OctalWord indexMemory = memory.getWord(pointerToMemory + offset);
 
-=======
-
-
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
-	//Obtain the value from memory (pointer)
+	//Return the value from that the pointer points to
+	return indexMemory;
 }
 
 OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
-	//Obtain the value of the register
+	//Obtain the pointer to the memory address
+	OctalWord pointerToMemory = memory.getWord(regValue);
 
 	//Obtain the value of the offset
+	OctalWord offset = pc.getVal() + 2;
 
-	//Obtain the pointer in memory
+	//Add the offset to the memory address that stores the pointer
+	OctalWord indexPointer = memory.getWord(pointerToMemory + offset);
 
-	//Obtain the value from memory (pointer)
+	//Obtain the pointer second pointer
+	OctalWord indexMemory = memory.getWord(indexPointer);
+
+	//Return the value from that the pointer points to
+	return indexMemory;
 }
 #pragma endregion
 
@@ -677,6 +680,28 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord tempSrc = src;
+	const OctalWord zero(0);
+
+	//Obtain the most significant bit of the result
+	OctalBit mostSignificant = tempSrc[5];
+	
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificant.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (tempSrc.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the source
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -687,6 +712,49 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempDest = dest;
+	OctalWord tempSrc = src;
+	OctalWord zero(0);
+	const OctalWord one(1);
+
+	//Negate the destination, then add one, and add the result to source
+	result = tempDest.operator~();
+	result = result.operator+(1);
+	result = tempSrc.operator-(result);
+
+	//Obtain the most significant bit of the result
+	OctalBit mostSignificantR = result[5];
+	OctalBit mostSignificantS = tempSrc[5];
+	OctalBit mostSignificantD = tempDest[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificantR.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Check if the operand signs are not equal
+	if (mostSignificantS.operator!=(mostSignificantD))
+	{
+		//Check if arithmetic overflow occured and if true set the V bit
+		if (mostSignificantD.operator==(mostSignificantR)) SEV();
+		//Otherwise clear the V bit
+		else CLV();
+	}
+
+	//Check for carry from the most-significant bit of the result and if true set the C bit
+	if (status.V == 1) SEC();
+	//Otherwise clear the C bit
+	else CLC();
+
+	//Return the unmodifed destination register
+	return dest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -697,6 +765,33 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempDest = dest;
+	OctalWord tempSrc = src;
+	const OctalWord zero(0);
+
+	//And the destination and the source
+	result = tempDest.operator&(tempSrc);
+
+	//Obtain the most significant bit of the result
+	OctalBit mostSignificant = result[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificant.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the unmodifed destination register
+	return dest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -707,6 +802,34 @@ OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempSrc = src;
+	OctalWord tempDest = dest;
+	const OctalWord zero(0);
+
+	//Negate the source then and with the desination
+	result = tempSrc.operator~();
+	result = result.operator&(tempDest);
+
+	//Obtain the most significant bit of the result
+	OctalBit mostSignificant = result[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificant.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+	
+	//Clear the V bit
+	CLV();
+	
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -717,6 +840,33 @@ OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempDest = dest;
+	OctalWord tempSrc = src;
+	const OctalWord zero(0);
+
+	//Or the source and destination together
+	result = tempSrc.operator|(tempDest);
+
+	//Obtain the most significant bit of the result
+	OctalBit mostSignificant = result[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificant.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+	
+	//Clear the V bit
+	CLV();
+	
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -727,6 +877,46 @@ OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempDest = dest;
+	OctalWord tempSrc = src;
+	const OctalWord zero(0);
+
+	//Add the source and destination together
+	result = tempSrc.operator+(tempDest);
+
+	//Obtain the most significant bit of the result, destination, and source
+	OctalBit mostSignificantR = result[5];
+	OctalBit mostSignificantS = tempSrc[5];
+	OctalBit mostSignificantD = tempDest[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificantR.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Check if the operand signs are equal
+	if (mostSignificantS.operator==(mostSignificantD))
+	{
+		//Check if arithmetic overflow occured and if true set the V bit
+		if (mostSignificantS.operator!=(mostSignificantR)) SEV();
+		//Otherwise clear the V bit
+		else CLV();
+	}
+
+	//Check for carry from the most-significant bit of the result and if true set the C bit
+	if (status.V == 1) SEC();
+	//Otherwise clear the C bit
+	else CLC();
+
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -737,6 +927,46 @@ OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	OctalWord tempDest = dest;
+	OctalWord tempSrc = src;
+	const OctalWord zero(0);
+
+	//Add the source and destination together
+	result = tempSrc.operator-(tempDest);
+
+	//Obtain the most significant bit of the result, destination, and source
+	OctalBit mostSignificantR = result[5];
+	OctalBit mostSignificantS = tempSrc[5];
+	OctalBit mostSignificantD = tempDest[5];
+
+	//Check if the result is negative and if true set the N bit
+	if (mostSignificantR.operator==(1)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Check if the operand signs are not equal
+	if (mostSignificantS.operator!=(mostSignificantD))
+	{
+		//Check if arithmetic overflow occured and if true set the V bit
+		if (mostSignificantS.operator==(mostSignificantR)) SEV();
+		//Otherwise clear the V bit
+		else CLV();
+	}
+
+	//Check for carry from the most-significant bit of the result and if true set the C bit
+	if (status.V == 1) SEC();
+	//Otherwise clear the C bit
+	else CLC();
+	
+	//Return the unmodifed destination register
+	return result;
 }
 #pragma endregion
 
