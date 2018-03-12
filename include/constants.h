@@ -1,6 +1,6 @@
 #pragma once
 
-#define MEMORYLENGTH 0177777
+#define MEMORYLENGTH 36000
 #define NUMGENERALREGISTERS 6
 
 #define HALT_OPCODE 0000000
@@ -96,3 +96,5 @@
 
 #define WORD_OCTAL_LENGTH 6
 #define MAX_OCTAL_VALUE 0177777
+
+#define BIT_WIDTH 16

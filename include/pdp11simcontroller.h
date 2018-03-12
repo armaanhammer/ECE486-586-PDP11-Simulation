@@ -16,7 +16,7 @@ public:
 	PDP11SimController();
 	~PDP11SimController();
 	void run();
-	void loadProgram(std::string lines[], int count);
+	void loadProgram();
 	void fetch();
 	bool decode();
 	int getInstructionCount();
@@ -140,7 +140,7 @@ private:
 	typedef void(*executeFunction)(const OctalWord&);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(const int);
+	typedef OctalWord(*AddressModeFunc)(const OctalWord&, const int);
 #pragma endregion
 
 #pragma region VARS
@@ -150,6 +150,8 @@ private:
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
 	int instructionCount;
+	bool debugRegisters = false;
+	bool debugMemory = false;
 
 	Table<int, AddressModeFunc>* AM;
 	OctalWord ci;
