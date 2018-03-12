@@ -298,7 +298,7 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regAddressMode = w[1].b;
 	int opcode = w.value >> 6;
 
-	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value);
+	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value, regNum);
 
 	OctalWord result = (*(SO->find(opcode)))(operand);
 
@@ -319,17 +319,9 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int opcode = w.value >> 12;
 
 	//Create octal word (6-bit value) for the source
-<<<<<<< HEAD
-<<<<<<< HEAD
 	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
-=======
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value);
->>>>>>> 431c45defa8963997be6ae3b6d2893b24adfa352
-=======
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
->>>>>>> ddbae760012853cd1510166745ea058f89f4c302
 	//Create octal word (6-bit value) for the source
-	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value);
+	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value, destNum);
 
 	//Calculate the result octal word (6-bit value) for the result
 	OctalWord result = (*(DO->find(opcode))) (operandA, operandB);
@@ -1040,7 +1032,7 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 	else
 		status.V = false;
 	
-	++src;  // do the thing
+	src++;  // do the thing
 	
 	// N: set if result < 0; cleared otherwise
 	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
