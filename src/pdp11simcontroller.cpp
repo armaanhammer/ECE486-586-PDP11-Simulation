@@ -904,20 +904,52 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 //Function: ADC insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Adds the contents of the C-bit into the destination operand. This permits the carry 
+//from the addition of the low-order words to be carried into the high-order result. 
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADC(const OctalWord& src)
 {
+	//V: set if dest was 077777 and (C) was 1; cleared otherwise
+	status.V = (src == 077777 && status.C) ? true : false;
+	
+	//C: set if dest was 177777 and (C) was 1; cleared otherise
+	bool tempBool = (src == 0177777 && status.C) ? true : false;
+	
+	src = src + status.C ? 1 : 0; // add src and type-converted carry
+	status.C = tempBool;
+	
+	//N: set if result < 0; cleared otherwise
+	status.N = src < 0;
+	
+	//Z: set if result = 0; cleared otherwise
+	status.Z = (src == 0) ? true : false;
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
 //Function: SBC insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Subtracts the contents of the C-bit from the destination. This permits the carry from 
+//the subtraction of two low-order words to be subtracted from the high order part of the result. 
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SBC(const OctalWord& src)
 {
+	//V: set if dest was 100000; cleared otherwise
+	status.V = (src == 0100000) ? true : false;
+	
+	//C: set if dest was 0 and C was 1; cleared otherwise
+	bool tempBool = (src == 0 && status.C) ? true : false;
+	
+	src = src - status.C ? 1 : 0; // add src and type-converted carry
+	status.C = tempBool;
+	
+	//N: set if result < 0; cleared otherwise
+	status.N = src < 0;
+	
+	//Z: set if result = 0; cleared otherwise
+	status.Z = (src == 0) ? true : false;
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -952,20 +984,52 @@ OctalWord PDP11SimController::TST(const OctalWord& src)
 //Function: ROR insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Rotates all bits of the destination operand right one place. The LSB is loaded into the 
+//C-bit and the previous contents of the C-bit are loaded into the MSB of the destination.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROR(const OctalWord& src)
 {
+	//C: loaded with the low-order bit of the destination
+	status.C = (src[BIT_WIDTH - 1] == 1) ? true : false;
+	
+	src >>= 1;  // shift left 1 bit
+	src[0] = status.C ? 1 : 0; //fix the 16th bit
+	
+	//N: set if the high-order bit of the result word is set (result < 0); cleared otherwise
+	status.N = src < 0;
+
+	//Z: set if all bits of the result word = 0; cleared otherwise
+	status.Z = (src == 0) ? true : false;
+	
+	//V: loaded from the exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	status.V = status.N ^ status.C;  
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
 //Function: ROL insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Rotate all bits of the destination operand left one place. The MSB is loaded into the 
+//C-bit of the status word and the previous contents of the C-bit are loaded into the LSB of the destination.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROL(const OctalWord& src)
 {
+	//C: loaded with the high-order bit of the destination
+	status.C = (src[0] == 1) ? true : false;
+	
+	src <<= 1;  // shift left 1 bit
+	src[BIT_WIDTH - 1] = status.C ? 1 : 0; //fix the 16th bit
+	
+	//N: set if the high-order bit of the result word is set (result < 0); cleared otherwise
+	status.N = src < 0;
+
+	//Z: set if all bits of the result word = 0; cleared otherwise
+	status.Z = (src == 0) ? true : false;
+	
+	//V: loaded from the exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	status.V = status.N ^ status.C;  
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1013,20 +1077,51 @@ OctalWord PDP11SimController::ASR(const OctalWord& src)
 //Function: ASL insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: Shifts all bits of the destination operand left one place. The LSB is loaded with a 0. 
+//The C-bit of the status word is loaded from the MSB of the destination. 
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASL(const OctalWord& src)
 {
+	//C: loaded with the high-order bit of the destination
+	status.C = (src[0] == 1) ? true : false;
+	
+	src <<= 1;  // shift left 1 bit
+
+	//N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.N = src < 0;
+	
+	//Z: set if the result = 0; cleared otherwise
+	status.Z = (src == 0) ? true : false;
+
+	//V: loaded from the exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	status.V = status.N ^ status.C;  
+	return src;
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SUB insturction (Single Operand Instruction)
+//Function: SXT insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Description: If the condition code bit N is set then a -1 is placed in the destination operand: if 
+//N bit is clear, then a 0 is placed in the destination operand. This instruction is particularly 
+//useful in multiple precision arithmetic because it permits the sign to be extended through multiple words.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SXT(const OctalWord& src)
 {
+	// the N-bit is replicated through dest: dest = 0 if N is clear; dest = -1 if N is set
+	src = (status.N == false) ? 0 : -1; 
+	
+	//N: unaffected
+	
+	//Z: set if N bit clear
+	status.Z = !status.N;
+	
+	//V: cleared
+	status.V = false;
+	
+	//C: unaffected
+	
+	return src;
 }
 
 #pragma endregion
