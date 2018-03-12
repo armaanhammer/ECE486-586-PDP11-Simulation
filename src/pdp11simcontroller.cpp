@@ -745,8 +745,27 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 //Output: (OctalWord) Octal result of operation
 //Description: returns source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::MOV(const OctalWord& dest,const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//Check if the source is negative and if true set the N bit
+	if (src.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (src.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Set the result equal to the source and return
+	return result = src;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -757,6 +776,31 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+	const OctalWord one(1);
+
+	//Negate the destination, then add one, and add the result to source
+	result = dest.operator~;
+	result = result.operator+(one);
+	result = src.operator-(result);
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the unmodifed destination register
+	return dest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -767,6 +811,28 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//And the destination and the source
+	result = dest && src;
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the unmodifed destination register
+	return dest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -777,6 +843,29 @@ OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//Negate the source then and with the desination
+	result = src.operator~;
+	result = result && dest;
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -787,6 +876,28 @@ OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//Or the source and destination together
+	result = src || dest;
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Clear the V bit
+	CLV();
+
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -797,6 +908,35 @@ OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//Add the source and destination together
+	result = src.operator+(dest);
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Check if arithmetic overflow occured and if true set the V bit
+	if (/*both operands are the same sign and result is a different sign*/) SEV();
+	//Otherwise clear the V bit
+	else CLV();
+
+	//Check for carry from the most-significant bit of the result and if true set the C bit
+	if (status.V == 1) SEC();
+	//Otherwise clear the C bit
+	else CLC();
+
+	//Return the unmodifed destination register
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -807,6 +947,35 @@ OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 {
+	//Declare octalword variables
+	OctalWord result;
+	const OctalWord zero(0);
+
+	//Subtract the source from the destination
+	result = src.operator-(dest);
+
+	//Check if the result is negative and if true set the N bit
+	if (result.operator<(zero)) SEN();
+	//Otherwise clear the N bit
+	else CLN();
+
+	//Check if the source is equal to zero and if true set the Z bit
+	if (result.operator==(zero)) SEZ();
+	//Otherwise clear the Z bit
+	else CLZ();
+
+	//Check if arithmetic overflow occured and if true set the V bit
+	if (/*operands were opposite sign and the sign of the source is the same as the result*/) SEV();
+	//Otherwise clear the V bit
+	else CLV();
+
+	//Check for carry from the most-significant bit of the result and if true set the C bit
+	if (status.V == 1) SEC();
+	//Otherwise clear the C bit
+	else CLC();
+
+	//Return the unmodifed destination register
+	return result;
 }
 #pragma endregion
 
