@@ -39,3 +39,7 @@ void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction)
 bool Memory::loadProgramIntoMem(string lines[])
 {
 }
+
+void Memory::print()
+{
+}

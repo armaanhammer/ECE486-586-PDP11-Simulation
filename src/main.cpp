@@ -23,8 +23,8 @@ int main(int argc, char* argv[])
 	PDP11SimController* pdp = new PDP11SimController();
 	string line;
 	ifstream file;
-	bool debug = false;
-	bool verbose = false;
+	bool debugMem = false;
+	bool debugReg = false;
 	int count = 0;
 
 	// determine operation ie is debug mode or verbose mode etc
@@ -32,34 +32,37 @@ int main(int argc, char* argv[])
 	// boolean variable = checkFlags(char* of the thing you want to check, "" string of the thing to check against)
 	for (int i = 0; i < argc; i++)
 	{
-		debug = debug | checkFlags(argv[i], "-D");
-		debug = debug | checkFlags(argv[i], "-d");
+		debugReg = debugReg | checkFlags(argv[i], "-D");
+		debugReg = debugReg | checkFlags(argv[i], "-d");
+		debugMem = debugMem | checkFlags(argv[i], "-A");
+		debugMem = debugMem | checkFlags(argv[i], "-a");
 	}
-	for (int i = 0; i < argc; i++)
-	{
-		verbose = verbose | checkFlags(argv[i], "-A");
-		verbose = verbose | checkFlags(argv[i], "-a");
-	}
-	
 	
 	/*******************************************************************
 	// prompt the user here if no command line flag
 	*******************************************************************/
+	if (!debugReg && ! debugMem)
+	{
+		// ask for debug modes
+	}
+	if (argc <= 1)
+	{
+		// ask for a file
+	}
 	
-	
-	if (verbose) cout << "Opening file\n";
+	if (debugMem || debugReg) cout << "Opening file\n";
 
 	try
 	{
 		file.open(argv[1]);
 		if (file.is_open())
 		{
-			if (verbose) cout << argv[1] << " was opened successfully\n";
+			if (debugMem || debugReg) cout << argv[1] << " was opened successfully\n";
+
 			while (getline(file, line))
 			{
 				istringstream iss(line);
 				unsigned int instruction, address;
-				count++;
 				
 				// error handling section
 				if (!(iss >> instruction))
@@ -76,18 +79,6 @@ int main(int argc, char* argv[])
 				{
 					cerr << "ignoring address after instruction code: " << instruction << ", THIS IS NOT AN ACTUAL ERROR\n\n";
 				}
-
-				/***********************************************************************************************************
-				// this is were we actually handle cache instructions
-				//if (verbose) cout << endl << instruction << ',' << hex << address << '\n';
-
-				//switch (instruction)
-				//{
-				//default:
-				//	cout << instruction << " found at line " << count << ", is not a valid instruction for a cache" << endl;
-				//	break;
-				//}
-				*************************************************************************************************************/
 
 				if (verbose)
 				{
@@ -107,6 +98,10 @@ int main(int argc, char* argv[])
 		cout << e.what() << "\n\n";
 	}
 	file.close();
+
+	int instructioncount = pdp->getInstructionCount();
+	
+	// do some final prints
 	if (!linuxOp) getchar();
 	return 0;
 }

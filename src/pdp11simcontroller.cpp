@@ -20,7 +20,16 @@ PDP11SimController::PDP11SimController()
 	createDoubleOpTable();
 	createPSWITable();
 	createSingleOpTable();
+	createEDOITable();
 	ci = OctalWord(0);
+	memory = Memory();
+	for (int i = 0; i < NUMGENERALREGISTERS; i++)
+	{
+		r[i] = Register();
+	}
+	status = StatusRegister();
+	sp = Register();
+	pc = Register();
 }
 
 ///-----------------------------------------------
@@ -28,6 +37,12 @@ PDP11SimController::PDP11SimController()
 ///-----------------------------------------------
 PDP11SimController::~PDP11SimController()
 {
+	delete SO;
+	delete DO;
+	delete BI;
+	delete PSWI;
+	delete AM;
+	delete EDO;
 }
 #pragma endregion
 
@@ -35,6 +50,7 @@ PDP11SimController::~PDP11SimController()
 //Run the loaded program
 void PDP11SimController::run()
 {
+
 	while(ci != HALT_OPCODE)
 	{
 		fetch();
@@ -59,6 +75,7 @@ void PDP11SimController::fetch()
 //Create a table of single operation instructions
 void PDP11SimController::createSingleOpTable()
 {
+	SO = new Table<int, OneParamFunc>();
 	SO->add(JSR_OPCODE, this->JSR);
 	SO->add(CLR_OPCODE, this->CLR);
 	SO->add(COM_OPCODE, this->COM);
@@ -79,6 +96,7 @@ void PDP11SimController::createSingleOpTable()
 //Create a table of double operation instructions
 void PDP11SimController::createDoubleOpTable()
 {
+	DO = new Table<int, TwoParamFunc>();
 	DO->add(MOV_OPCODE, this->MOV);
 	DO->add(CMP_OPCODE, this->CMP);
 	DO->add(BIT_OPCODE, this->BIT);
@@ -92,6 +110,7 @@ void PDP11SimController::createDoubleOpTable()
 //Create a table for addressing modes
 void PDP11SimController::createAddressingModeTable()
 {
+	AM = new Table<int, AddressModeFunc>();
 	AM->add(REGISTER_CODE, this->REGISTER);
 	AM->add(REGISTER_CODE, this->REGISTER_DEFERRED);
 	AM->add(REGISTER_CODE, this->AUTOINC);
@@ -106,6 +125,7 @@ void PDP11SimController::createAddressingModeTable()
 //Create a table for the branch instructions
 void PDP11SimController::createBranchTable()
 {
+	BI = new Table<int, OneParamFunc>();
 	BI->add(BR_OPCODE, this->BR);
 	BI->add(BNE_OPCODE, this->BNE);
 	BI->add(BEQ_OPCODE, this->BEQ);
@@ -128,6 +148,7 @@ void PDP11SimController::createBranchTable()
 
 void PDP11SimController::createPSWITable()
 {
+	PSWI = new Table<int, NoParamFunc>();
 	PSWI->add(SPL_OPCODE, this->SPL);
 	PSWI->add(CLC_OPCODE, this->CLC);
 	PSWI->add(CLV_OPCODE, this->CLV);
@@ -145,6 +166,7 @@ void PDP11SimController::createPSWITable()
 //Create a table for the extended double operation instructions
 void PDP11SimController::createEDOITable()
 {
+	EDO = new Table<int, NoParamFunc>();
 	EDO->add(MUL_OPCODE, this->MUL);
 	EDO->add(DIV_OPCODE, this->DIV);
 	EDO->add(ASH_OPCODE, this->ASH);

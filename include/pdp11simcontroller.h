@@ -150,6 +150,8 @@ private:
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
 	int instructionCount;
+	bool debugRegisters = false;
+	bool debugMemory = false;
 
 	Table<int, AddressModeFunc>* AM;
 	OctalWord ci;

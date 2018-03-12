@@ -21,3 +21,7 @@ void Register::setval(OctalWord value)
 	delete r;
 	r = new OctalWord(value);
 }
+
+void Register::print()
+{
+}

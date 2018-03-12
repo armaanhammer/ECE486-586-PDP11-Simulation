@@ -11,6 +11,7 @@ public:
 	~Register();
 	OctalWord getVal();
 	void setval(OctalWord value);
+	void print();
 private:
 	OctalWord* r;
 };
