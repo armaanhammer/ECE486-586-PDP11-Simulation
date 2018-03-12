@@ -15,7 +15,7 @@ public:
 	
 	KEY invalid;
 
-	VALUE& operator[] (KEY k);
+	VALUE &operator[] (KEY k);
 
 private:
 	List<KEY> key;

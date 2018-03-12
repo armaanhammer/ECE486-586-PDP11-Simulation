@@ -16,10 +16,6 @@ typedef struct MemSpot
 	MemSpot() { touched = false; instruction = false; value = OctalWord(0); };
 	MemSpot(int v) { touched = false; instruction = false; value = OctalWord(v); };
 	MemSpot(int v, bool i) { touched = false; instruction = i; value = OctalWord(v); };
-	MemSpot(int v, bool i, bool t) { touched = false; instruction = i; value = OctalWord(v); };
-	MemSpot(OctalWord v) { touched = false; instruction = false; value = v; };
-	MemSpot(OctalWord v, bool i) { touched = false; instruction = i; value = v; };
-	MemSpot(OctalWord v, bool i, bool t) { touched = t; instruction = i; value = v; };
 };
 
 class Memory

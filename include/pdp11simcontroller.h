@@ -16,7 +16,7 @@ public:
 	PDP11SimController();
 	~PDP11SimController();
 	void run();
-	void loadProgram(std::string lines[], int count);
+	void loadProgram();
 	void fetch();
 	bool decode();
 	int getInstructionCount();
@@ -140,7 +140,7 @@ private:
 	typedef void(*executeFunction)(const OctalWord&);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(const int);
+	typedef OctalWord(*AddressModeFunc)(const OctalWord&, const int);
 #pragma endregion
 
 #pragma region VARS
@@ -164,14 +164,14 @@ private:
 #pragma endregion
 
 #pragma region AM
-	OctalWord REGISTER(int AddrMode);
-	OctalWord REGISTER_DEFERRED(int AddrMode);
-	OctalWord AUTOINC(int AddrMode);
-	OctalWord AUTOINC_DEFERRED(int AddrMode);
-	OctalWord AUTODEC(int AddrMode);
-	OctalWord AUTODEC_DEFERRED(int AddrMode);
-	OctalWord INDEX(int AddrMode);
-	OctalWord INDEX_DEFERRED(int AddrMode);
+	OctalWord REGISTER(OctalWord regValue, int reg);
+	OctalWord REGISTER_DEFERRED(OctalWord regValue, int reg);
+	OctalWord AUTOINC(OctalWord regValue, int reg);
+	OctalWord AUTOINC_DEFERRED(OctalWord regValue, int reg);
+	OctalWord AUTODEC(OctalWord regValue, int reg);
+	OctalWord AUTODEC_DEFERRED(OctalWord regValue, int reg);
+	OctalWord INDEX(OctalWord regValue, int reg);
+	OctalWord INDEX_DEFERRED(OctalWord regValue, int reg);
 #pragma endregion
 };
 #endif
