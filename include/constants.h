@@ -96,3 +96,5 @@
 
 #define WORD_OCTAL_LENGTH 6
 #define MAX_OCTAL_VALUE 0177777
+
+#define BIT_WIDTH 16
