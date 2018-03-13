@@ -796,22 +796,12 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
 	OctalWord tempSrc = src;
-	const OctalWord zero(0);
 
-	//Obtain the most significant bit of the result
-	OctalBit mostSignificant = tempSrc[5];
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificant.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
-
-	(tempSrc[5] == 1) ? SEN(): CLN();
-
-	//Check if the source is equal to zero and if true set the Z bit
-	if (tempSrc == 0) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 
 	//Clear the V bit
 	CLV();
@@ -829,21 +819,16 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
-	OctalWord zero(0);
-	const OctalWord one(1);
 
+	what??? why add one?
 	//Negate the destination, then add one, and add the result to source
+	OctalWord result;
+
 	result = tempDest.operator~();
 	result = result.operator+(1);
 	result = tempSrc.operator-(result);
-
-	//Obtain the most significant bit of the result
-	OctalBit mostSignificantR = result[5];
-	OctalBit mostSignificantS = tempSrc[5];
-	OctalBit mostSignificantD = tempDest[5];
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
 	(result < 0) ? SEN() :CLN();
@@ -1007,11 +992,6 @@ OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 
 	//Add the source and destination together
 	result = tempSrc - tempDest;
-
-	//Obtain the most significant bit of the result, destination, and source
-	OctalBit mostSignificantR = result[5];
-	OctalBit mostSignificantS = tempSrc[5];
-	OctalBit mostSignificantD = tempDest[5];
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
 	(result < 0) ? SEN() : CLN();
