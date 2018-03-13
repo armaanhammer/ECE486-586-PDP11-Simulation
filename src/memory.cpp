@@ -4,6 +4,7 @@
 #include <string>
 #include "table.h"
 #include "memory.h"
+#include <iostream>
 
 using namespace std;
 
@@ -19,27 +20,30 @@ Memory::~Memory()
 
 OctalWord Memory::getWord(OctalWord address)
 {
-	return memory[address];
+	return (*memory)[address].value;
 }
 
 bool Memory::isTouched(OctalWord address)
 {
-	return memory[address].touched;
+	return (*memory)[address].touched;
 }
 
-void Memory::setWord(OctalWord address, OctalWord value)
+void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = false)
 {
-	memory[address] = value;
-}
-
-void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction)
-{
-}
-
-bool Memory::loadProgramIntoMem(string lines[])
-{
+	memory->add(address, MemSpot(value, isInstruction, touched));
 }
 
 void Memory::print()
 {
+	cout << "memory hierarchy\n  location  |   value\n";
+	for (int i = 0; i < MEMORYLENGTH; i+=2)
+	{
+		OctalWord index = OctalWord(2 * i);
+		OctalWord toPrint = memory->find(index).value;
+		cout << "   ";
+		index.print();
+		cout << "   |   ";
+		toPrint.print();
+		cout << "  \n";
+	}
 }

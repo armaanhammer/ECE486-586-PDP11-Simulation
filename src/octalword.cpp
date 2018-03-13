@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "types.h"
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -38,6 +39,11 @@ string OctalWord::asString()
 	}
 	ret = bit[5] + bit[4] + bit[3] + bit[2] + bit[1] + bit[0];
 	return ret;
+}
+
+void OctalWord::print()
+{
+	cout << (*this)[5].b << (*this)[4].b << (*this)[3].b << (*this)[2].b << (*this)[1].b << (*this)[0].b;
 }
 
 void OctalWord::updateBits()
