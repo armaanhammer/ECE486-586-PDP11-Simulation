@@ -984,10 +984,11 @@ OctalWord PDP11SimController::JSR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CLR(const OctalWord& src)
 {
-	status.N = false;
-	status.Z = true;
-	status.V = false;
-	status.C = false;
+	status.N = 0;
+	status.Z = 1;
+	status.V = 0;
+	status.C = 0;
+	
 	return OctalWord(0);
 }
 
@@ -1000,23 +1001,14 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::COM(const OctalWord& src)
 {
-	~src;  // do the thing
-	// N: set if most significant bit of result is set; cleared otherwise
-	OctalWord tempVal = 0100000;  // create mask, MSB = 16th bit
-	tempVal = tempVal & src;  // bitwise AND with src
-	if(tempVal == 0100000)  // test if MSB set
-		status.N = true;
-	else
-		status.N = false;
+	OctalWord tempDest = ~src;  // do the thing
 	
-	if(src == 0)  // Z: set if result is 0; cleared otherwise
-		status.Z = true;
-	else
-		status.Z = false;
-	
+	status.N = tempDest[0]; // N: set if most significant bit of result is set; cleared otherwise
+	status.Z = tempDest ? 0 : 1; // Z: set if result is 0; cleared otherwise
 	status.V = false;  // V: cleared
 	status.C = true;  // C: set
-	return src;
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1027,27 +1019,15 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
-	if(src == 077777)  // V: set if dest was 077777; cleared otherwise
-		status.V = true;
-	else
-		status.V = false;
+	OctalWord tempDest = src;
+	++tempDest; // do the thing
 	
-	src++;  // do the thing
+	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
+	status.V = (src == 077777) ? 1 : 0; // V: set if dest was 077777; cleared otherwise
+	// C: not affected
 	
-	// N: set if result < 0; cleared otherwise
-	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
-	OctalWord MSBtest = src & MSBmask; // bitwise AND with src
-	if(MSBtest == MSBmask)  // test if MSB set
-		status.N = true;
-	else
-		status.N = false;
-	
-	if(src == 0)  // Z: set if result is 0; cleared otherwise
-		status.Z = true;
-	else
-		status.Z = false;	
-	
-	return src;
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1058,27 +1038,15 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
-	if(src == 0100000)  // V: set if dest was 100000; cleared otherwise
-		status.V = true;
-	else
-		status.V = false;
+	OctalWord tempDest = src;
+	--tempDest; // do the thing
 	
-	--src;  // do the thing
-	
-	// N: set if result < 0; cleared otherwise
-	OctalWord MSBmask = 0100000;  // create mask, MSB = 16th bit
-	OctalWord MSBtest = src & MSBmask; // bitwise AND with src
-	if(MSBtest == MSBmask)  // test if MSB set
-		status.N = true;
-	else
-		status.N = false;
-	
-	if(src == 0)  // Z: set if result is 0; cleared otherwise
-		status.Z = true;
-	else
-		status.Z = false;	
-	
-	return src;
+	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
+	status.V = (src == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
+	// C: not affected
+
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
