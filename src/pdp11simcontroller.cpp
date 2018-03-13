@@ -62,7 +62,7 @@ void PDP11SimController::run()
 
 		if (pc.getVal().value % 2 != 0)
 		{
-			cerr << "pc is no longer word aligned\n";
+			cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print << "\n";
 		}
 
 		if (debugMemory) memory.print();
@@ -143,7 +143,7 @@ void PDP11SimController::loadProgram(string filename)
 
 				if (index % 2 != 0)
 				{
-					cerr << "PC has become unaligned. Now terminating execution.  current instruction was: " << ci.print;
+					cerr << "PC has become unaligned. Now terminating load.";
 				}
 			}
 		}
@@ -1101,6 +1101,7 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
 	++tempDest; // do the thing
 	
 	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
@@ -1121,6 +1122,7 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
 	--tempDest; // do the thing
 	
 	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
@@ -1219,6 +1221,17 @@ OctalWord PDP11SimController::TST(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROR(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest >>= 1;  // do the thing
+	tempDest[0] = tempSrc[BIT_WIDTH -1];  // rotate the bit shifted out
+	
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[BIT_WIDTH -1]; // C: loaded from low-order bit of the destination (interpreting as source instead)
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1229,6 +1242,17 @@ OctalWord PDP11SimController::ROR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROL(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest <<= 1;  // do the thing
+	tempDest[BIT_WIDTH -1] = tempSrc[0];  // rotate the bit shifted out
+
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[0]; // C: loaded from high-order bit of the destination
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1241,35 +1265,17 @@ OctalWord PDP11SimController::ROL(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASR(const OctalWord& src)
 {	
-	OctalWord tempMSB = 0100000;  // create mask, MSB = 16th bit
-	tempMSB = tempMSB & src;  // bitwise AND with src to capture state	
-	OctalWord tempLSB = 0000001;  // create mask, LSB = 1st bit
-	tempLSB = tempLSB & src;  // bitwise AND with src to capture state
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest >>= 1;  // do the thing
+	tempDest[0] = tempSrc[0];  // force sign extension to prevent ambiguity
 	
-	src >>= 1;  // shift right 1 bit
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[BIT_WIDTH -1]; // C: loaded from low-order bit of the destination (interpreting as source instead)
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
 	
-	// mitigate logical vs. arithmetic shift ambiguity
-	if(tempMSB == 0100000) // test if MSB was set in source
-		src = src | tempMSB; // if so, force MSB to be set in result
-	
-	if(tempMSB == 0100000) 	// N: set if the high-order bit of the result is set (result < 0); cleared otherwise
-		status.N = true;
-	else
-		status.N = false;
-	
-	if(src == 0) // Z: set if the result = 0; cleared otherwise
-		status.Z = true;
-	else
-		status.Z = false;
-	
-	if(tempLSB == 0000001) // C: loaded from low-order bit of the destination
-		status.C = true;
-	else
-		status.C = false;
-
-	//V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	status.V = status.N ^ status.C;  
-	return src;
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1280,6 +1286,16 @@ OctalWord PDP11SimController::ASR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASL(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest <<= 1;  // do the thing
+	
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[0]; // C: loaded from high-order bit of the destination
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
