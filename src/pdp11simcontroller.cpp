@@ -1122,7 +1122,8 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::COM(const OctalWord& src)
 {
-	OctalWord tempDest = ~src;  // do the thing
+	OctalWord tempDest = src;
+	~tempDest; // do the thing
 	
 	status.N = tempDest[0]; // N: set if most significant bit of result is set; cleared otherwise
 	status.Z = tempDest ? 0 : 1; // Z: set if result is 0; cleared otherwise
@@ -1141,11 +1142,12 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
 	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
 	++tempDest; // do the thing
 	
 	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
 	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
-	status.V = (src == 077777) ? 1 : 0; // V: set if dest was 077777; cleared otherwise
+	status.V = (tempSrc == 077777) ? 1 : 0; // V: set if dest was 077777; cleared otherwise
 	// C: not affected
 	
 	return tempDest;
@@ -1160,11 +1162,12 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
 	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
 	--tempDest; // do the thing
 	
 	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
 	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
-	status.V = (src == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
+	status.V = (tempSrc == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
 	// C: not affected
 
 	return tempDest;
@@ -1180,7 +1183,9 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
-	OctalWord tempDest = ~src;  // do the thing
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	-tempDest; // do the thing
 	
 	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
 	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
@@ -1189,7 +1194,7 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 
 	// premept potential two's compliment ambiguity for edge case:
 	// word 100000 (or byte 200) must be replaced by itself
-	return 	(src == 0100000) ? src : tempDest;
+	return 	(tempSrc == 0100000) ? tempSrc : tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1200,12 +1205,14 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADC(const OctalWord& src)
 {
-	OctalWord tempDest = src + status.C;  // do the thing
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest = tempDest + status.C;  // do the thing
 	
 	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
 	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
-	status.V = (src == 077777 && status.C == 1) ? 1 : 0; // V: set if dest was 077777 and (C) was 1; cleared otherwise
-	status.C = (src == 0177777 && status.C == 1) ? 1 : 0; // C: set if dest was 177777 and (C) was 1; cleared otherise
+	status.V = (tempSrc == 077777 && status.C == 1) ? 1 : 0; // V: set if dest was 077777 and (C) was 1; cleared otherwise
+	status.C = (tempSrc == 0177777 && status.C == 1) ? 1 : 0; // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
 	return tempDest;
 }
@@ -1218,12 +1225,14 @@ OctalWord PDP11SimController::ADC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SBC(const OctalWord& src)
 {
-	OctalWord tempDest = src - status.C;  // do the thing
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest = tempDest - status.C;  // do the thing
 	
 	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
 	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
-	status.V = (src == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
-	status.C = (src == 0177777 && status.C == 1) ? 0 : 1; // C: set if dest was 177777 and (C) was 1; cleared otherise
+	status.V = (tempSrc == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
+	status.C = (tempSrc == 0177777 && status.C == 1) ? 0 : 1; // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
 	return tempDest;
 }
@@ -1236,10 +1245,11 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::TST(const OctalWord& src)
 {
+	OctalWord tempSrc = src;
 	// do nothing
 	
-	status.N = (src < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (src == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
+	status.N = (tempSrc < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
+	status.Z = (tempSrc == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
 	status.V = 0; // V: cleared
 	status.C = 0; // C: cleared
 	
@@ -1254,6 +1264,17 @@ OctalWord PDP11SimController::TST(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROR(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest >>= 1;  // do the thing
+	tempDest[0] = tempSrc[BIT_WIDTH -1];  // rotate the bit shifted out
+	
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[BIT_WIDTH -1]; // C: loaded from low-order bit of the destination (interpreting as source instead)
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1264,6 +1285,17 @@ OctalWord PDP11SimController::ROR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ROL(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest <<= 1;  // do the thing
+	tempDest[BIT_WIDTH -1] = tempSrc[0];  // rotate the bit shifted out
+
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[0]; // C: loaded from high-order bit of the destination
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1276,35 +1308,17 @@ OctalWord PDP11SimController::ROL(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASR(const OctalWord& src)
 {	
-	OctalWord tempMSB = 0100000;  // create mask, MSB = 16th bit
-	tempMSB = tempMSB & src;  // bitwise AND with src to capture state	
-	OctalWord tempLSB = 0000001;  // create mask, LSB = 1st bit
-	tempLSB = tempLSB & src;  // bitwise AND with src to capture state
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest >>= 1;  // do the thing
+	tempDest[0] = tempSrc[0];  // force sign extension to prevent ambiguity
 	
-	src >>= 1;  // shift right 1 bit
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[BIT_WIDTH -1]; // C: loaded from low-order bit of the destination (interpreting as source instead)
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
 	
-	// mitigate logical vs. arithmetic shift ambiguity
-	if(tempMSB == 0100000) // test if MSB was set in source
-		src = src | tempMSB; // if so, force MSB to be set in result
-	
-	if(tempMSB == 0100000) 	// N: set if the high-order bit of the result is set (result < 0); cleared otherwise
-		status.N = true;
-	else
-		status.N = false;
-	
-	if(src == 0) // Z: set if the result = 0; cleared otherwise
-		status.Z = true;
-	else
-		status.Z = false;
-	
-	if(tempLSB == 0000001) // C: loaded from low-order bit of the destination
-		status.C = true;
-	else
-		status.C = false;
-
-	//V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	status.V = status.N ^ status.C;  
-	return src;
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1315,6 +1329,16 @@ OctalWord PDP11SimController::ASR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASL(const OctalWord& src)
 {
+	OctalWord tempDest = src;
+	OctalWord tempSrc = src;
+	tempDest <<= 1;  // do the thing
+	
+	status.N = tempDest[0]; // N: set if the high-order bit of the result is set (result < 0); cleared otherwise
+	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if the result = 0; cleared otherwise
+	status.C = tempSrc[0]; // C: loaded from high-order bit of the destination
+	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
+	
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
