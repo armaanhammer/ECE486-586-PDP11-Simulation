@@ -224,7 +224,7 @@ void PDP11SimController::JSR(OctalWord src)
 	unsigned int regNum = src[2].b;
 	unsigned int destNum = src[0].b;
 	unsigned int destAddressMode = src[0].b;
-	OctalWord temp = (*(AM[destAddressMode])(r[destNum].getVal());
+	//OctalWord temp = (*(AM[destAddressMode])(r[destNum].getVal());
 }
 
 ///operation: PC = reg
