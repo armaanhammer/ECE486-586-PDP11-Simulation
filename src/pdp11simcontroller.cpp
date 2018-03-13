@@ -4,6 +4,9 @@
 #include "pdp11simcontroller.h"
 #include "register.h"
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -12,7 +15,7 @@ using namespace std;
 /// Constructor Function
 ///-----------------------------------------------
 PDP11SimController::PDP11SimController()
-{	
+{
 	//Initialize the PDP11SimController class
 	instructionCount = 0;
 	createAddressingModeTable();
@@ -20,7 +23,18 @@ PDP11SimController::PDP11SimController()
 	createDoubleOpTable();
 	createPSWITable();
 	createSingleOpTable();
+	createEDOITable();
 	ci = OctalWord(0);
+	memory = Memory();
+	for (int i = 0; i < NUMGENERALREGISTERS; i++)
+	{
+		r[i] = Register();
+	}
+	status = StatusRegister();
+	sp = Register();
+	pc = Register();
+	debugMemory = debugMem;
+	debugRegisters = debugReg;
 }
 
 ///-----------------------------------------------
@@ -28,6 +42,12 @@ PDP11SimController::PDP11SimController()
 ///-----------------------------------------------
 PDP11SimController::~PDP11SimController()
 {
+	delete SO;
+	delete DO;
+	delete BI;
+	delete PSWI;
+	delete AM;
+	delete EDO;
 }
 #pragma endregion
 
@@ -39,15 +59,110 @@ void PDP11SimController::run()
 		decode();
 		(*execute)(ci);
 		pc.setval(pc.getVal() + 2);
+
+		if (pc.getVal().value % 2 != 0)
+		{
+			cerr << "pc is no longer word aligned\n";
+		}
+
+		if (debugMemory) memory.print();
+		if (debugRegisters) printRegs();
 	}
+}
+
+void PDP11SimController::printRegs()
+{
+	cout << "register contents\n"
+		<< "  reg  |   value\n";
+	cout << "   0   |  "; r[0].print(); cout << endl;
+	cout << "   1   |  "; r[1].print(); cout << endl;
+	cout << "   2   |  "; r[2].print(); cout << endl;
+	cout << "   3   |  "; r[3].print(); cout << endl;
+	cout << "   4   |  "; r[4].print(); cout << endl;
+	cout << "   5   |  "; r[5].print(); cout << endl;
+	cout << "   6   |  "; r[6].print(); cout << endl;
+	cout << "   7   |  "; r[7].print(); cout << endl;
+	cout << "   sp  |  "; sp.print(); cout << endl;
+	cout << "   pc  |  "; pc.print(); cout << endl;
 }
 
 void PDP11SimController::loadProgram()
 {
+	ifstream file;
+	string line;
+	int index = 0;
+	char* c_string;		// used as an intermediate for converting string to octal
+	bool startAddressFound = false;
+
+	try
+	{
+		if (debugMemory || debugRegisters) cout << "Opening file\n";
+		file.open(filename);
+		if (file.is_open())
+		{
+			if (debugMemory || debugRegisters) cout << filename << " was opened successfully\n";
+
+			while (getline(file, line))
+			{
+				strcpy(c_string, line.c_str());
+				int b[6] = {
+					(c_string[1] - '0'),
+					(c_string[2] - '0'),
+					(c_string[3] - '0'),
+					(c_string[4] - '0'),
+					(c_string[5] - '0'),
+					(c_string[6] - '0')
+				};
+				int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
+
+				switch (c_string[0])
+				{
+				case '@':
+					// change index
+					index = num;
+					if (!startAddressFound)
+					{
+						// set pc address
+						startAddressFound = true;
+						pc.setval(OctalWord(num));
+					}
+					break;
+				case '-':
+					// call setword at 2*i, isInstruction, touched
+					memory.setWord(OctalWord(index), OctalWord(num), true, true);
+					break;
+				case '*':
+					// set pc address
+					startAddressFound = true;
+					pc.setval(OctalWord(num));
+					continue;
+				}
+
+				// incrememt the index
+				index += 2;
+
+				if (index % 2 != 0)
+				{
+					// ERROR!!!!
+				}
+			}
+		}
+	}
+	catch (exception e)
+	{
+		cout << e.what() << "\n\n";
+	}
+	file.close();
+
+	for (index; index < MEMORYLENGTH; index += 2)
+	{
+		memory.setWord(OctalWord(index), OctalWord(0));
+	}
 }
 
 void PDP11SimController::fetch()
 {
+	ci = pc.getVal();
 }
 
 #pragma region TABLE
@@ -57,6 +172,7 @@ void PDP11SimController::fetch()
 //Create a table of single operation instructions
 void PDP11SimController::createSingleOpTable()
 {
+	SO = new Table<int, OneParamFunc>();
 	SO->add(JSR_OPCODE, this->JSR);
 	SO->add(CLR_OPCODE, this->CLR);
 	SO->add(COM_OPCODE, this->COM);
@@ -77,6 +193,7 @@ void PDP11SimController::createSingleOpTable()
 //Create a table of double operation instructions
 void PDP11SimController::createDoubleOpTable()
 {
+	DO = new Table<int, TwoParamFunc>();
 	DO->add(MOV_OPCODE, this->MOV);
 	DO->add(CMP_OPCODE, this->CMP);
 	DO->add(BIT_OPCODE, this->BIT);
@@ -90,6 +207,7 @@ void PDP11SimController::createDoubleOpTable()
 //Create a table for addressing modes
 void PDP11SimController::createAddressingModeTable()
 {
+	AM = new Table<int, AddressModeFunc>();
 	AM->add(REGISTER_CODE, this->REGISTER);
 	AM->add(REGISTER_CODE, this->REGISTER_DEFERRED);
 	AM->add(REGISTER_CODE, this->AUTOINC);
@@ -104,6 +222,7 @@ void PDP11SimController::createAddressingModeTable()
 //Create a table for the branch instructions
 void PDP11SimController::createBranchTable()
 {
+	BI = new Table<int, OneParamFunc>();
 	BI->add(BR_OPCODE, this->BR);
 	BI->add(BNE_OPCODE, this->BNE);
 	BI->add(BEQ_OPCODE, this->BEQ);
@@ -126,6 +245,7 @@ void PDP11SimController::createBranchTable()
 
 void PDP11SimController::createPSWITable()
 {
+	PSWI = new Table<int, NoParamFunc>();
 	PSWI->add(SPL_OPCODE, this->SPL);
 	PSWI->add(CLC_OPCODE, this->CLC);
 	PSWI->add(CLV_OPCODE, this->CLV);
@@ -143,6 +263,7 @@ void PDP11SimController::createPSWITable()
 //Create a table for the extended double operation instructions
 void PDP11SimController::createEDOITable()
 {
+	EDO = new Table<int, NoParamFunc>();
 	EDO->add(MUL_OPCODE, this->MUL);
 	EDO->add(DIV_OPCODE, this->DIV);
 	EDO->add(ASH_OPCODE, this->ASH);
