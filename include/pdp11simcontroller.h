@@ -13,13 +13,14 @@
 class PDP11SimController 
 {
 public:
-	PDP11SimController();
+	PDP11SimController(bool debugMem, bool debugReg);
 	~PDP11SimController();
 	void run();
-	void loadProgram(std::string lines[], int count);
+	void loadProgram(std::string filename);
 	void fetch();
 	bool decode();
 	int getInstructionCount();
+	void printRegs();
 
 private:
 //processor status word instructions
@@ -150,7 +151,8 @@ private:
 	StatusRegister status; //Status register
 	Memory memory; //Memory array
 	int instructionCount;
-
+	bool debugMemory;
+	bool debugRegisters;
 	Table<int, AddressModeFunc>* AM;
 	OctalWord ci;
 	executeFunction execute;

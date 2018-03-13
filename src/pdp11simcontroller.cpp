@@ -14,7 +14,7 @@ using namespace std;
 ///-----------------------------------------------
 /// Constructor Function
 ///-----------------------------------------------
-PDP11SimController::PDP11SimController()
+PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 {
 	//Initialize the PDP11SimController class
 	instructionCount = 0;
@@ -86,7 +86,7 @@ void PDP11SimController::printRegs()
 	cout << "   pc  |  "; pc.print(); cout << endl;
 }
 
-void PDP11SimController::loadProgram()
+void PDP11SimController::loadProgram(string filename)
 {
 	ifstream file;
 	string line;
@@ -799,14 +799,16 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 
 	//Obtain the most significant bit of the result
 	OctalBit mostSignificant = tempSrc[5];
-	
+
 	//Check if the result is negative and if true set the N bit
 	if (mostSignificant.operator==(1)) SEN();
 	//Otherwise clear the N bit
 	else CLN();
 
+	(tempSrc[5] == 1) ? SEN(): CLN();
+
 	//Check if the source is equal to zero and if true set the Z bit
-	if (tempSrc.operator==(zero)) SEZ();
+	if (tempSrc == 0) SEZ();
 	//Otherwise clear the Z bit
 	else CLZ();
 
@@ -842,15 +844,11 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 	OctalBit mostSignificantS = tempSrc[5];
 	OctalBit mostSignificantD = tempDest[5];
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificantR.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 
 	//Check if the operand signs are not equal
 	if (mostSignificantS.operator!=(mostSignificantD))
@@ -879,26 +877,16 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
-	const OctalWord zero(0);
-
 	//And the destination and the source
-	result = tempDest.operator&(tempSrc);
+	OctalWord result = tempSrc & tempDest;
 
-	//Obtain the most significant bit of the result
-	OctalBit mostSignificant = result[5];
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificant.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
-
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 
 	//Clear the V bit
 	CLV();
@@ -916,27 +904,16 @@ OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempSrc = src;
 	OctalWord tempDest = dest;
-	const OctalWord zero(0);
-
 	//Negate the source then and with the desination
-	result = tempSrc.operator~();
-	result = result.operator&(tempDest);
+	OctalWord result = ~tempSrc & tempDest;
 
-	//Obtain the most significant bit of the result
-	OctalBit mostSignificant = result[5];
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificant.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
-
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 	
 	//Clear the V bit
 	CLV();
@@ -954,26 +931,16 @@ OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
-	const OctalWord zero(0);
-
 	//Or the source and destination together
-	result = tempSrc.operator|(tempDest);
+	OctalWord result = tempSrc | tempDest;
 
-	//Obtain the most significant bit of the result
-	OctalBit mostSignificant = result[5];
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificant.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
-
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 	
 	//Clear the V bit
 	CLV();
@@ -991,36 +958,28 @@ OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
-	const OctalWord zero(0);
-
 	//Add the source and destination together
-	result = tempSrc.operator+(tempDest);
+	OctalWord result = tempSrc + tempDest;
 
-	//Obtain the most significant bit of the result, destination, and source
-	OctalBit mostSignificantR = result[5];
-	OctalBit mostSignificantS = tempSrc[5];
-	OctalBit mostSignificantD = tempDest[5];
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() :CLN();
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificantR.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result == 0) ? SEZ() : CLZ();
 
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
-
-	//Check if the operand signs are equal
-	if (mostSignificantS.operator==(mostSignificantD))
+	//Check if the operand signs are not equal
+	if (tempSrc[5] != tempDest[5])
 	{
 		//Check if arithmetic overflow occured and if true set the V bit
-		if (mostSignificantS.operator!=(mostSignificantR)) SEV();
+		if (tempSrc[5] != result[5]) SEV();
 		//Otherwise clear the V bit
 		else CLV();
+	}
+	else
+	{
+		CLV();
 	}
 
 	//Check for carry from the most-significant bit of the result and if true set the C bit
@@ -1044,33 +1003,32 @@ OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 	OctalWord result;
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
-	const OctalWord zero(0);
 
 	//Add the source and destination together
-	result = tempSrc.operator-(tempDest);
+	result = tempSrc - tempDest;
 
 	//Obtain the most significant bit of the result, destination, and source
 	OctalBit mostSignificantR = result[5];
 	OctalBit mostSignificantS = tempSrc[5];
 	OctalBit mostSignificantD = tempDest[5];
 
-	//Check if the result is negative and if true set the N bit
-	if (mostSignificantR.operator==(1)) SEN();
-	//Otherwise clear the N bit
-	else CLN();
+	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
+	(result < 0) ? SEN() : CLN();
 
-	//Check if the source is equal to zero and if true set the Z bit
-	if (result.operator==(zero)) SEZ();
-	//Otherwise clear the Z bit
-	else CLZ();
+	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
+	(result==0) ? SEZ() : CLZ();
 
 	//Check if the operand signs are not equal
-	if (mostSignificantS.operator!=(mostSignificantD))
+	if (tempSrc[5] != tempDest[5])
 	{
 		//Check if arithmetic overflow occured and if true set the V bit
-		if (mostSignificantS.operator==(mostSignificantR)) SEV();
+		if (tempSrc[5] != result[5]) SEV();
 		//Otherwise clear the V bit
 		else CLV();
+	}
+	else
+	{
+		CLV();
 	}
 
 	//Check for carry from the most-significant bit of the result and if true set the C bit
@@ -1105,10 +1063,10 @@ OctalWord PDP11SimController::JSR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::CLR(const OctalWord& src)
 {
-	status.N = 0;
-	status.Z = 1;
-	status.V = 0;
-	status.C = 0;
+	CLN();
+	SEZ();
+	CLV();
+	CLC();
 	
 	return OctalWord(0);
 }
@@ -1122,12 +1080,13 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::COM(const OctalWord& src)
 {
-	OctalWord tempDest = ~src;  // do the thing
+	OctalWord tempDest = src;  // do the thing
+	tempDest = ~tempDest;
 	
-	status.N = tempDest[0]; // N: set if most significant bit of result is set; cleared otherwise
-	status.Z = tempDest ? 0 : 1; // Z: set if result is 0; cleared otherwise
-	status.V = false;  // V: cleared
-	status.C = true;  // C: set
+	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	CLV();  // V: cleared
+	CLC();  // C: set
 	
 	return tempDest;
 }
@@ -1140,12 +1099,13 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
+	OctalWord ts = src;
 	OctalWord tempDest = src;
 	++tempDest; // do the thing
 	
-	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
-	status.V = (src == 077777) ? 1 : 0; // V: set if dest was 077777; cleared otherwise
+	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	(ts == 077777) ? SEV() : CLV(); // V: set if dest was 077777; cleared otherwise
 	// C: not affected
 	
 	return tempDest;
@@ -1159,12 +1119,13 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
+	OctalWord ts = src;
 	OctalWord tempDest = src;
 	--tempDest; // do the thing
 	
-	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
-	status.V = (src == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
+	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
 	// C: not affected
 
 	return tempDest;
@@ -1180,16 +1141,17 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
-	OctalWord tempDest = ~src;  // do the thing
+	OctalWord ts = src;
+	OctalWord tempDest = -ts;  // do the thing
 	
-	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result is 0; cleared otherwise
-	status.V = (tempDest == 0100000) ? 1 : 0; // V: set if result is 100000; cleared otherwise
-	status.C = (tempDest == 0) ? 0 : 1; // C: cleared if the result is 0; set otherwise
+	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
+	(tempDest == 0) ? CLC() : SEC();
 
 	// premept potential two's compliment ambiguity for edge case:
 	// word 100000 (or byte 200) must be replaced by itself
-	return 	(src == 0100000) ? src : tempDest;
+	return 	(ts == 0100000) ? src : tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1200,12 +1162,13 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ADC(const OctalWord& src)
 {
-	OctalWord tempDest = src + status.C;  // do the thing
+	OctalWord ts = src;
+	OctalWord tempDest = ts + status.C;  // do the thing
 	
-	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
-	status.V = (src == 077777 && status.C == 1) ? 1 : 0; // V: set if dest was 077777 and (C) was 1; cleared otherwise
-	status.C = (src == 0177777 && status.C == 1) ? 1 : 0; // C: set if dest was 177777 and (C) was 1; cleared otherise
+	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	(ts == 077777 && status.C == 1) ? SEV() : CLV(); // V: set if dest was 077777 and (C) was 1; cleared otherwise
+	(ts == 0177777 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
 	return tempDest;
 }
@@ -1218,12 +1181,13 @@ OctalWord PDP11SimController::ADC(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SBC(const OctalWord& src)
 {
-	OctalWord tempDest = src - status.C;  // do the thing
+	OctalWord ts = src;
+	OctalWord tempDest = ts - status.C;  // do the thing
 	
-	status.N = (tempDest < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (tempDest == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
-	status.V = (src == 0100000) ? 1 : 0; // V: set if dest was 100000; cleared otherwise
-	status.C = (src == 0177777 && status.C == 1) ? 0 : 1; // C: set if dest was 177777 and (C) was 1; cleared otherise
+	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
+	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
+	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
+	(ts == 0 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
 	return tempDest;
 }
@@ -1237,11 +1201,12 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 OctalWord PDP11SimController::TST(const OctalWord& src)
 {
 	// do nothing
+	OctalWord test = src;
 	
-	status.N = (src < 0) ? 1 : 0; // N: set if result < 0; cleared otherwise
-	status.Z = (src == 0) ? 1 : 0; // Z: set if result = 0; cleared otherwise
-	status.V = 0; // V: cleared
-	status.C = 0; // C: cleared
+	(test < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
+	(test == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
+	CLV(); // V: cleared
+	CLC(); // C: cleared
 	
 	return src;
 }
@@ -1597,41 +1562,41 @@ OctalWord PDP11SimController::BCS(const OctalWord& src)
 ///----------------------------------
 OctalWord PDP11SimController::MUL()
 {
-	cout << "a MUL instruction was detected\n";
+	cout << "a MUL instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::DIV()
 {
-	cout << "a DIV instruction was detected\n";
+	cout << "a DIV instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::ASH()
 {
-	cout << "a ASH instruction was detected\n";
+	cout << "a ASH instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::ASHC()
 {
-	cout << "a ASHC instruction was detected\n";
+	cout << "a ASHC instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::XOR()
 {
-	cout << "a XOR instruction was detected\n";
+	cout << "a XOR instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::FPO()
 {
-	cout << "a floating point instruction was detected\n";
+	cout << "a floating point instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::SYSINSTRUCTION()
 {
-	cout << "a system instruction was detected\n";
+	cout << "a system instruction was detected and skipped\n";
 }
 
 OctalWord PDP11SimController::SOB()
 {
-	cout << "a SOB instruction was detected\n";
+	cout << "a SOB instruction was detected and skipped\n";
 }
 #pragma endregion
