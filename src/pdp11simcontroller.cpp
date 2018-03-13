@@ -795,19 +795,19 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 {
 	//Declare octalword variables
-	OctalWord tempSrc = src;
+	OctalWord tempDest = src;
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(tempDest < 0) ? SEN() :CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
-	(result == 0) ? SEZ() : CLZ();
+	(tempDest == 0) ? SEZ() : CLZ();
 
 	//Clear the V bit
 	CLV();
 
 	//Return the source
-	return src;
+	return tempDest;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -822,13 +822,8 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
 
-	what??? why add one?
 	//Negate the destination, then add one, and add the result to source
-	OctalWord result;
-
-	result = tempDest.operator~();
-	result = result.operator+(1);
-	result = tempSrc.operator-(result);
+	OctalWord result = tempSrc + ((~tempDest) + 1);
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
 	(result < 0) ? SEN() :CLN();
@@ -837,12 +832,16 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 	(result == 0) ? SEZ() : CLZ();
 
 	//Check if the operand signs are not equal
-	if (mostSignificantS.operator!=(mostSignificantD))
+	if (tempSrc[5] != tempDest[5])
 	{
 		//Check if arithmetic overflow occured and if true set the V bit
-		if (mostSignificantD.operator==(mostSignificantR)) SEV();
+		if (tempDest[5] == result[5]) SEV();
 		//Otherwise clear the V bit
 		else CLV();
+	}
+	else 
+	{
+		CLV();
 	}
 
 	//Check for carry from the most-significant bit of the result and if true set the C bit
