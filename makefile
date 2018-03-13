@@ -16,4 +16,4 @@ PDPSim: pdp11simcontroller.cpp memory.cpp register.cpp table.cpp list.cpp octalw
 .PHONY: clean
 
 clean:
-	rm -f CacheSim.o
+	rm -f pdp11simcontroller.o
