@@ -46,6 +46,17 @@ void OctalWord::print()
 	cout << (*this)[5].b << (*this)[4].b << (*this)[3].b << (*this)[2].b << (*this)[1].b << (*this)[0].b;
 }
 
+string OctalWord::print(bool)
+{
+	char bits[6] = {'n', 'n', 'n', 'n', 'n', 'n'};
+	for (int i = 0; i < 6; i++) 
+	{
+		bits[i] = (*this)[i].b - '0';
+	}
+	string ret = string(bits);
+	return ret;
+}
+
 void OctalWord::updateBits()
 {
 	for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
