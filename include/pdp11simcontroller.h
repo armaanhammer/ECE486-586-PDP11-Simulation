@@ -41,6 +41,7 @@ private:
 //Single operation instructions
 #pragma region SOI
 	OctalWord JSR(const OctalWord& src);
+	void RTS(OctalWord src);
 	OctalWord CLR(const OctalWord& src);
 	OctalWord COM(const OctalWord& src);
 	OctalWord INC(const OctalWord& src);

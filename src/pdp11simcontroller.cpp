@@ -56,18 +56,21 @@ void PDP11SimController::run()
 	while(ci != HALT_OPCODE)
 	{
 		fetch();
-		decode();
-		(*execute)(ci);
-		pc.setval(pc.getVal() + 2);
-
-		if (pc.getVal().value % 2 != 0)
+		if (ci != NOP_OPCODE) 
 		{
-			cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print << "\n";
-		}
+			decode();
+			(*execute)(ci);
+			pc.setval(pc.getVal() + 2);
 
-		if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
-		if (debugMemory) memory.print();
-		if (debugRegisters) printRegs();
+			if (pc.getVal().value % 2 != 0)
+			{
+				cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print << "\n";
+			}
+
+			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
+			if (debugMemory) memory.print();
+			if (debugRegisters) printRegs();
+		}
 	}
 }
 
@@ -164,6 +167,17 @@ void PDP11SimController::loadProgram(string filename)
 void PDP11SimController::fetch()
 {
 	ci = pc.getVal();
+}
+
+///operation: PC = reg
+///			  reg = (SP)+
+///condition codes: Unaffected
+///Loads the contents of reg into PC and pops the top element of the processor stack into the specified register. 
+///Return from a non-reentrant subroutine is typically made through the same register that was used in its call. 
+///Thus, a subroutine called with a JSR PC,dest exits with a RTS PC and a subroutine called with a JSR R5,dest 
+///may retrieve parameters with addressing modes (R5)+, X(R5), or @X(R5), and finally exits with an RTS R5.
+void PDP11SimController::RTS(OctalWord src)
+{
 }
 
 #pragma region TABLE
@@ -287,6 +301,11 @@ bool PDP11SimController::decode()
 	if (ci > MAX_OCTAL_VALUE) 
 	{ 
 		return false; 
+	}
+	if (ci[5] == 0 && ci[4] == 0 && ci[3] == 0 && ci[2] == 2 && ci[1] == 0)
+	{
+		execute = this->RTS;
+		return true;
 	}
 	// check to see if op is PSWI, if true exec op
 	if (checkForPSW(ci[3], ci[4], ci[5]))
@@ -1029,7 +1048,46 @@ OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
 //Function: JSR insturction (Single Operand Instruction)
 //Input: (OctalWord) source register
 //Output: (OctalWord) Octal result of operation
-//Description: 
+//Operation: temp = dest (temp is an internal processor register)
+//			 -(SP) = reg (push reg contents onto processor stack)
+//			 reg = PC (PC holds location following JSR; this address now put in reg)
+//			 PC = temp (PC now points to subroutine address)
+//Condition Codes: Unaffected
+//Description: In execution of the JSR, the old contents of the specified register (the "Linkage Register") 
+//				are automatically pushed onto the processor stack and new linkage information placed in the 
+//				register. Thus subroutines nested within subroutines to any depth may all be called with the 
+//				same linkage register. There is no need either to plan the maximum depth at which any 
+//				particular subroutine will be called or to include instructions in each routine to save and 
+//				restore the linkage pointer. Further, since all linkages are saved in a reentrant manner on 
+//				the processor stack, execution of a subroutine reentered and executed by an interrupt service 
+//				routine. Execution of the initial subroutine can then be resumed when other requests are 
+//				satisfied. This process (called nesting) can proceed to any level.
+//
+//				In both JSR and JMP instructions the destination address is used to load the program counter, 
+//				R7. Thus for example a JSR in destination mode 1 for general register R1 (where (R1) = 100), 
+//				will access a subroutine at location 100. This is effectively one level less of deferral 
+//				than operate instructions such as ADD.
+//
+//				In the PDP-11/60, a JSR using addressing mode 0 will result in an "illegal" instruction and a 
+//				trap through the trap vector address 4.
+//
+//				A subroutine called with a JSR reg,dest instruction can access the arguments following the 
+//				call with either autoincrement addressing, (reg) +, (if arguments are accessed sequentially)
+//				or by indexed addressing, X(reg), (if accessed in random order). These addressing modes may 
+//				also be deferred, @(reg) + and @X(reg) if the parameters are operand addresses rather than the
+//				operand themselves.
+//
+//				JSR PC,dest is a special case of the PDP-11 subroutine call suitable for subroutine calls that 
+//				transmit parameters through the general registers or on the system stack. The SP and the PC 
+//				are the only registers that may be modified by this call.
+//
+//				Another special case of the JSR instruction is JSR PC,@(SP) + which exchanges the top element 
+//				of the processor stack and the contents of the program counter. Use of this instruction allows 
+//				two routines to swap program control and resume operation when recalled where they left off. 
+//				Such routines are called "co-routines."
+//
+//				Return from a subroutine is done by the RTS instruction. RTS reg loads the contents of reg into 
+//				the PC and pops the top element of the processor stack into the specified register.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::JSR(const OctalWord& src)
 {

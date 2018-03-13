@@ -5,6 +5,7 @@
 
 #define HALT_OPCODE 0000000
 #define NOP_OPCODE 000240
+#define RETURN_FROM_SUBROUTINE_OPCODE 00020
 
 // Processor Status Word Instructions Opcodes
 #define SPL_OPCODE 000230
