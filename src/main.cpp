@@ -96,9 +96,11 @@ int main(int argc, char* argv[])
 	}
 
 	pdp->loadProgram(filename);
+	pdp->run();
 
 	while (1)
 	{
+		cout << endl << endl;
 		if (debugMem || debugReg)
 		{
 			cout << endl;
@@ -113,8 +115,9 @@ int main(int argc, char* argv[])
 			pdp = new PDP11SimController(debugMem, debugReg);
 			cout << "please enter a new file name: ";
 			cin >> filename;
-			cout << endl;
+			cout << endl << endl;
 			pdp->loadProgram(filename);
+			pdp->run();
 		}
 	}
 

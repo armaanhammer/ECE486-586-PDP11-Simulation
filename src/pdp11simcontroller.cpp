@@ -65,6 +65,7 @@ void PDP11SimController::run()
 			cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print << "\n";
 		}
 
+		if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
 		if (debugMemory) memory.print();
 		if (debugRegisters) printRegs();
 	}
