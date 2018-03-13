@@ -143,7 +143,7 @@ void PDP11SimController::loadProgram(string filename)
 
 				if (index % 2 != 0)
 				{
-					// ERROR!!!!
+					cerr << "PC has become unaligned. Now terminating execution.  current instruction was: " << ci.print;
 				}
 			}
 		}
