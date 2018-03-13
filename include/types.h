@@ -40,6 +40,18 @@ typedef struct StatusRegister
 		}
 		return *this;
 	};
+
+	void print()
+	{
+		cout << "processor status word\n"
+			<< " bit | value\n"
+			<< "  I  |   " << I << "\n"
+			<< "  T  |   " << T << "\n"
+			<< "  N  |   " << N << "\n"
+			<< "  Z  |   " << Z << "\n"
+			<< "  V  |   " << V << "\n"
+			<< "  C  |   " << C << "\n";
+	}
 };
 
 typedef struct Bit

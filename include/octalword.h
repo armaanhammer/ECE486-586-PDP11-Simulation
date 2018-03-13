@@ -14,6 +14,7 @@ public:
 	OctalWord(int val);
 	~OctalWord();
 	std::string asString();
+	void print();
 
 	// public member variables
 	OctalBit octbit[6];
