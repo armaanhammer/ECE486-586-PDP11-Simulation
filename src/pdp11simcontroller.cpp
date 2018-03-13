@@ -32,6 +32,7 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	}
 	status = StatusRegister();
 	sp = Register();
+	sp.setval(OctalWord(STACK_STARTING_ADDRESS));
 	pc = Register();
 	debugMemory = debugMem;
 	debugRegisters = debugReg;
