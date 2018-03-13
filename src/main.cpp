@@ -20,12 +20,12 @@ bool checkFlags(char* arg, string flag);
 
 int main(int argc, char* argv[])
 {
-	PDP11SimController* pdp = new PDP11SimController();
-	string line;
 	ifstream file;
 	bool debugMem = false;
 	bool debugReg = false;
 	int count = 0;
+	string filename;
+	int fileargnum = -1;
 
 	// determine operation ie is debug mode or verbose mode etc
 	// easy to use:
@@ -43,61 +43,80 @@ int main(int argc, char* argv[])
 	*******************************************************************/
 	if (!debugReg && ! debugMem)
 	{
+		char choice;
 		// ask for debug modes
-	}
-	if (argc <= 1)
-	{
-		// ask for a file
-	}
-	
-	if (debugMem || debugReg) cout << "Opening file\n";
-
-	try
-	{
-		file.open(argv[1]);
-		if (file.is_open())
+		cout << "no debug flags set would you like to set them?\n"
+			<< " < 1: debug memory\n"
+			<< " < 2: debug register\n"
+			<< " < 3: both\n";
+		cin >> choice;
+		switch (choice)
 		{
-			if (debugMem || debugReg) cout << argv[1] << " was opened successfully\n";
-
-			while (getline(file, line))
-			{
-				istringstream iss(line);
-				unsigned int instruction, address;
-				
-				// error handling section
-				if (!(iss >> instruction))
-				{
-					cerr << "failed to read instruction code at line: " << count << endl << endl;
-					continue;
-				}
-				else if (instruction < 0 || instruction > 4 && instruction < 8 || instruction > 9)
-				{
-					cerr << "not actual code, skipping instruction code and address at line: " << count << endl << endl;
-					continue;
-				}
-				else if ((instruction != 9 || instruction != 8) && !(iss >> hex >> address))
-				{
-					cerr << "ignoring address after instruction code: " << instruction << ", THIS IS NOT AN ACTUAL ERROR\n\n";
-				}
-
-				if (verbose)
-				{
-					cout << endl;
-					char next = getchar();
-					if (next == 'Q' || next == 'q' || next == '')
-					{
-						cout << "Now terminating simulation\n\n";
-						break;
-					}
-				}
-			}
+		case '1':
+			debugMem = true;
+			break;
+		case '2':
+			debugReg = true;
+			break;
+		case '3':
+			debugMem = true;
+			debugReg = true;
+			break;
+		default:
+			break;
 		}
 	}
-	catch (exception e)
+	PDP11SimController* pdp = new PDP11SimController(debugMem, debugReg);
+
+	for (int i = 1; i < argc; i++)
 	{
-		cout << e.what() << "\n\n";
+		try
+		{
+			file.open(argv[1]);
+			if (file.is_open()) 
+			{
+				fileargnum = i;
+				break;
+			}
+		}
+		catch (exception e)
+		{
+			cout << e.what() << "\n\n";
+		}
 	}
-	file.close();
+	
+	if (fileargnum == -1)
+	{
+		cout << "a file path to a program to run was missing from the command line arguments\n";
+		cin >> filename;
+	}
+	else
+	{
+		filename = string(argv[fileargnum]);
+	}
+
+	pdp->loadProgram(filename);
+
+	while (1)
+	{
+		if (debugMem || debugReg)
+		{
+			cout << endl;
+			cout << "would you like to load another program?\n";
+			char next = getchar();
+			if (next == 'Q' || next == 'q' || next == '')
+			{
+				cout << "Now terminating simulation\n\n";
+				break;
+			}
+			delete pdp;
+			pdp = new PDP11SimController(debugMem, debugReg);
+			cout << "please enter a new file name: ";
+			cin >> filename;
+			cout << endl;
+			pdp->loadProgram(filename);
+		}
+	}
 
 	int instructioncount = pdp->getInstructionCount();
 	
