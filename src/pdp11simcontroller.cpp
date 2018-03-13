@@ -221,6 +221,10 @@ void PDP11SimController::fetch()
 //----------------------------------------------------------------------------------------------------
 void PDP11SimController::JSR(OctalWord src)
 {
+	unsigned int regNum = src[2].b;
+	unsigned int destNum = src[0].b;
+	unsigned int destAddressMode = src[0].b;
+	OctalWord temp = (*(AM[destAddressMode])(r[destNum].getVal());
 }
 
 ///operation: PC = reg
@@ -1356,7 +1360,7 @@ OctalWord PDP11SimController::ASL(const OctalWord& src)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SXT(const OctalWord& src)
 {
-	OctalWord tempDest = (status.N == 0) ? OctalWord(-1) : OctalWord(0);  // do the thing
+	OctalWord tempDest = (status.N == 0) ? OctalWord(0) : OctalWord(-1);  // do the thing
 	
 	// N: unaffected
 	status.Z = !status.N; // Z: set if N bit clear
