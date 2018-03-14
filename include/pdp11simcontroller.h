@@ -18,6 +18,7 @@ public:
 	bool decode();
 	int getInstructionCount();
 	void printRegs();
+	void printMem();
 
 private:
 #pragma region TYPES
