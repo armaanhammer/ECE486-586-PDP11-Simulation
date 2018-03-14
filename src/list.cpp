@@ -2,7 +2,7 @@
 
 template<class T> List<T>::List()
 {
-	this->item = NULL;
+	this->item = 0;
 	next = 0;
 	size = 0;
 }
@@ -17,7 +17,7 @@ template<class T> List<T>::List(T item)
 template<class T> List<T>::List(T item, List<T>* p)
 {
 	this->item = item;
-	next = null;
+	next = 0;
 	size = 1 + p->size;
 	List<T>* temp = this;
 

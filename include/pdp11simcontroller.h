@@ -139,7 +139,7 @@ private:
 
 #pragma region TYPES
 	typedef void(*NoParamFunc)();
-	typedef void(*executeFunction)(const OctalWord&);
+	typedef void(*executeFunction)(OctalWord);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
 	typedef OctalWord(*AddressModeFunc)(const OctalWord&, const int);

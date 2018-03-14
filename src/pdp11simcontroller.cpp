@@ -1618,7 +1618,7 @@ OctalWord PDP11SimController::BCC(const OctalWord& src)
    It is used to test for a carry in the result of a previous operation.
    1 000 011 1xx xxx xxx BCS
    PC = PC + (2 * offset) if C = 1 */
-static OctalWord PDP11SimController::BCS(const OctalWord& src)
+OctalWord PDP11SimController::BCS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 
@@ -1636,49 +1636,49 @@ static OctalWord PDP11SimController::BCS(const OctalWord& src)
 ///----------------------------------
 /// Extended Double Operand Instruction Functions
 ///----------------------------------
-static OctalWord PDP11SimController::MUL()
+OctalWord PDP11SimController::MUL()
 {
 	cout << "a MUL instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::DIV()
+OctalWord PDP11SimController::DIV()
 {
 	cout << "a DIV instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::ASH()
+OctalWord PDP11SimController::ASH()
 {
 	cout << "a ASH instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::ASHC()
+OctalWord PDP11SimController::ASHC()
 {
 	cout << "a ASHC instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::XOR()
+OctalWord PDP11SimController::XOR()
 {
 	cout << "a XOR instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::FPO()
+OctalWord PDP11SimController::FPO()
 {
 	cout << "a floating point instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::SYSINSTRUCTION()
+OctalWord PDP11SimController::SYSINSTRUCTION()
 {
 	cout << "a system instruction was detected and skipped\n";
 }
 
-static OctalWord PDP11SimController::SOB()
+OctalWord PDP11SimController::SOB()
 {
 	cout << "a SOB instruction was detected and skipped\n";
 }
 #pragma endregion
 
 #pragma region PRINT_TO_FILE
-static bool PRINT_TO_FILE(OctalWord address, char type)
+bool PRINT_TO_FILE(OctalWord address, char type)
 {
 	//Declare the file to be opened
 	ofstream traceFile;

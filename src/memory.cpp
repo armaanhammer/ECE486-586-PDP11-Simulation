@@ -28,7 +28,7 @@ bool Memory::isTouched(OctalWord address)
 	return (*memory)[address].touched;
 }
 
-void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = false)
+void Memory::setWord(OctalWord address, OctalWord value, bool isInstruction, bool touched)
 {
 	memory->add(address, MemSpot(value, isInstruction, touched));
 }
