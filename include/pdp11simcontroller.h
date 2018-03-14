@@ -159,7 +159,7 @@ private:
 #pragma endregion
 
 #pragma region PRINT_TO_FILE
-	 bool PRINT_TO_FILE(OctalWord address, char type);
+	bool PRINT_TO_FILE(OctalWord address, char type);
 #pragma endregion
 };
 #endif
