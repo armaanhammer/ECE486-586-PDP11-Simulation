@@ -20,11 +20,11 @@ typedef struct MemSpot
 	MemSpot(OctalWord v, bool i, bool t) { touched = t; instruction = i; value = v; };
 };
 
-class Memory
+class Mem
 {
 public:
-	Memory();
-	~Memory();
+	Mem();
+	~Mem();
 	OctalWord getWord(OctalWord address);
 	bool isTouched(OctalWord address);
 	void setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = false);

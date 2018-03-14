@@ -34,7 +34,7 @@ private:
 	Register sp; //Stack pointer register
 	Register pc; //Program counter register
 	StatusRegister status; //Status register
-	Memory memory; //Memory array
+	Mem memory; //Memory array
 	int instructionCount;
 	bool debugMemory;
 	bool debugRegisters;
