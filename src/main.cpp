@@ -32,10 +32,10 @@ int main(int argc, char* argv[])
 	// boolean variable = checkFlags(char* of the thing you want to check, "" string of the thing to check against)
 	for (int i = 0; i < argc; i++)
 	{
-		debugReg = debugReg | checkFlags(argv[i], "-D");
-		debugReg = debugReg | checkFlags(argv[i], "-d");
-		debugMem = debugMem | checkFlags(argv[i], "-A");
-		debugMem = debugMem | checkFlags(argv[i], "-a");
+		debugReg = debugReg | checkFlags(argv[i], "-R");
+		debugReg = debugReg | checkFlags(argv[i], "-r");
+		debugMem = debugMem | checkFlags(argv[i], "-M");
+		debugMem = debugMem | checkFlags(argv[i], "-m");
 	}
 	
 	/*******************************************************************
