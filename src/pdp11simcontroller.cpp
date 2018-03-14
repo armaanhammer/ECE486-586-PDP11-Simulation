@@ -170,7 +170,11 @@ void PDP11SimController::loadProgram(string filename)
 
 void PDP11SimController::fetch()
 {
+	//Fetch the current instruction
 	ci = pc.getVal();
+
+	//Print the instruction fetch
+	PRINT_TO_FILE(pc.getVal(), 2);
 }
 
 #pragma region JUMP
@@ -498,14 +502,20 @@ void PDP11SimController::doPSWI(OctalWord w)
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
+	//Obtain the register octal value
 	int regNum = w[0].b;
+	//Obtain the register addressing mode octal value
 	int regAddressMode = w[1].b;
+	//Obtain the opcode octal value
 	int opcode = w.value >> 6;
 
+	//Create octal word (6-bits) for the operand
 	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value, regNum);
-
+	
+	//Calculate the result octal word (6-bit value) for the result
 	OctalWord result = (*(SO->find(opcode)))(operand);
 
+	//Write the value back to the destination
 	WriteBack(regAddressMode, regNum, result);
 }
 
@@ -530,7 +540,7 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	//Calculate the result octal word (6-bit value) for the result
 	OctalWord result = (*(DO->find(opcode))) (operandA, operandB);
 
-	//Write the value write back to the destination register
+	//Write the value write back to the destination
 	WriteBack(destAddressMode, destNum, result);
 }
 
@@ -547,26 +557,36 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(REGISTER_DEFERRED_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
 	//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal() - 2), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
 	//Basic addressing index
 	case(INDEX_CODE):
@@ -574,6 +594,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE((r[destReg].getVal() + memory.getWord(pc.getVal())), 1);
 		break;
 	//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
@@ -581,6 +603,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE((memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal()))), 1);
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
@@ -594,16 +618,22 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
 		break;
+	//SP register addressing deferred mode
 	case(SP_DEFERRED_CODE):
 		break;
+	//SP register addressing autoincrement mode
 	case(SP_AUTOINC_CODE):
 		break;
+	//SP register addressing autoincrement deferred mode
 	case(SP_AUTOINC_DEFERRED_CODE):
 		break;
+	//SP register addressing autodecrement deferred mode
 	case(SP_AUTODEC_CODE):
 		break;
+	//SP register addressing index mode
 	case(SP_INDEX_CODE):
 		break;
+	//SP register addressing index deferred mode
 	case(Sp_INDEX_DEFFERRED_CODE):
 		break;
 	default:
