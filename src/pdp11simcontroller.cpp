@@ -160,7 +160,11 @@ void PDP11SimController::loadProgram(string filename)
 
 void PDP11SimController::fetch()
 {
+	//Fetch the current instruction
 	ci = pc.getVal();
+
+	//Print to the trace file (instruction fetch)
+	PRINT_TO_FILE(pc.getVal(), 2);
 }
 
 #pragma region JUMP
@@ -494,26 +498,36 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(REGISTER_DEFERRED_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
 	//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
-		memory.setWord(memory.getWord(r[destReg].getVal() - 2), writenVal);
+		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
 	//Basic addressing index
 	case(INDEX_CODE):
@@ -521,6 +535,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(r[destReg].getVal() + memory.getWord(pc.getVal()), 1);
 		break;
 	//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
@@ -528,6 +544,8 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), 1);
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
@@ -752,6 +770,9 @@ OctalWord PDP11SimController::REGISTER(OctalWord regValue, int reg)
 
 OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 {
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(regValue, 0);
+
 	//Obtain the value from memory (pointer)
 	return memory.getWord(regValue);
 }
@@ -760,6 +781,9 @@ OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 {
 	//Increment the value of the register
 	r[reg].setval(regValue + 2);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(regValue + 2, 0);
 
 	//Obtain the value from memory (pointer)
 	return memory.getWord(regValue);
@@ -770,6 +794,9 @@ OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 	//Increment the value of the register
 	r[reg].setval(regValue + 2);
 
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(memory.getWord(regValue + 2), 0);
+
 	//Obtain the value from memory (pointer)
 	return memory.getWord(memory.getWord(regValue));
 }
@@ -778,6 +805,9 @@ OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
 	r[reg].setval(regValue - 2);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(regValue - 2, 0);
 
 	//Obtain the value from memory (pointer)
 	return memory.getWord(regValue - 2);
@@ -788,8 +818,11 @@ OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 	//Decrement the value of the register
 	r[reg].setval(regValue - 2);
 
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(memory.getWord(regValue - 2), 0);
+
 	//Obtain the value from memory (pointer)
-	return memory.getWord(memory.getWord(regValue));
+	return memory.getWord(memory.getWord(regValue - 2));
 }
 
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
@@ -802,6 +835,9 @@ OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 
 	//Add the offset to the memory address
 	OctalWord indexMemory = memory.getWord(pointerToMemory + offset);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(pointerToMemory + offset, 0);
 
 	//Return the value from that the pointer points to
 	return indexMemory;
@@ -820,6 +856,9 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 
 	//Obtain the pointer second pointer
 	OctalWord indexMemory = memory.getWord(indexPointer);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(indexPointer, 0);
 
 	//Return the value from that the pointer points to
 	return indexMemory;
