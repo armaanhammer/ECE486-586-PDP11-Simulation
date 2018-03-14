@@ -31,6 +31,6 @@ public:
 	void print();
 	
 private:
-	Table<OctalWord, MemSpot>* memory;
+	MemSpot* memory;
 };
 #endif

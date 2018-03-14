@@ -20,7 +20,6 @@
 #define SCC_OPCODE 000277
 
 // Single Operand Instructions Opcodes
-#define JSR_OPCODE 004
 #define CLR_OPCODE 0050
 #define COM_OPCODE 0051
 #define INC_OPCODE 0052

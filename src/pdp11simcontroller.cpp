@@ -21,12 +21,11 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 {
 	//Initialize the PDP11SimController class
 	instructionCount = 0;
-	createAddressingModeTable();
-	createBranchTable();
-	createDoubleOpTable();
-	createPSWITable();
-	createSingleOpTable();
-	createEDOITable();
+	pc = Register();
+	sp = Register();
+	status = StatusRegister();
+	memory = Memory();
+	ci = OctalWord(0);
 	for (int i = 0; i < NUMGENERALREGISTERS; i++)
 	{
 		r[i] = Register();
@@ -36,24 +35,11 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	debugRegisters = debugReg;
 }
 
-Register PDP11SimController::r[NUMGENERALREGISTERS] = {};
-Register PDP11SimController::pc = Register();
-Register PDP11SimController::sp = Register();
-StatusRegister PDP11SimController::status = StatusRegister();
-Memory PDP11SimController::memory = Memory();
-OctalWord PDP11SimController::ci = OctalWord(0);
-
 ///-----------------------------------------------
 /// Destructor Function
 ///-----------------------------------------------
 PDP11SimController::~PDP11SimController()
 {
-	delete SO;
-	delete DO;
-	delete BI;
-	delete PSWI;
-	delete AM;
-	delete EDO;
 }
 #pragma endregion
 
@@ -68,7 +54,6 @@ void PDP11SimController::run()
 			{
 				cerr << "DECODE FAILED. Skipping Instruction " << ci.print(true);
 			}
-			(*execute)(ci);
 			pc.setval(pc.getVal() + 2);
 
 			if (pc.getVal().value % 2 != 0)
@@ -245,116 +230,6 @@ void PDP11SimController::RTS(OctalWord src)
 }
 #pragma endregion
 
-#pragma region TABLE
-///-----------------------------------------------
-/// Table Creation Functions
-///-----------------------------------------------
-//Create a table of single operation instructions
-void PDP11SimController::createSingleOpTable()
-{
-	SO = new Table<int, OneParamFunc>();
-	SO->add(CLR_OPCODE, this->CLR);
-	SO->add(COM_OPCODE, this->COM);
-	SO->add(INC_OPCODE, this->INC);
-	SO->add(DEC_OPCODE, this->DEC);
-	SO->add(NEG_OPCODE, this->NEG);
-	SO->add(ADC_OPCODE, this->ADC);
-	SO->add(SBC_OPCODE, this->SBC);
-	SO->add(TST_OPCODE, this->TST);
-	SO->add(ROR_OPCODE, this->ROR);
-	SO->add(ROL_OPCODE, this->ROL);
-	SO->add(ASR_OPCODE, this->ASR);
-	SO->add(ASL_OPCODE, this->ASL);
-	SO->add(SXT_OPCODE, this->SXT);
-	SO->invalid = this->NULLFUNC1;
-}
-
-//Create a table of double operation instructions
-void PDP11SimController::createDoubleOpTable()
-{
-	DO = new Table<int, TwoParamFunc>();
-	DO->add(MOV_OPCODE, this->MOV);
-	DO->add(CMP_OPCODE, this->CMP);
-	DO->add(BIT_OPCODE, this->BIT);
-	DO->add(BIC_OPCODE, this->BIC);
-	DO->add(BIS_OPCODE, this->BIS);
-	DO->add(ADD_OPCODE, this->ADD);
-	DO->add(SUB_OPCODE, this->SUB);
-	DO->invalid = this->NULLFUNC2;
-}
-
-//Create a table for addressing modes
-void PDP11SimController::createAddressingModeTable()
-{
-	AM = new Table<int, AddressModeFunc>();
-	AM->add(REGISTER_CODE, this->REGISTER);
-	AM->add(REGISTER_CODE, this->REGISTER_DEFERRED);
-	AM->add(REGISTER_CODE, this->AUTOINC);
-	AM->add(REGISTER_CODE, this->AUTOINC_DEFERRED);
-	AM->add(REGISTER_CODE, this->AUTODEC);
-	AM->add(REGISTER_CODE, this->AUTODEC_DEFERRED);
-	AM->add(REGISTER_CODE, this->INDEX);
-	AM->add(REGISTER_CODE, this->INDEX_DEFERRED);
-	AM->invalid = this->NULLFUNCAM;
-}
-
-//Create a table for the branch instructions
-void PDP11SimController::createBranchTable()
-{
-	BI = new Table<int, OneParamFunc>();
-	BI->add(BR_OPCODE, this->BR);
-	BI->add(BNE_OPCODE, this->BNE);
-	BI->add(BEQ_OPCODE, this->BEQ);
-	BI->add(BPL_OPCODE, this->BPL);
-	BI->add(BMI_OPCODE, this->BMI);
-	BI->add(BVC_OPCODE, this->BVC);
-	BI->add(BVS_OPCODE, this->BVS);
-	BI->add(BHIS_OPCODE, this->BHIS);
-	BI->add(BCC_OPCODE, this->BCC);
-	BI->add(BLO_OPCODE, this->BLO);
-	BI->add(BCS_OPCODE, this->BCS);
-	BI->add(BGE_OPCODE, this->BGE);
-	BI->add(BLT_OPCODE, this->BLT);
-	BI->add(BGT_OPCODE, this->BGT);
-	BI->add(BLE_OPCODE, this->BLE);
-	BI->add(BHI_OPCODE, this->BHI);
-	BI->add(BLOS_OPCODE, this->BLOS);
-	BI->invalid = this->NULLFUNC1;
-}
-
-void PDP11SimController::createPSWITable()
-{
-	PSWI = new Table<int, NoParamFunc>();
-	PSWI->add(SPL_OPCODE, this->SPL);
-	PSWI->add(CLC_OPCODE, this->CLC);
-	PSWI->add(CLV_OPCODE, this->CLV);
-	PSWI->add(CLZ_OPCODE, this->CLZ);
-	PSWI->add(CLN_OPCODE, this->CLN);
-	PSWI->add(SEC_OPCODE, this->SEC);
-	PSWI->add(SEV_OPCODE, this->SEV);
-	PSWI->add(SEZ_OPCODE, this->SEZ);
-	PSWI->add(SEN_OPCODE, this->SEN);
-	PSWI->add(CCC_OPCODE, this->CCC);
-	PSWI->add(SCC_OPCODE, this->SCC);
-	PSWI->invalid = this->NULLFUNC0;
-}
-
-//Create a table for the extended double operation instructions
-void PDP11SimController::createEDOITable()
-{
-	EDO = new Table<int, NoParamFunc>();
-	EDO->add(MUL_OPCODE, this->MUL);
-	EDO->add(DIV_OPCODE, this->DIV);
-	EDO->add(ASH_OPCODE, this->ASH);
-	EDO->add(ASHC_OPCODE, this->ASHC);
-	EDO->add(XOR_OPCODE, this->XOR);
-	EDO->add(FLOATING_POINT_OPCODE, this->FPO);
-	EDO->add(SYSTEM_NSTRUCTION_OPCODE, this->SYSINSTRUCTION);
-	EDO->add(SOB_OPCODE, this->SOB);
-	EDO->invalid = this->NULLFUNC0;
-}
-#pragma endregion
-
 #pragma region DECODE
 ///-----------------------------------------------
 /// Decoding Functions
@@ -481,8 +356,26 @@ bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 bool PDP11SimController::checkForBranch(int value)
 {
 	int opcode = value >> 8;
-	
-	return (BI->find(opcode)) ? true : false;
+
+	switch(opcode)
+	{
+		case BR_OPCODE: return true;
+		case BNE_OPCODE: return true;
+		case BEQ_OPCODE: return true;
+		case BPL_OPCODE: return true;
+		case BMI_OPCODE: return true;
+		case BVC_OPCODE: return true;
+		case BVS_OPCODE: return true;
+		case BHIS_OPCODE: return true;
+		case BLO_OPCODE: return true;
+		case BGE_OPCODE: return true;
+		case BLT_OPCODE: return true;
+		case BGT_OPCODE: return true;
+		case BLE_OPCODE: return true;
+		case BHI_OPCODE: return true;
+		case BLOS_OPCODE: return true;
+		default: return false;
+	}
 }
 
 #pragma endregion
@@ -499,7 +392,23 @@ void PDP11SimController::doPSWI(OctalWord w)
 		opcode = SPL_OPCODE;
 	}
 	//find and exec op by opcode
-	(*(PSWI->find(opcode)))();
+	switch(opcode)
+	{
+		case SPL_OPCODE: SPL(); break;
+		case CLC_OPCODE: CLC(); break;
+		case CLV_OPCODE: CLV(); break;
+		case CLZ_OPCODE: CLZ(); break;
+		case CLN_OPCODE: CLN(); break;
+		case SEC_OPCODE: SEC(); break;
+		case SEV_OPCODE: SEV(); break;
+		case SEZ_OPCODE: SEZ(); break;
+		case SEN_OPCODE: SEN(); break;
+		case CCC_OPCODE: CCC(); break;
+		case SCC_OPCODE: SCC(); break;
+		default:
+			cerr << "doPSWI() called with an invalid opcode: " << w.asString();
+			break;
+	}
 }
 
 void PDP11SimController::doSingleOpInstruction(OctalWord w)
@@ -508,9 +417,29 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regAddressMode = w[1].b;
 	int opcode = w.value >> 6;
 
-	OctalWord operand = (*(AM->find(regAddressMode))) (r[regNum].getVal().value, regNum);
+	OctalWord operand = getOperand(r[regNum].getVal().value, regNum, regAddressMode);
+	OctalWord result = OctalWord(0);
 
-	OctalWord result = (*(SO->find(opcode)))(operand);
+	switch(opcode)
+	{
+		case CLR_OPCODE: result = CLR(operand); break;
+		case INC_OPCODE: result = INC(operand); break;
+		case COM_OPCODE: result = COM(operand); break;
+		case DEC_OPCODE: result = DEC(operand); break;
+		case NEG_OPCODE: result = NEG(operand); break;
+		case ADC_OPCODE: result = ADC(operand); break;
+		case SBC_OPCODE: result = SBC(operand); break;
+		case TST_OPCODE: result = TST(operand); break;
+		case ROR_OPCODE: result = ROR(operand); break;
+		case ROL_OPCODE: result = ROL(operand); break;
+		case ASR_OPCODE: result = ASR(operand); break;
+		case ASL_OPCODE: result = ASL(operand); break;
+		case SXT_OPCODE: result = SXT(operand); break;
+		default:
+			cerr << "doSingleOpInstruction() called with an invalid opcode: " << opcode
+				<< " and operand " << operand.asString() << endl;
+			break;
+	}
 
 	WriteBack(regAddressMode, regNum, result);
 }
@@ -529,14 +458,27 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int opcode = w.value >> 12;
 
 	//Create octal word (6-bit value) for the source
-	OctalWord operandA = (*(AM->find(srcAddressMode))) (r[srcNum].getVal().value, srcNum);
-	//Create octal word (6-bit value) for the source
-	OctalWord operandB = (*(AM->find(destAddressMode))) (r[destNum].getVal().value, destNum);
+	OctalWord operandA = getOperand(r[srcNum].getVal().value, srcNum, srcAddressMode);
+	//Create octal word (6-bit value) for the destination
+	OctalWord operandB = getOperand(r[destNum].getVal().value, destNum, destAddressMode);
+	OctalWord result = OctalWord(0);
 
-	//Calculate the result octal word (6-bit value) for the result
-	OctalWord result = (*(DO->find(opcode))) (operandA, operandB);
+	switch(opcode)
+	{
+		case MOV_OPCODE: result = MOV(operandA, operandB); break;
+		case CMP_OPCODE: result = CMP(operandA, operandB); break;
+		case BIT_OPCODE: result = BIT(operandA, operandB); break;
+		case BIC_OPCODE: result = BIC(operandA, operandB); break;
+		case BIS_OPCODE: result = BIS(operandA, operandB); break;
+		case ADD_OPCODE: result = ADD(operandA, operandB); break;
+		case SUB_OPCODE: result = SUB(operandA, operandB); break;
+		default:
+			cerr << "doDoubleOpInstruction() called with an invalid opcode: " << opcode
+				<< " and operands " << operandA.asString() << " " << operandB.asString()
+				<< endl;
+			break;
+	}
 
-	//Write the value write back to the destination register
 	WriteBack(destAddressMode, destNum, result);
 }
 
@@ -622,8 +564,31 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 	int value = w.value;
 	int opcode = value >> 8;
 
-	OctalWord newpc = (*(BI->find(opcode)))(ci);
+	OctalWord newpc = OctalWord(0);
 	
+	switch(opcode)
+	{
+		case BR_OPCODE: newpc = BR(w); break;
+		case BNE_OPCODE: newpc = BNE(w); break;
+		case BEQ_OPCODE: newpc = BEQ(w); break;
+		case BPL_OPCODE: newpc = BPL(w); break;
+		case BMI_OPCODE: newpc = BMI(w); break;
+		case BVC_OPCODE: newpc = BVC(w); break;
+		case BVS_OPCODE: newpc = BVS(w); break;
+		case BHIS_OPCODE: newpc = BHIS(w); break;
+		case BLO_OPCODE: newpc = BLO(w); break;
+		case BGE_OPCODE: newpc = BGE(w); break;
+		case BLT_OPCODE: newpc = BLT(w); break;
+		case BGT_OPCODE: newpc = BGT(w); break;
+		case BLE_OPCODE: newpc = BLE(w); break;
+		case BHI_OPCODE: newpc = BHI(w); break;
+		case BLOS_OPCODE: newpc = BLOS(w); break;
+		default:
+			cerr << "doBranchInstruction() called with an invalid opcode: " << opcode
+				<< endl;
+			break;
+	}
+
 	WriteBack(0, 7, newpc);
 }
 
@@ -633,28 +598,28 @@ void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
 	switch (opnum)
 	{
 	case 0:
-		(*(EDO->find(MUL_OPCODE)))();
+		MUL();
 		break;
 	case 1:
-		(*(EDO->find(DIV_OPCODE)))();
+		DIV();
 		break;
 	case 2:
-		(*(EDO->find(ASH_OPCODE)))();
+		ASH();
 		break;
 	case 3:
-		(*(EDO->find(ASHC_OPCODE)))();
+		ASHC();
 		break;
 	case 4:
-		(*(EDO->find(XOR_OPCODE)))();
+		XOR();
 		break;
 	case 5:
-		(*(EDO->find(FLOATING_POINT_OPCODE)))();
+		FPO();
 		break;
 	case 6:
-		(*(EDO->find(SYSTEM_NSTRUCTION_OPCODE)))();
+		SYSINSTRUCTION();
 		break;
 	case 7:
-		(*(EDO->find(SOB_OPCODE)))();
+		SOB();
 		break;
 	default:
 		break;
@@ -670,34 +635,6 @@ int PDP11SimController::getInstructionCount()
 {
 	return instructionCount;
 }
-#pragma endregion
-
-#pragma region NULL_FUNCTIONS
-///-----------------------------------------------
-/// NULL Functions
-///-----------------------------------------------
-void PDP11SimController::NULLFUNC0()
-{
-	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
-}
-
-OctalWord PDP11SimController::NULLFUNC1(const OctalWord& src)
-{
-	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src.value << " called\n";
-}
-
-OctalWord PDP11SimController::NULLFUNC2(const OctalWord& dest, const OctalWord& src)
-{
-	cout << "some opcode has resulted in a NULLFUNC with two parameters:";
-	cout << dest.value << " and " << src.value << " called\n";
-}
-
-OctalWord PDP11SimController::NULLFUNCAM(OctalWord dest, int src)
-{
-	cout << "some opcode has resulted in a NULL Addressing Mode function with two parameters:";
-	cout << dest.value << " and " << src << " called\n";
-}
-
 #pragma endregion
 
 #pragma region PROCESSOR_STATUS_WORD_INSTRUCTIONS
@@ -772,29 +709,41 @@ void PDP11SimController::SCC()
 ///-----------------------------------------------
 /// Addressing Mode Functions
 ///----------------------------------------------
-///
-/// The following are the defined constatns from types.h
-/// that are used in this section:
-///
-///#define NUM_ADDRESSING_MODES			18
-///#define REGISTER_CODE				00
-///#define REGISTER_DEFERRED_CODE		01
-///#define AUTOINC_CODE					02
-///#define AUTOINC_DEFERRED_CODE		03
-///#define AUTODEC_CODE					04
-///#define AUTODEC_DEFERRED_CODE		05
-///#define INDEX_CODE					06
-///#define INDEX_DEFFERRED_CODE			07
-///#define PC_IMMEDIATE_CODE			027
-///#define PC_ABSOLUTE_CODE				037
-///#define PC_RELATIVE_CODE				067
-///#define PC_RELATIVE_DEFERRED_CODE	077
-///#define SP_DEFERRED_CODE				016
-///#define SP_AUTOINC_CODE				026
-///#define SP_AUTOINC_DEFERRED_CODE		036
-///#define SP_AUTODEC_CODE				046
-///#define SP_INDEX_CODE				066
-///#define Sp_INDEX_DEFFERRED_CODE		076
+
+OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addressMode)
+{
+	OctalWord operand = OctalWord(0);
+
+	if (reg == 6 || 7)
+	{
+		addressMode += 8*reg;
+	}
+	switch(addressMode)
+	{
+		case REGISTER_CODE:operand =  REGISTER(r[reg].getVal().value, reg); break;
+		case REGISTER_DEFERRED_CODE: operand = REGISTER_DEFERRED(r[reg].getVal().value, reg); break;
+		case AUTOINC_CODE: operand = AUTOINC(r[reg].getVal().value, reg); break;
+		case AUTOINC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
+		case AUTODEC_CODE: operand = AUTODEC(r[reg].getVal().value, reg); break;
+		case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
+		case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
+		case INDEX_DEFFERRED_CODE: operand = INDEX_DEFERRED(r[reg].getVal().value, reg); break;
+		//case PC_IMMEDIATE_CODE:			(r[reg].getVal().value, reg); break;
+		//case PC_ABSOLUTE_CODE:				(r[reg].getVal().value, reg); break;
+		//case PC_RELATIVE_CODE:				(r[reg].getVal().value, reg); break;
+		//case PC_RELATIVE_DEFERRED_CODE:	(r[reg].getVal().value, reg); break;
+		//case SP_DEFERRED_CODE:				(r[reg].getVal().value, reg); break;
+		//case SP_AUTOINC_CODE:				(r[reg].getVal().value, reg); break;
+		//case SP_AUTOINC_DEFERRED_CODE:		(r[reg].getVal().value, reg); break;
+		//case SP_AUTODEC_CODE:				(r[reg].getVal().value, reg); break;
+		//case SP_INDEX_CODE:				(r[reg].getVal().value, reg); break;
+		//case Sp_INDEX_DEFFERRED_CODE:		(r[reg].getVal().value, reg); break;
+		default:
+			cerr << "";
+			break;
+	}
+	return operand;
+}
 
 OctalWord PDP11SimController::REGISTER(OctalWord regValue, int reg)
 {
