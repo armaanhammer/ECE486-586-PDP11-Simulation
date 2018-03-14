@@ -114,7 +114,7 @@ void PDP11SimController::loadProgram(string filename)
 
 			while (getline(file, line))
 			{
-				std::strcpy(c_string, line.c_str());
+				strcpy(c_string, line.c_str());
 				int b[6] = {
 					(c_string[1] - '0'),
 					(c_string[2] - '0'),
@@ -670,7 +670,7 @@ int PDP11SimController::getInstructionCount()
 ///-----------------------------------------------
 /// NULL Functions
 ///-----------------------------------------------
-OctalWord PDP11SimController::NULLFUNC0()
+void PDP11SimController::NULLFUNC0()
 {
 	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
 }
@@ -686,7 +686,7 @@ OctalWord PDP11SimController::NULLFUNC2(const OctalWord& dest, const OctalWord& 
 	cout << dest.value << " and " << src.value << " called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNCAM(const OctalWord& dest, const int src)
+OctalWord PDP11SimController::NULLFUNCAM(OctalWord dest, const int src)
 {
 	cout << "some opcode has resulted in a NULL Addressing Mode function with two parameters:";
 	cout << dest.value << " and " << src << " called\n";

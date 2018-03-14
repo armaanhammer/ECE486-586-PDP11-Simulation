@@ -14,7 +14,7 @@ template<class KEY, class VALUE> VALUE Table<KEY, VALUE>::find(KEY key)
 {
 	int indexKey = this->key.indexof(key);
 	VALUE ret = value.getAt();
-	return (ret != NULL) ? ret : invalid;
+	return (ret != 0) ? ret : invalid;
 }
 
 template<class KEY, class VALUE> void Table<KEY, VALUE>::add(KEY key, VALUE value)
