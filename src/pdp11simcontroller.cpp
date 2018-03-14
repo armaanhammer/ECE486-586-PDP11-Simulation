@@ -1584,6 +1584,32 @@ OctalWord PDP11SimController::BCS(const OctalWord& src)
 	}
 	return pcvalue;
 }
+
+OctalWord PDP11SimController::BLO(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
+
+	if(status.C == 1)
+	{
+		offset<<1;
+		pcvalue = pcvalue + offset;
+	}
+	return pcvalue;
+}
+
+OctalWord PDP11SimController::BHI(const OctalWord& src)
+{
+	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
+
+	if(status.Z == 0 || status.C == 0)
+	{
+		offset<<1;
+		pcvalue = pcvalue + offset;
+	}
+	return pcvalue;
+}
 #pragma endregion
 
 #pragma region EXTENDED_DOUBLE_OPERAND_INSTRUCTIONS

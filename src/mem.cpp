@@ -10,6 +10,10 @@ using namespace std;
 Mem::Mem()
 {
 	memory = new MemSpot[MEMORYLENGTH]();
+	for (int i = 0; i < MEMORYLENGTH; i++) 
+	{
+		memory[i] = MemSpot(0);
+	}
 }
 
 Mem::~Mem()
