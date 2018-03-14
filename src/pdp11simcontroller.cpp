@@ -686,7 +686,7 @@ OctalWord PDP11SimController::NULLFUNC2(const OctalWord& dest, const OctalWord& 
 	cout << dest.value << " and " << src.value << " called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNCAM(OctalWord dest, const int src)
+OctalWord PDP11SimController::NULLFUNCAM(OctalWord dest, int src)
 {
 	cout << "some opcode has resulted in a NULL Addressing Mode function with two parameters:";
 	cout << dest.value << " and " << src << " called\n";

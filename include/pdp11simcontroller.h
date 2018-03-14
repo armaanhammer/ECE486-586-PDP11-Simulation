@@ -102,10 +102,10 @@ private:
 
 //Null functions
 #pragma region NULLFUNC
-	static OctalWord NULLFUNC0();
+	static void NULLFUNC0();
 	static OctalWord NULLFUNC1(const OctalWord& src);
 	static OctalWord NULLFUNC2(const OctalWord& dest, const OctalWord& src);
-	static OctalWord NULLFUNCAM(const OctalWord& dest, const int);
+	static OctalWord NULLFUNCAM(OctalWord, int);
 #pragma endregion
 
 //Functions to check the instruction types
@@ -142,7 +142,7 @@ private:
 	typedef void(*executeFunction)(OctalWord);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(OctalWord, const int);
+	typedef OctalWord(*AddressModeFunc)(OctalWord, int);
 #pragma endregion
 
 #pragma region VARS
