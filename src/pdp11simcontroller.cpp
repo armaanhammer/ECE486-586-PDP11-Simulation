@@ -1670,3 +1670,25 @@ OctalWord PDP11SimController::SOB()
 	cout << "a SOB instruction was detected and skipped\n";
 }
 #pragma endregion
+
+#pragma region PRINT_TO_FILE
+bool PRINT_TO_FILE(OctalWord address, char type)
+{
+	//Declare the file to be opened
+	ofstream traceFile;
+
+	//Declare addressing string
+	string tempAddr = address.print(true);
+
+	//Open the trace file
+	traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
+
+	//Write to the end of the file
+	traceFile << type << " " << tempAddr << endl;
+
+	//Close the file
+	traceFile.close();
+
+	//Needs a return statement
+}
+#pragma endregion

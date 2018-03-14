@@ -174,5 +174,9 @@ private:
 	OctalWord INDEX(OctalWord regValue, int reg);
 	OctalWord INDEX_DEFERRED(OctalWord regValue, int reg);
 #pragma endregion
+
+#pragma region PRINT_TO_FILE
+	bool PRINT(OctalWord address, char type);
+#pragma endregion
 };
 #endif
