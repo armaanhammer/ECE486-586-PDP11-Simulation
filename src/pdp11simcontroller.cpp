@@ -42,85 +42,48 @@ PDP11SimController::~PDP11SimController()
 }
 #pragma endregion
 
-//----------------------------------------------------------------------------------------------------
-//Function: run
-//Input: None
-//Output: (void) None
-//Description: Starts running current process untill a halt instruction is detected. Starting with the
-//	instruction fetch (IF) and checking if the fetched instruction is NULL. The instruction is decoded
-//	then the program counter is incremented by 2 and the instruction count is incremented. There are 
-//	optional debug modes that can be used during testing.
-//	debugMemory:	0 - Memory debug off
-//					1 - Memory debug on
-//	debugRegisters:	0 - Register debug off
-//					1 - Register debug on
-//----------------------------------------------------------------------------------------------------
 void PDP11SimController::run()
 {
-	//Do while halt instruction is not detected
 	while(ci != HALT_OPCODE)
 	{
-		//Fetch the current instruction
 		fetch();
-		//Make sure current instruction is not a NULL operation
 		if (ci != NOP_OPCODE) 
 		{
-			//Decode the instruction and check for errors
 			if (!decode())
 			{
-				//Display the decode failed error
 				cerr << "DECODE FAILED. Skipping Instruction " << ci.print(true);
 			}
-			//Increment the value of the program counter (PC)
 			pc.setval(pc.getVal() + 2);
 
-			//Make sure the current program counter address is word aligned
 			if (pc.getVal().value % 2 != 0)
 			{
-				//Displat the pc alignment error
 				cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print(true) << "\n";
 			}
 
-			//Check for different debug modes
 			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
 			if (debugMemory) memory.print();
 			if (debugRegisters) printRegs();
-
-			//Increment the instruction count
 			instructionCount++;
 		}
 	}
 }
 
-//----------------------------------------------------------------------------------------------------
-//Function: printRegs
-//Input: None
-//Output: (void) None
-//Description: Display the content of all the registers to the terminal display for debugging
-//----------------------------------------------------------------------------------------------------
 void PDP11SimController::printRegs()
 {
-	//Displat the content of the registers
 	cout << "register contents\n"
 		<< "  reg  |   value\n";
-	cout << "   0   |  "; r[0].print(); cout << endl; //Display content of register 0
-	cout << "   1   |  "; r[1].print(); cout << endl; //Display content of register 1
-	cout << "   2   |  "; r[2].print(); cout << endl; //Display content of register 2
-	cout << "   3   |  "; r[3].print(); cout << endl; //Display content of register 3
-	cout << "   4   |  "; r[4].print(); cout << endl; //Display content of register 4
-	cout << "   5   |  "; r[5].print(); cout << endl; //Display content of register 5
-	cout << "   6   |  "; r[6].print(); cout << endl; //Display content of register 6 or SP
-	cout << "   7   |  "; r[7].print(); cout << endl; //Display content of register 7 or PC
-	cout << "   sp  |  "; sp.print(); cout << endl; //Display content of SP register
-	cout << "   pc  |  "; pc.print(); cout << endl; //Display content of PC register
+	cout << "   0   |  "; r[0].print(); cout << endl;
+	cout << "   1   |  "; r[1].print(); cout << endl;
+	cout << "   2   |  "; r[2].print(); cout << endl;
+	cout << "   3   |  "; r[3].print(); cout << endl;
+	cout << "   4   |  "; r[4].print(); cout << endl;
+	cout << "   5   |  "; r[5].print(); cout << endl;
+	cout << "   6   |  "; r[6].print(); cout << endl;
+	cout << "   7   |  "; r[7].print(); cout << endl;
+	cout << "   sp  |  "; sp.print(); cout << endl;
+	cout << "   pc  |  "; pc.print(); cout << endl;
 }
 
-//----------------------------------------------------------------------------------------------------
-//Function: loadProgram
-//Input: (string) filename - 
-//Output: (void) None
-//Description: Loads the ASCII file into the correct memory location
-//----------------------------------------------------------------------------------------------------
 void PDP11SimController::loadProgram(string filename)
 {
 	ifstream file;
@@ -146,7 +109,7 @@ void PDP11SimController::loadProgram(string filename)
 					(line[5] - '0'),
 					(line[6] - '0')
 				};
-				int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
+				int num = (b[0] << 15) + (b[1] << 12) + (b[2] << 9) + (b[3] << 6) + (b[4] << 3) + b[5];
 
 				switch (line[0])
 				{
@@ -193,12 +156,6 @@ void PDP11SimController::loadProgram(string filename)
 	}
 }
 
-//----------------------------------------------------------------------------------------------------
-//Function: fetch
-//Input: None
-//Output: (void) None
-//Description: Fetches the current instuction pointed to by the program counter (PC)
-//----------------------------------------------------------------------------------------------------
 void PDP11SimController::fetch()
 {
 	//Fetch the current instruction
@@ -344,7 +301,7 @@ bool PDP11SimController::checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, Octa
 //Function: checkForPSW
 //Input: (OctalBit) specified address bits
 //Output: (bool) true if the instruction is PSW instruction
-//Description: Function for opcode checking the PSW instruction
+//Description: Function for opcode checking the 
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5)
 {
@@ -1698,49 +1655,41 @@ OctalWord PDP11SimController::BHI(const OctalWord& src)
 ///----------------------------------
 void PDP11SimController::MUL()
 {
-	//Print out double operand instruction message
 	cout << "a MUL instruction was detected and skipped\n";
 }
 
 void PDP11SimController::DIV()
 {
-	//Print out double operand instruction message
 	cout << "a DIV instruction was detected and skipped\n";
 }
 
 void PDP11SimController::ASH()
 {
-	//Print out double operand instruction message
 	cout << "a ASH instruction was detected and skipped\n";
 }
 
 void PDP11SimController::ASHC()
 {
-	//Print out double operand instruction message
 	cout << "a ASHC instruction was detected and skipped\n";
 }
 
 void PDP11SimController::XOR()
 {
-	//Print out double operand instruction message
 	cout << "a XOR instruction was detected and skipped\n";
 }
 
 void PDP11SimController::FPO()
 {
-	//Print out double operand instruction message
 	cout << "a floating point instruction was detected and skipped\n";
 }
 
 void PDP11SimController::SYSINSTRUCTION()
 {
-	//Print out double operand instruction message
 	cout << "a system instruction was detected and skipped\n";
 }
 
 void PDP11SimController::SOB()
 {
-	//Print out double operand instruction message
 	cout << "a SOB instruction was detected and skipped\n";
 }
 #pragma endregion

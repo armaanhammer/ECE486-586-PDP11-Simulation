@@ -127,7 +127,7 @@ OctalWord OctalWord::operator&(const int rhs)
 #pragma endregion
 
 #pragma region ASSIGNMENT_OP_OVERLOAD
-OctalWord& OctalWord::operator=(const OctalWord &newAssignment)
+OctalWord& OctalWord::operator=(const OctalWord& newAssignment)
 {
 	if (this != &newAssignment)
 	{
