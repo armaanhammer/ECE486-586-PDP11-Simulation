@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.h"
+#include<iostream>
 
 #ifndef TYPES_LIB_20180221
 #define TYPES_LIB_20180221
@@ -43,7 +44,7 @@ typedef struct StatusRegister
 
 	void print()
 	{
-		cout << "processor status word\n"
+		std::cout << "processor status word\n"
 			<< " bit | value\n"
 			<< "  I  |   " << I << "\n"
 			<< "  T  |   " << T << "\n"
