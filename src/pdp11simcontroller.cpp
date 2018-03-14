@@ -1,6 +1,5 @@
-#include "memory.h"
+#include "mem.h"
 #include "types.h"
-#include "table.h"
 #include "constants.h"
 #include "pdp11simcontroller.h"
 #include "register.h"
@@ -24,7 +23,7 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	pc = Register();
 	sp = Register();
 	status = StatusRegister();
-	memory = Memory();
+	memory = Mem();
 	ci = OctalWord(0);
 	for (int i = 0; i < NUMGENERALREGISTERS; i++)
 	{

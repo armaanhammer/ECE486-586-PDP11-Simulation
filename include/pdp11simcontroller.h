@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include "memory.h"
+#include "mem.h"
 #include "types.h"
 #include "octalword.h"
-#include "table.h"
 #include "constants.h"
 #include "register.h"
 
@@ -38,8 +37,7 @@ private:
 	int instructionCount;
 	bool debugMemory;
 	bool debugRegisters;
-	Table<int, AddressModeFunc>* AM;
-	 OctalWord ci;
+	OctalWord ci;
 #pragma endregion
 
 	void JSR(OctalWord src);
