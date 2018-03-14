@@ -7,6 +7,8 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <stdio.h>
+#include <string.h>
 
 using namespace std;
 
@@ -68,7 +70,7 @@ void PDP11SimController::run()
 
 			if (pc.getVal().value % 2 != 0)
 			{
-				cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print << "\n";
+				cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print(true) << "\n";
 			}
 
 			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
@@ -112,7 +114,7 @@ void PDP11SimController::loadProgram(string filename)
 
 			while (getline(file, line))
 			{
-				strcpy(c_string, line.c_str());
+				std::strcpy(c_string, line.c_str());
 				int b[6] = {
 					(c_string[1] - '0'),
 					(c_string[2] - '0'),
@@ -1636,42 +1638,42 @@ OctalWord PDP11SimController::BCS(const OctalWord& src)
 ///----------------------------------
 /// Extended Double Operand Instruction Functions
 ///----------------------------------
-OctalWord PDP11SimController::MUL()
+void PDP11SimController::MUL()
 {
 	cout << "a MUL instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::DIV()
+void PDP11SimController::DIV()
 {
 	cout << "a DIV instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::ASH()
+void PDP11SimController::ASH()
 {
 	cout << "a ASH instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::ASHC()
+void PDP11SimController::ASHC()
 {
 	cout << "a ASHC instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::XOR()
+void PDP11SimController::XOR()
 {
 	cout << "a XOR instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::FPO()
+void PDP11SimController::FPO()
 {
 	cout << "a floating point instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::SYSINSTRUCTION()
+void PDP11SimController::SYSINSTRUCTION()
 {
 	cout << "a system instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::SOB()
+void PDP11SimController::SOB()
 {
 	cout << "a SOB instruction was detected and skipped\n";
 }

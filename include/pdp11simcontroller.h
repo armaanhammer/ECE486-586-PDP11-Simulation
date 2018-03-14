@@ -70,14 +70,14 @@ private:
 
 //Extended double operation instruction
 #pragma region EDOI
-	static OctalWord MUL();
-	static OctalWord DIV();
-	static OctalWord ASH();
-	static OctalWord ASHC();
-	static OctalWord XOR();
-	static OctalWord FPO();
-	static OctalWord SYSINSTRUCTION();
-	static OctalWord SOB();
+	static void MUL();
+	static void DIV();
+	static void ASH();
+	static void ASHC();
+	static void XOR();
+	static void FPO();
+	static void SYSINSTRUCTION();
+	static void SOB();
 #pragma endregion
 
 #pragma region BI
@@ -142,7 +142,7 @@ private:
 	typedef void(*executeFunction)(OctalWord);
 	typedef OctalWord(*OneParamFunc)(const OctalWord&);
 	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(const OctalWord&, const int);
+	typedef OctalWord(*AddressModeFunc)(OctalWord, const int);
 #pragma endregion
 
 #pragma region VARS

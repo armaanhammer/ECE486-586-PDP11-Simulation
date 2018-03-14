@@ -13,7 +13,7 @@ public:
 	bool remove(KEY key);
 	bool clear();
 	
-	KEY invalid;
+	VALUE invalid;
 
 	VALUE& operator[] (KEY k);
 
