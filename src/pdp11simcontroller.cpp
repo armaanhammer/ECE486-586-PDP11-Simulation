@@ -126,7 +126,6 @@ void PDP11SimController::loadProgram(string filename)
 	ifstream file;
 	string line;
 	int index = 0;
-	char* c_string = new char[7];		// used as an intermediate for converting string to octal
 	bool startAddressFound = false;
 
 	try
@@ -139,18 +138,17 @@ void PDP11SimController::loadProgram(string filename)
 
 			while (getline(file, line))
 			{
-				strcpy(c_string, line.c_str());
 				int b[6] = {
-					(c_string[1] - '0'),
-					(c_string[2] - '0'),
-					(c_string[3] - '0'),
-					(c_string[4] - '0'),
-					(c_string[5] - '0'),
-					(c_string[6] - '0')
+					(line[1] - '0'),
+					(line[2] - '0'),
+					(line[3] - '0'),
+					(line[4] - '0'),
+					(line[5] - '0'),
+					(line[6] - '0')
 				};
 				int num = b[0] << 15 + b[1] << 12 + b[2] << 9 + b[3] << 6 + b[4] << 3 + b[5];
 
-				switch (c_string[0])
+				switch (line[0])
 				{
 				case '@':
 					// change index
