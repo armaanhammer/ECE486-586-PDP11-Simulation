@@ -32,16 +32,6 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	sp.setval(OctalWord(STACK_STARTING_ADDRESS));
 	debugMemory = debugMem;
 	debugRegisters = debugReg;
-
-	//for (unsigned int index = 0; index < MEMORYLENGTH / 2; index ++)
-	//{
-		//if (index == 3 * MEMORYLENGTH / 4)
-		//{
-		//	cout << "something\n";
-		//}
-		//memory.setWord(OctalWord(2*index), OctalWord(0));
-	//}
-	//cout << "test\n";
 }
 
 ///-----------------------------------------------
@@ -168,16 +158,13 @@ void PDP11SimController::loadProgram(string filename)
 	}
 	file.close();
 
-	//for (index; index < MEMORYLENGTH; index += 2)
-	//{
-		//memory.setWord(OctalWord(index), OctalWord(0));
-	//}
+	if (debugMemory) memory.print();
 }
 
 void PDP11SimController::fetch()
 {
 	//Fetch the current instruction
-	ci = pc.getVal();
+	ci = memory.getWord(pc.getVal());
 
 	//Print to the trace file (instruction fetch)
 	PRINT_TO_FILE(pc.getVal(), 2);
