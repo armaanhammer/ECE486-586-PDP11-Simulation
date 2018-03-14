@@ -15,4 +15,4 @@ PDPSim: pdp11simcontroller.cpp mem.cpp register.cpp octalword.cpp main.cpp
 
 .PHONY: clean
 clean:
-	rm -f pdp11simcontroller.o
+	rm -f main
