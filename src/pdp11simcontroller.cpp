@@ -89,7 +89,7 @@ void PDP11SimController::loadProgram(string filename)
 	ifstream file;
 	string line;
 	int index = 0;
-	char* c_string;		// used as an intermediate for converting string to octal
+	char* c_string = new char[7];		// used as an intermediate for converting string to octal
 	bool startAddressFound = false;
 
 	try
