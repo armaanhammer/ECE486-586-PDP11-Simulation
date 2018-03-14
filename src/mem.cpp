@@ -9,8 +9,8 @@ using namespace std;
 
 Mem::Mem()
 {
-	memory = new MemSpot[MEMORYLENGTH]();
-	for (int i = 0; i < MEMORYLENGTH; i++) 
+	memory = new MemSpot[MEMORYLENGTH/4];
+	for (int i = 0; i < MEMORYLENGTH/4; i++) 
 	{
 		memory[i] = MemSpot(0);
 	}
@@ -33,9 +33,9 @@ bool Mem::isTouched(OctalWord address)
 
 void Mem::setWord(OctalWord address, OctalWord value, bool isInstruction, bool touched)
 {
-	memory[address.value].value = value;
-	memory[address.value].instruction = isInstruction;
-	memory[address.value].touched = touched;
+	memory[address.value/2].value = value;
+	memory[address.value/2].instruction = isInstruction;
+	memory[address.value/2].touched = touched;
 }
 
 void Mem::print()
@@ -44,11 +44,14 @@ void Mem::print()
 	for (int i = 0; i < MEMORYLENGTH; i+=2)
 	{
 		OctalWord index = OctalWord(2 * i);
-		OctalWord toPrint = memory[index.value].value;
-		cout << "   ";
-		index.print();
-		cout << "   |   ";
-		toPrint.print();
-		cout << "  \n";
+		if (memory->touched)
+		{
+			OctalWord toPrint = memory[index.value /2].value;
+			cout << "   ";
+			index.print();
+			cout << "   |   ";
+			toPrint.print();
+			cout << "  \n";
+		}
 	}
 }

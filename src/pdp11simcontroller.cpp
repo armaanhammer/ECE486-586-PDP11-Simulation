@@ -23,7 +23,7 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	pc = Register();
 	sp = Register();
 	status = StatusRegister();
-	memory = Mem();
+	//memory = Mem();
 	ci = OctalWord(0);
 	for (int i = 0; i < NUMGENERALREGISTERS; i++)
 	{
@@ -32,6 +32,16 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	sp.setval(OctalWord(STACK_STARTING_ADDRESS));
 	debugMemory = debugMem;
 	debugRegisters = debugReg;
+
+	//for (unsigned int index = 0; index < MEMORYLENGTH / 2; index ++)
+	//{
+		//if (index == 3 * MEMORYLENGTH / 4)
+		//{
+		//	cout << "something\n";
+		//}
+		//memory.setWord(OctalWord(2*index), OctalWord(0));
+	//}
+	//cout << "test\n";
 }
 
 ///-----------------------------------------------
@@ -82,6 +92,11 @@ void PDP11SimController::printRegs()
 	cout << "   7   |  "; r[7].print(); cout << endl;
 	cout << "   sp  |  "; sp.print(); cout << endl;
 	cout << "   pc  |  "; pc.print(); cout << endl;
+}
+
+void PDP11SimController::printMem()
+{
+	memory.print();
 }
 
 void PDP11SimController::loadProgram(string filename)
@@ -150,10 +165,10 @@ void PDP11SimController::loadProgram(string filename)
 	}
 	file.close();
 
-	for (index; index < MEMORYLENGTH; index += 2)
-	{
-		memory.setWord(OctalWord(index), OctalWord(0));
-	}
+	//for (index; index < MEMORYLENGTH; index += 2)
+	//{
+		//memory.setWord(OctalWord(index), OctalWord(0));
+	//}
 }
 
 void PDP11SimController::fetch()

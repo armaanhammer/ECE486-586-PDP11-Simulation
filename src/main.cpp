@@ -98,6 +98,14 @@ int main(int argc, char* argv[])
 	pdp->loadProgram(filename);
 	pdp->run();
 
+	if (debugMem || debugReg)
+	{
+		pdp->printRegs();
+		pdp->printMem();
+	}
+	int instructioncount = pdp->getInstructionCount();
+	cout << "for " << filename << "the total number of instructions was " << instructioncount << endl;
+
 	while (1)
 	{
 		cout << endl << endl;
@@ -118,10 +126,16 @@ int main(int argc, char* argv[])
 			cout << endl << endl;
 			pdp->loadProgram(filename);
 			pdp->run();
+
+			if (debugMem || debugReg)
+			{
+				pdp->printRegs();
+				pdp->printMem();
+			}
+			instructioncount = pdp->getInstructionCount();
+			cout << "for " << filename << "the total number of instructions was " << instructioncount << endl;
 		}
 	}
-
-	int instructioncount = pdp->getInstructionCount();
 	
 	// do some final prints
 	if (!linuxOp) getchar();
