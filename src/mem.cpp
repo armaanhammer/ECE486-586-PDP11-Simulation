@@ -41,10 +41,10 @@ void Mem::setWord(OctalWord address, OctalWord value, bool isInstruction, bool t
 void Mem::print()
 {
 	cout << "memory hierarchy\n  location  |   value\n";
-	for (int i = 0; i < MEMORYLENGTH; i+=2)
+	for (int i = 0; i < MEMORYLENGTH / 4 ; i+=2)
 	{
 		OctalWord index = OctalWord(2 * i);
-		if (memory->touched)
+		if (memory[i].touched)
 		{
 			OctalWord toPrint = memory[index.value /2].value;
 			cout << "   ";

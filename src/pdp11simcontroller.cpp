@@ -54,6 +54,7 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
+	fetch();
 	while(ci != HALT_OPCODE)
 	{
 		fetch();
@@ -141,6 +142,10 @@ void PDP11SimController::loadProgram(string filename)
 				case '-':
 					// call setword at 2*i, isInstruction, touched
 					memory.setWord(OctalWord(index), OctalWord(num), true, true);
+					//cout << memory.getWord(OctalWord(index)).print(true) << endl;
+
+					// incrememt the index
+					index += 2;
 					break;
 				case '*':
 					// set pc address
@@ -149,13 +154,11 @@ void PDP11SimController::loadProgram(string filename)
 					continue;
 				}
 
-				// incrememt the index
-				index += 2;
-
 				if (index % 2 != 0)
 				{
 					cerr << "PC has become unaligned. Now terminating load.";
 				}
+				//memory.print();
 			}
 		}
 	}

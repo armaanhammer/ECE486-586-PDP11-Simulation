@@ -31,13 +31,13 @@ OctalWord::~OctalWord()
 
 string OctalWord::asString()
 {
-	char bit[6];
-	string ret = "";
-	for (int i = 0; i < 6; i++)
+	char bit[7];
+	for (int i = 5; i >= 0; i--)
 	{
-		bit[i] = (*this)[i].b - '0';
+		bit[5 - i] = (*this)[i].b + '0';
 	}
-	ret = bit[5] + bit[4] + bit[3] + bit[2] + bit[1] + bit[0];
+	bit[6] = 0;
+	string ret = string(bit);
 	return ret;
 }
 
