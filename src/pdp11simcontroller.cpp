@@ -35,6 +35,7 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	debugMemory = debugMem;
 	debugRegisters = debugReg;
 }
+
 Register PDP11SimController::r[NUMGENERALREGISTERS] = {};
 Register PDP11SimController::pc = Register();
 Register PDP11SimController::sp = Register();

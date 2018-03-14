@@ -1,7 +1,5 @@
-#pragma once
-
 #include "constants.h"
-#include<iostream>
+#include <iostream>
 
 #ifndef TYPES_LIB_20180221
 #define TYPES_LIB_20180221

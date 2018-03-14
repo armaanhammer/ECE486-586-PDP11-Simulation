@@ -1,5 +1,3 @@
-#pragma once
-
 #include "types.h"
 #include "octalword.h"
 #include "table.h"

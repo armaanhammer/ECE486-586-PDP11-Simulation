@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef LIST_H_20180221
 #define LIST_H_20180221
 template <class T> class List

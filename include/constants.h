@@ -1,5 +1,3 @@
-#pragma once
-
 #define MEMORYLENGTH 36000
 #define NUMGENERALREGISTERS 8
 

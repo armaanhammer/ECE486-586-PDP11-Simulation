@@ -1,4 +1,3 @@
-#pragma once
 #include "list.h"
 
 #ifndef TABLE_H_20180221
