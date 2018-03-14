@@ -31,11 +31,11 @@ OctalWord::~OctalWord()
 
 string OctalWord::asString()
 {
-	string bit[6];
+	char bit[6];
 	string ret = "";
 	for (int i = 0; i < 6; i++)
 	{
-		bit[i] = to_string(octbit[i].b);
+		bit[i] = (*this)[i].b - '0';
 	}
 	ret = bit[5] + bit[4] + bit[3] + bit[2] + bit[1] + bit[0];
 	return ret;
@@ -48,13 +48,7 @@ void OctalWord::print()
 
 string OctalWord::print(bool)
 {
-	char bits[6] = {'n', 'n', 'n', 'n', 'n', 'n'};
-	for (int i = 0; i < 6; i++) 
-	{
-		bits[i] = (*this)[i].b - '0';
-	}
-	string ret = string(bits);
-	return ret;
+	return this->asString();
 }
 
 void OctalWord::updateBits()

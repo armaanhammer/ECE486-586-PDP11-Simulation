@@ -109,7 +109,7 @@ void PDP11SimController::loadProgram(string filename)
 	try
 	{
 		if (debugMemory || debugRegisters) cout << "Opening file\n";
-		file.open(filename);
+		file.open(filename.c_str());
 		if (file.is_open())
 		{
 			if (debugMemory || debugRegisters) cout << filename << " was opened successfully\n";
@@ -1687,18 +1687,23 @@ bool PRINT_TO_FILE(OctalWord address, char type)
 	//Declare the file to be opened
 	ofstream traceFile;
 
-	//Declare addressing string
-	string tempAddr = address.print(true);
+	try
+	{
+		//Declare addressing string
+		string tempAddr = address.print(true);
 
-	//Open the trace file
-	traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
+		//Open the trace file
+		traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
 
-	//Write to the end of the file
-	traceFile << type << " " << tempAddr << endl;
-
-	//Close the file
+		//Write to the end of the file
+		traceFile << type << " " << tempAddr << endl;
+	}
+	catch (exception e)
+	{
+		cout << e.what() << "\n\n";
+		return false;
+	}
 	traceFile.close();
-
-	//Needs a return statement
+	return true;
 }
 #pragma endregion
