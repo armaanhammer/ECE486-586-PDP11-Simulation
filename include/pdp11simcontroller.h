@@ -23,109 +23,109 @@ public:
 	void printRegs();
 
 private:
-	void JSR(OctalWord src);
-	void RTS(OctalWord src);
+	static void JSR(OctalWord src);
+	static void RTS(OctalWord src);
 //processor status word instructions
 #pragma region PSWI
-	void SPL();
-	void CLC();
-	void CLV();
-	void CLZ();
-	void CLN();
-	void SEC();
-	void SEV();
-	void SEZ();
-	void SEN();
-	void CCC();
-	void SCC();
+	static void SPL();
+	static void CLC();
+	static void CLV();
+	static void CLZ();
+	static void CLN();
+	static void SEC();
+	static void SEV();
+	static void SEZ();
+	static void SEN();
+	static void CCC();
+	static void SCC();
 #pragma endregion
 
 //Single operation instructions
 #pragma region SOI
-	OctalWord CLR(const OctalWord& src);
-	OctalWord COM(const OctalWord& src);
-	OctalWord INC(const OctalWord& src);
-	OctalWord DEC(const OctalWord& src);
-	OctalWord NEG(const OctalWord& src);
-	OctalWord ADC(const OctalWord& src);
-	OctalWord SBC(const OctalWord& src);
-	OctalWord TST(const OctalWord& src);
-	OctalWord ROR(const OctalWord& src);
-	OctalWord ROL(const OctalWord& src);
-	OctalWord ASR(const OctalWord& src);
-	OctalWord ASL(const OctalWord& src);
-	OctalWord SXT(const OctalWord& src);		// is this a byte operation?
+	static OctalWord CLR(const OctalWord& src);
+	static OctalWord COM(const OctalWord& src);
+	static OctalWord INC(const OctalWord& src);
+	static OctalWord DEC(const OctalWord& src);
+	static OctalWord NEG(const OctalWord& src);
+	static OctalWord ADC(const OctalWord& src);
+	static OctalWord SBC(const OctalWord& src);
+	static OctalWord TST(const OctalWord& src);
+	static OctalWord ROR(const OctalWord& src);
+	static OctalWord ROL(const OctalWord& src);
+	static OctalWord ASR(const OctalWord& src);
+	static OctalWord ASL(const OctalWord& src);
+	static OctalWord SXT(const OctalWord& src);		// is this a byte operation?
 #pragma endregion
 
 //Double operation instructions
 #pragma region DOI
-	OctalWord MOV(const OctalWord& dest, const OctalWord& src);
-	OctalWord CMP(const OctalWord& dest, const OctalWord& src);
-	OctalWord BIT(const OctalWord& dest, const OctalWord& src);
-	OctalWord BIC(const OctalWord& dest, const OctalWord& src);
-	OctalWord BIS(const OctalWord& dest, const OctalWord& src);
-	OctalWord ADD(const OctalWord& dest, const OctalWord& src);
-	OctalWord SUB(const OctalWord& dest, const OctalWord& src);
+	static OctalWord MOV(const OctalWord& dest, const OctalWord& src);
+	static OctalWord CMP(const OctalWord& dest, const OctalWord& src);
+	static OctalWord BIT(const OctalWord& dest, const OctalWord& src);
+	static OctalWord BIC(const OctalWord& dest, const OctalWord& src);
+	static OctalWord BIS(const OctalWord& dest, const OctalWord& src);
+	static OctalWord ADD(const OctalWord& dest, const OctalWord& src);
+	static OctalWord SUB(const OctalWord& dest, const OctalWord& src);
 #pragma endregion
 
 //Extended double operation instruction
 #pragma region EDOI
-	OctalWord MUL();
-	OctalWord DIV();
-	OctalWord ASH();
-	OctalWord ASHC();
-	OctalWord XOR();
-	OctalWord FPO();
-	OctalWord SYSINSTRUCTION();
-	OctalWord SOB();
+	static OctalWord MUL();
+	static OctalWord DIV();
+	static OctalWord ASH();
+	static OctalWord ASHC();
+	static OctalWord XOR();
+	static OctalWord FPO();
+	static OctalWord SYSINSTRUCTION();
+	static OctalWord SOB();
 #pragma endregion
 
 #pragma region BI
-	OctalWord BR(const OctalWord& src);
-	OctalWord BNE(const OctalWord& src);
-	OctalWord BEQ(const OctalWord& src);
-	OctalWord BPL(const OctalWord& src);
-	OctalWord BMI(const OctalWord& src);
-	OctalWord BVC(const OctalWord& src);
-	OctalWord BVS(const OctalWord& src);
-	OctalWord BHIS(const OctalWord& src);
-	OctalWord BCC(const OctalWord& src);
-	OctalWord BLO(const OctalWord& src);
-	OctalWord BCS(const OctalWord& src);
-	OctalWord BGE(const OctalWord& src);
-	OctalWord BLT(const OctalWord& src);
-	OctalWord BGT(const OctalWord& src);
-	OctalWord BLE(const OctalWord& src);
-	OctalWord BHI(const OctalWord& src);
-	OctalWord BLOS(const OctalWord& src);
+	static OctalWord BR(const OctalWord& src);
+	static OctalWord BNE(const OctalWord& src);
+	static OctalWord BEQ(const OctalWord& src);
+	static OctalWord BPL(const OctalWord& src);
+	static OctalWord BMI(const OctalWord& src);
+	static OctalWord BVC(const OctalWord& src);
+	static OctalWord BVS(const OctalWord& src);
+	static OctalWord BHIS(const OctalWord& src);
+	static OctalWord BCC(const OctalWord& src);
+	static OctalWord BLO(const OctalWord& src);
+	static OctalWord BCS(const OctalWord& src);
+	static OctalWord BGE(const OctalWord& src);
+	static OctalWord BLT(const OctalWord& src);
+	static OctalWord BGT(const OctalWord& src);
+	static OctalWord BLE(const OctalWord& src);
+	static OctalWord BHI(const OctalWord& src);
+	static OctalWord BLOS(const OctalWord& src);
 #pragma endregion
 
 //Null functions
 #pragma region NULLFUNC
-	OctalWord NULLFUNC();
-	OctalWord NULLFUNC(const OctalWord& src);
-	OctalWord NULLFUNC(const OctalWord& dest, const OctalWord& src);
+	static OctalWord NULLFUNC0();
+	static OctalWord NULLFUNC1(const OctalWord& src);
+	static OctalWord NULLFUNC2(const OctalWord& dest, const OctalWord& src);
+	static OctalWord NULLFUNCAM(const OctalWord& dest, const int);
 #pragma endregion
 
 //Functions to check the instruction types
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
-	bool checkForBranch(int value);
-	bool checkForDO(OctalWord w);
-	bool checkUnimplementedDoubleOp(OctalWord w);
-	bool checkForSO(OctalWord w);
-	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
-	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
+	static bool checkForBranch(int value);
+	static bool checkForDO(OctalWord w);
+	static bool checkUnimplementedDoubleOp(OctalWord w);
+	static bool checkForSO(OctalWord w);
+	static bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
+	static bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 #pragma endregion
 
 //Function to execute the intruction types
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
-	void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal);
-	void doBranchInstruction(OctalWord w);
-	void doUnimplementedDoubleOp(OctalWord w);
-	void doDoubleOpInstruction(OctalWord w);
-	void doSingleOpInstruction(OctalWord w);
-	void doPSWI(OctalWord w);
-	void WriteBack(int am, int destReg, OctalWord writenVal);
+	static void WriteBack(int am, int destReg, OctalWord writenVal);
+	static void doBranchInstruction(OctalWord w);
+	static void doUnimplementedDoubleOp(OctalWord w);
+	static void doDoubleOpInstruction(OctalWord w);
+	static void doSingleOpInstruction(OctalWord w);
+	static void doPSWI(OctalWord w);
 #pragma endregion
 
 #pragma region TABLE
@@ -146,37 +146,37 @@ private:
 #pragma endregion
 
 #pragma region VARS
-	Register r[NUMGENERALREGISTERS]; //General purpose registers
-	Register sp; //Stack pointer register
-	Register pc; //Program counter register
-	StatusRegister status; //Status register
-	Memory memory; //Memory array
-	int instructionCount;
-	bool debugMemory;
-	bool debugRegisters;
-	Table<int, AddressModeFunc>* AM;
-	OctalWord ci;
-	executeFunction execute;
-	Table<int, OneParamFunc>* SO;
-	Table<int, TwoParamFunc>* DO;
-	Table<int, OneParamFunc>* BI;
-	Table<int, NoParamFunc>*  PSWI;
-	Table<int, NoParamFunc>* EDO;
+	static Register r[NUMGENERALREGISTERS]; //General purpose registers
+	static Register sp; //Stack pointer register
+	static Register pc; //Program counter register
+	static StatusRegister status; //Status register
+	static Memory memory; //Memory array
+	static int instructionCount;
+	static bool debugMemory;
+	static bool debugRegisters;
+	static Table<int, AddressModeFunc>* AM;
+	static OctalWord ci;
+	static executeFunction execute;
+	static Table<int, OneParamFunc>* SO;
+	static Table<int, TwoParamFunc>* DO;
+	static Table<int, OneParamFunc>* BI;
+	static Table<int, NoParamFunc>*  PSWI;
+	static Table<int, NoParamFunc>* EDO;
 #pragma endregion
 
 #pragma region AM
-	OctalWord REGISTER(OctalWord regValue, int reg);
-	OctalWord REGISTER_DEFERRED(OctalWord regValue, int reg);
-	OctalWord AUTOINC(OctalWord regValue, int reg);
-	OctalWord AUTOINC_DEFERRED(OctalWord regValue, int reg);
-	OctalWord AUTODEC(OctalWord regValue, int reg);
-	OctalWord AUTODEC_DEFERRED(OctalWord regValue, int reg);
-	OctalWord INDEX(OctalWord regValue, int reg);
-	OctalWord INDEX_DEFERRED(OctalWord regValue, int reg);
+	static OctalWord REGISTER(OctalWord regValue, int reg);
+	static OctalWord REGISTER_DEFERRED(OctalWord regValue, int reg);
+	static OctalWord AUTOINC(OctalWord regValue, int reg);
+	static OctalWord AUTOINC_DEFERRED(OctalWord regValue, int reg);
+	static OctalWord AUTODEC(OctalWord regValue, int reg);
+	static OctalWord AUTODEC_DEFERRED(OctalWord regValue, int reg);
+	static OctalWord INDEX(OctalWord regValue, int reg);
+	static OctalWord INDEX_DEFERRED(OctalWord regValue, int reg);
 #pragma endregion
 
 #pragma region PRINT_TO_FILE
-	bool PRINT_TO_FILE(OctalWord address, char type);
+	static bool PRINT_TO_FILE(OctalWord address, char type);
 #pragma endregion
 };
 #endif

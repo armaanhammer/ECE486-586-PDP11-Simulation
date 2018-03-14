@@ -260,7 +260,7 @@ void PDP11SimController::createSingleOpTable()
 	SO->add(ASR_OPCODE, this->ASR);
 	SO->add(ASL_OPCODE, this->ASL);
 	SO->add(SXT_OPCODE, this->SXT);
-	SO->invalid = this->NULLFUNC;
+	SO->invalid = this->NULLFUNC1;
 }
 
 //Create a table of double operation instructions
@@ -274,7 +274,7 @@ void PDP11SimController::createDoubleOpTable()
 	DO->add(BIS_OPCODE, this->BIS);
 	DO->add(ADD_OPCODE, this->ADD);
 	DO->add(SUB_OPCODE, this->SUB);
-	DO->invalid = this->NULLFUNC;
+	DO->invalid = this->NULLFUNC2;
 }
 
 //Create a table for addressing modes
@@ -289,7 +289,7 @@ void PDP11SimController::createAddressingModeTable()
 	AM->add(REGISTER_CODE, this->AUTODEC_DEFERRED);
 	AM->add(REGISTER_CODE, this->INDEX);
 	AM->add(REGISTER_CODE, this->INDEX_DEFERRED);
-	AM->invalid = this->NULLFUNC;
+	AM->invalid = this->NULLFUNCAM;
 }
 
 //Create a table for the branch instructions
@@ -313,7 +313,7 @@ void PDP11SimController::createBranchTable()
 	BI->add(BLE_OPCODE, this->BLE);
 	BI->add(BHI_OPCODE, this->BHI);
 	BI->add(BLOS_OPCODE, this->BLOS);
-	BI->invalid = this->NULLFUNC;
+	BI->invalid = this->NULLFUNC1;
 }
 
 void PDP11SimController::createPSWITable()
@@ -330,7 +330,7 @@ void PDP11SimController::createPSWITable()
 	PSWI->add(SEN_OPCODE, this->SEN);
 	PSWI->add(CCC_OPCODE, this->CCC);
 	PSWI->add(SCC_OPCODE, this->SCC);
-	PSWI->invalid = this->NULLFUNC;
+	PSWI->invalid = this->NULLFUNC0;
 }
 
 //Create a table for the extended double operation instructions
@@ -345,7 +345,7 @@ void PDP11SimController::createEDOITable()
 	EDO->add(FLOATING_POINT_OPCODE, this->FPO);
 	EDO->add(SYSTEM_NSTRUCTION_OPCODE, this->SYSINSTRUCTION);
 	EDO->add(SOB_OPCODE, this->SOB);
-	EDO->invalid = this->NULLFUNC;
+	EDO->invalid = this->NULLFUNC0;
 }
 #pragma endregion
 
@@ -668,20 +668,26 @@ int PDP11SimController::getInstructionCount()
 ///-----------------------------------------------
 /// NULL Functions
 ///-----------------------------------------------
-OctalWord PDP11SimController::NULLFUNC()
+OctalWord PDP11SimController::NULLFUNC0()
 {
 	cout << "some opcode has resulted in a NULLFUNC with no parameters called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNC(const OctalWord& src)
+OctalWord PDP11SimController::NULLFUNC1(const OctalWord& src)
 {
 	cout << "some opcode has resulted in a NULLFUNC with one parameter:" << src.value << " called\n";
 }
 
-OctalWord PDP11SimController::NULLFUNC(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::NULLFUNC2(const OctalWord& dest, const OctalWord& src)
 {
 	cout << "some opcode has resulted in a NULLFUNC with two parameters:";
 	cout << dest.value << " and " << src.value << " called\n";
+}
+
+OctalWord PDP11SimController::NULLFUNCAM(const OctalWord& dest, const int src)
+{
+	cout << "some opcode has resulted in a NULL Addressing Mode function with two parameters:";
+	cout << dest.value << " and " << src << " called\n";
 }
 
 #pragma endregion
@@ -1612,7 +1618,7 @@ OctalWord PDP11SimController::BCC(const OctalWord& src)
    It is used to test for a carry in the result of a previous operation.
    1 000 011 1xx xxx xxx BCS
    PC = PC + (2 * offset) if C = 1 */
-OctalWord PDP11SimController::BCS(const OctalWord& src)
+static OctalWord PDP11SimController::BCS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 
@@ -1630,49 +1636,49 @@ OctalWord PDP11SimController::BCS(const OctalWord& src)
 ///----------------------------------
 /// Extended Double Operand Instruction Functions
 ///----------------------------------
-OctalWord PDP11SimController::MUL()
+static OctalWord PDP11SimController::MUL()
 {
 	cout << "a MUL instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::DIV()
+static OctalWord PDP11SimController::DIV()
 {
 	cout << "a DIV instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::ASH()
+static OctalWord PDP11SimController::ASH()
 {
 	cout << "a ASH instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::ASHC()
+static OctalWord PDP11SimController::ASHC()
 {
 	cout << "a ASHC instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::XOR()
+static OctalWord PDP11SimController::XOR()
 {
 	cout << "a XOR instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::FPO()
+static OctalWord PDP11SimController::FPO()
 {
 	cout << "a floating point instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::SYSINSTRUCTION()
+static OctalWord PDP11SimController::SYSINSTRUCTION()
 {
 	cout << "a system instruction was detected and skipped\n";
 }
 
-OctalWord PDP11SimController::SOB()
+static OctalWord PDP11SimController::SOB()
 {
 	cout << "a SOB instruction was detected and skipped\n";
 }
 #pragma endregion
 
 #pragma region PRINT_TO_FILE
-bool PRINT_TO_FILE(OctalWord address, char type)
+static bool PRINT_TO_FILE(OctalWord address, char type)
 {
 	//Declare the file to be opened
 	ofstream traceFile;

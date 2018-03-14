@@ -42,7 +42,7 @@ template<class T> T List<T>::find(T item)
 		return item;
 		temp = temp->next;
 	}
-	return NULL;
+	return 0;
 }
 
 template<class T> void List<T>::add(T item)
@@ -76,7 +76,7 @@ template<class T> bool List<T>::remove(T item)
 	case 1:
 		size = 0;
 		next = 0;
-		item = NULL;
+		item = 0;
 		return true;
 		break;
 	default:
@@ -148,7 +148,7 @@ template<class T> T List<T>::getAt(int index)
 		count++;
 		if (!temp)
 		{
-			return NULL;
+			return 0;
 		}
 	}
 	return temp->item;
