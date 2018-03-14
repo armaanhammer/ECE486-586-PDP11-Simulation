@@ -23,8 +23,35 @@ public:
 	void printRegs();
 
 private:
-	static void JSR(OctalWord src);
-	static void RTS(OctalWord src);
+#pragma region TYPES
+	typedef void(*NoParamFunc)();
+	typedef void(*executeFunction)(OctalWord);
+	typedef OctalWord(*OneParamFunc)(const OctalWord&);
+	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
+	typedef OctalWord(*AddressModeFunc)(OctalWord, int);
+#pragma endregion
+
+#pragma region VARS
+	static Register r[NUMGENERALREGISTERS]; //General purpose registers
+	static Register sp; //Stack pointer register
+	static Register pc; //Program counter register
+	static StatusRegister status; //Status register
+	static Memory memory; //Memory array
+	int instructionCount;
+	bool debugMemory;
+	bool debugRegisters;
+	Table<int, AddressModeFunc>* AM;
+	static OctalWord ci;
+	executeFunction execute;
+	Table<int, OneParamFunc>* SO;
+	Table<int, TwoParamFunc>* DO;
+	Table<int, OneParamFunc>* BI;
+	Table<int, NoParamFunc>*  PSWI;
+	Table<int, NoParamFunc>* EDO;
+#pragma endregion
+
+	void JSR(OctalWord src);
+	void RTS(OctalWord src);
 //processor status word instructions
 #pragma region PSWI
 	static void SPL();
@@ -110,22 +137,22 @@ private:
 
 //Functions to check the instruction types
 #pragma region CHECK_INSTRUCTION_TYPE_FUNCTIONS
-	static bool checkForBranch(int value);
-	static bool checkForDO(OctalWord w);
-	static bool checkUnimplementedDoubleOp(OctalWord w);
-	static bool checkForSO(OctalWord w);
-	static bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
-	static bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
+	bool checkForBranch(int value);
+	bool checkForDO(OctalWord w);
+	bool checkUnimplementedDoubleOp(OctalWord w);
+	bool checkForSO(OctalWord w);
+	bool checkForSPL(OctalBit b1, OctalBit b2, OctalBit b3, OctalBit b4, OctalBit b5);
+	bool checkForPSW(OctalBit b3, OctalBit b4, OctalBit b5);
 #pragma endregion
 
 //Function to execute the intruction types
 #pragma region EXEC_INSTRUCTION_TYPE_FUNCTIONS
-	static void WriteBack(int am, int destReg, OctalWord writenVal);
-	static void doBranchInstruction(OctalWord w);
-	static void doUnimplementedDoubleOp(OctalWord w);
-	static void doDoubleOpInstruction(OctalWord w);
-	static void doSingleOpInstruction(OctalWord w);
-	static void doPSWI(OctalWord w);
+	void WriteBack(int am, int destReg, OctalWord writenVal);
+	void doBranchInstruction(OctalWord w);
+	void doUnimplementedDoubleOp(OctalWord w);
+	void doDoubleOpInstruction(OctalWord w);
+	void doSingleOpInstruction(OctalWord w);
+	void doPSWI(OctalWord w);
 #pragma endregion
 
 #pragma region TABLE
@@ -135,33 +162,6 @@ private:
 	void createBranchTable();
 	void createPSWITable();
 	void createEDOITable();
-#pragma endregion
-
-#pragma region TYPES
-	typedef void(*NoParamFunc)();
-	typedef void(*executeFunction)(OctalWord);
-	typedef OctalWord(*OneParamFunc)(const OctalWord&);
-	typedef OctalWord(*TwoParamFunc)(const OctalWord&, const OctalWord&);
-	typedef OctalWord(*AddressModeFunc)(OctalWord, int);
-#pragma endregion
-
-#pragma region VARS
-	static Register r[NUMGENERALREGISTERS]; //General purpose registers
-	static Register sp; //Stack pointer register
-	static Register pc; //Program counter register
-	static StatusRegister status; //Status register
-	static Memory memory; //Memory array
-	static int instructionCount;
-	static bool debugMemory;
-	static bool debugRegisters;
-	static Table<int, AddressModeFunc>* AM;
-	static OctalWord ci;
-	static executeFunction execute;
-	static Table<int, OneParamFunc>* SO;
-	static Table<int, TwoParamFunc>* DO;
-	static Table<int, OneParamFunc>* BI;
-	static Table<int, NoParamFunc>*  PSWI;
-	static Table<int, NoParamFunc>* EDO;
 #pragma endregion
 
 #pragma region AM

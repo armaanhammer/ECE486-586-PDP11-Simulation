@@ -26,19 +26,20 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	createPSWITable();
 	createSingleOpTable();
 	createEDOITable();
-	ci = OctalWord(0);
-	memory = Memory();
 	for (int i = 0; i < NUMGENERALREGISTERS; i++)
 	{
 		r[i] = Register();
 	}
-	status = StatusRegister();
-	sp = Register();
 	sp.setval(OctalWord(STACK_STARTING_ADDRESS));
-	pc = Register();
 	debugMemory = debugMem;
 	debugRegisters = debugReg;
 }
+
+Register PDP11SimController::pc = Register();
+Register PDP11SimController::sp = Register();
+StatusRegister PDP11SimController::status = StatusRegister();
+Memory PDP11SimController::memory = Memory();
+OctalWord PDP11SimController::ci = OctalWord(0);
 
 ///-----------------------------------------------
 /// Destructor Function
@@ -76,6 +77,7 @@ void PDP11SimController::run()
 			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
 			if (debugMemory) memory.print();
 			if (debugRegisters) printRegs();
+			instructionCount++;
 		}
 	}
 }
@@ -364,41 +366,41 @@ bool PDP11SimController::decode()
 	}
 	if (ci[5] == 0 && ci[4] == 0 && ci[3] == 4)
 	{
-		execute = this->JSR;
+		JSR(ci);
 		return true;
 	}
 	if (ci[5] == 0 && ci[4] == 0 && ci[3] == 0 && ci[2] == 2 && ci[1] == 0)
 	{
-		execute = this->RTS;
+		RTS(ci);
 		return true;
 	}
 	// check to see if op is PSWI, if true exec op
 	if (checkForPSW(ci[3], ci[4], ci[5]))
 	{ 	
-		execute = this->doPSWI; 
+		doPSWI(ci); 
 		return true; 
 	}
 	// check to see if op is Branch Instruction, if true exec Instruction
 	if (checkForBranch(ci.value)) 
 	{ 
-		execute = this->doBranchInstruction; 
+		doBranchInstruction(ci); 
 		return true; 
 	}
 	// check to see if single operand instruction, if true exec instruction
 	if (checkForSO(ci)) 
 	{ 	
-		execute = this->doSingleOpInstruction;
+		doSingleOpInstruction(ci);
 		return true; 
 	}
 	// check to see if double operand instruction, if true exec instruction
 	if (checkForDO(ci)) 
 	{
-		execute = this->doDoubleOpInstruction; 
+		doDoubleOpInstruction(ci); 
 		return true; 
 	}
 	if (checkUnimplementedDoubleOp(ci)) 
 	{ 
-		execute = this->doUnimplementedDoubleOp; 
+		doUnimplementedDoubleOp(ci); 
 		return true; 
 	}
 	cerr << "un reachable code segment end of bool PDP11SimController::decode(int octalVA) reached\n";
@@ -618,7 +620,9 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 	int value = w.value;
 	int opcode = value >> 8;
 
-	(*(BI->find(opcode)))(ci);
+	OctalWord newpc = (*(BI->find(opcode)))(ci);
+	
+	WriteBack(0, 7, newpc);
 }
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
@@ -1395,8 +1399,7 @@ OctalWord PDP11SimController::BR(const OctalWord& src)
 
 	offset<<1;
 	OctalWord pcvalue = pc.getVal() + offset;
-	cout <<"BR\n"; 
-	WriteBack(0, 7, pcvalue);
+	return pcvalue;
 }
 
 /* Description: Causes a branch if N and V are either both clear or both set.
@@ -1405,14 +1408,14 @@ OctalWord PDP11SimController::BR(const OctalWord& src)
 OctalWord PDP11SimController::BGE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.V == 0 || status.N == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BGE\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:	Tests the state of the Z-bit and causes a branch if the Z-bit is clear.
@@ -1421,14 +1424,14 @@ OctalWord PDP11SimController::BGE(const OctalWord& src)
 OctalWord PDP11SimController::BNE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.Z == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BNE\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: Tests the state of the Z-bit and causes a branch if Z is set.
@@ -1437,14 +1440,14 @@ PC = PC + (2 * offset) if Z = 1 */
 OctalWord PDP11SimController::BEQ(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.Z == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BEQ\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:Tests the state of the N-bit and causes a branch if N is clear. 
@@ -1454,14 +1457,14 @@ OctalWord PDP11SimController::BEQ(const OctalWord& src)
 OctalWord PDP11SimController::BPL(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.N == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BPL\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: Tests the state of the N-bit and causes a branch if N is set. 
@@ -1472,14 +1475,14 @@ OctalWord PDP11SimController::BPL(const OctalWord& src)
 OctalWord PDP11SimController::BMI(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.N == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BMI\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:Tests the state of the V bit and causes a branch if the V bit is clear. 
@@ -1489,14 +1492,14 @@ OctalWord PDP11SimController::BMI(const OctalWord& src)
 OctalWord PDP11SimController::BVC(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.V == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BVC\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: BHIS is the same instruction as BCC. 
@@ -1507,14 +1510,14 @@ OctalWord PDP11SimController::BVC(const OctalWord& src)
 OctalWord PDP11SimController::BHIS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.C == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BHIS\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: Causes a branch if the "Exclusive Or" of the N and V bits are 1.
@@ -1523,14 +1526,14 @@ OctalWord PDP11SimController::BHIS(const OctalWord& src)
 OctalWord PDP11SimController::BLT(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.N == 1 || status.V == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BLT\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:Operation of BGT is similar to BGE, 
@@ -1540,15 +1543,14 @@ OctalWord PDP11SimController::BLT(const OctalWord& src)
 OctalWord PDP11SimController::BGT(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.N == status.V)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BGT\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
-
+	return pcvalue;
 }
 
 /* Description:Operation is similar to BLT but in addition will 
@@ -1558,14 +1560,14 @@ OctalWord PDP11SimController::BGT(const OctalWord& src)
 OctalWord PDP11SimController::BLE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.N != status.V)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BLE\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: Tests the state of V bit (overflow) and causes a branch 
@@ -1574,14 +1576,14 @@ OctalWord PDP11SimController::BLE(const OctalWord& src)
 OctalWord PDP11SimController::BVS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.V == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BVS\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:Causes a branch if the previous operation caused either a carry or a zero result.
@@ -1590,14 +1592,14 @@ OctalWord PDP11SimController::BVS(const OctalWord& src)
 OctalWord PDP11SimController::BLOS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.Z == 1 || status.C == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BLOS\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description:Tests the state of the C-bit and causes a branch if C is clear. 
@@ -1606,14 +1608,14 @@ OctalWord PDP11SimController::BLOS(const OctalWord& src)
 OctalWord PDP11SimController::BCC(const OctalWord& src)
 {   
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.C == 0)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BCC\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 
 /* Description: Tests the state of the C-bit and causes a branch if C is set. 
@@ -1623,14 +1625,14 @@ OctalWord PDP11SimController::BCC(const OctalWord& src)
 OctalWord PDP11SimController::BCS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
+	OctalWord pcvalue = pc.getVal();
 
 	if(status.C == 1)
 	{
 		offset<<1;
-		OctalWord pcvalue = pc.getVal() + offset;
-		cout <<"BCS\n"; 
-		WriteBack(0, 7, pcvalue);
+		pcvalue = pcvalue + offset;
 	}
+	return pcvalue;
 }
 #pragma endregion
 
