@@ -18,11 +18,17 @@ OctalWord::OctalWord()
 OctalWord::OctalWord(int val)
 {
 	value = val;
-	for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
+	octbit[0].b = val & 07;
+	octbit[1].b = (val & 070) >> 3;
+	octbit[2].b = (val & 0700) >> 6;
+	octbit[3].b = (val & 07000) >> 9;
+	octbit[4].b = (val & 070000) >> 12;
+	octbit[5].b = (val & 0100000) >> 15;
+	/*for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
 	{
 		int leftshift = val << ((WORD_OCTAL_LENGTH - i - 1) * 3);
 		octbit[i].b = leftshift >> ((WORD_OCTAL_LENGTH - 1) * 3);
-	}
+	}*/
 }
 
 OctalWord::~OctalWord()
@@ -53,11 +59,17 @@ string OctalWord::print(bool)
 
 void OctalWord::updateBits()
 {
-	for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
+	octbit[0].b = value & 07;
+	octbit[1].b = (value & 070) >> 3;
+	octbit[2].b = (value & 0700) >> 6;
+	octbit[3].b = (value & 07000) >> 9;
+	octbit[4].b = (value & 070000) >> 12;
+	octbit[5].b = (value & 0100000) >> 15;
+	/*for (int i = 0; i < WORD_OCTAL_LENGTH; i++)
 	{
-		int leftshift = this->value << ((WORD_OCTAL_LENGTH - i - 1) * 3);
-		this->octbit[i].b = leftshift >> ((WORD_OCTAL_LENGTH - 1) * 3);
-	}
+	int leftshift = val << ((WORD_OCTAL_LENGTH - i - 1) * 3);
+	octbit[i].b = leftshift >> ((WORD_OCTAL_LENGTH - 1) * 3);
+	}*/
 }
 
 OctalBit& OctalWord::operator[] (int index)
