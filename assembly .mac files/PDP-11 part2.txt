@@ -1,0 +1,35 @@
+Location no			Data// everything is in octal
+0					-077777		A: .WORD 077777
+
+2					-000001		B: .WORD 000001
+
+4					-016701		START:   MOV A,R1; //start denotes address 4 (in octal)
+
+6					-177770		177770 octal + 10octal (current PC) jumps to location 0
+
+10					-016702		MOV B,R2;
+
+12					-177766		177766 octal + 14 octal(current PC)->loc2 //2 000 02
+                                                  //010  000_000_000   000_010         
+14					-060102		ADD R1,R2
+
+16					-005502		ADC R2;
+
+20					-000000 	HALT;
+					//"-" means halt "@" means starting address thats how 
+						one differentiates between halt and starting address
+					
+so my op trace file is some what like this
+0 indicate data read
+1 data write
+2 instr fetch
+
+2 000004
+0 000006
+0 000000
+2 000010
+0 000012
+0 000002
+2 000014
+2 000016
+2 000020

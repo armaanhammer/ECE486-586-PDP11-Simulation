@@ -2,3 +2,5 @@
 *.swp
 .DS_Store
 *.json
+src/PDPSim
+src/trace_file.txt
