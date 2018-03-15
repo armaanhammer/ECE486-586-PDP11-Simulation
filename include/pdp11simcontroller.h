@@ -138,15 +138,6 @@ private:
 	void doPSWI(OctalWord w);
 #pragma endregion
 
-#pragma region TABLE
-	void createSingleOpTable();
-	void createDoubleOpTable();
-	void createAddressingModeTable();
-	void createBranchTable();
-	void createPSWITable();
-	void createEDOITable();
-#pragma endregion
-
 #pragma region AM
 	OctalWord getOperand(OctalWord regValue, int reg, int addressMode);
 	OctalWord REGISTER(OctalWord regValue, int reg);
@@ -157,6 +148,16 @@ private:
 	OctalWord AUTODEC_DEFERRED(OctalWord regValue, int reg);
 	OctalWord INDEX(OctalWord regValue, int reg);
 	OctalWord INDEX_DEFERRED(OctalWord regValue, int reg);
+	OctalWord PC_IMMEDIATE(OctalWord regValue, int reg);
+	OctalWord PC_ABSOLUTE(OctalWord regValue, int reg);
+	OctalWord PC_RELATIVE(OctalWord regValue, int reg);
+	OctalWord PC_RELATIVE_DEFERRED(OctalWord regValue, int reg);
+	OctalWord SP_DEFERRED(OctalWord regValue, int reg);
+	OctalWord SP_AUTOINC(OctalWord regValue, int reg);
+	OctalWord SP_AUTOINC_DEFERRED(OctalWord regValue, int reg);
+	OctalWord SP_AUTODEC(OctalWord regValue, int reg);
+	OctalWord SP_INDEXED(OctalWord regValue, int reg);
+	OctalWord SP_INDEX_DEFERRED(OctalWord regValue, int reg);
 #pragma endregion
 
 #pragma region PRINT_TO_FILE
