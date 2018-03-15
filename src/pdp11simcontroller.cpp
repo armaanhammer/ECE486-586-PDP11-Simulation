@@ -578,7 +578,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Write to the location pointed to by the pc
 		memory.setWord(memory.getWord(pc.getVal()), writenVal);
 		//Print to the trace file (data write)
-		PRINT_TO_FILE(memory.getWord(pc.getVal), 1);
+		PRINT_TO_FILE(memory.getWord(pc.getVal()), 1);
 		//Increment the PC
 		pc.setval(pc.getVal() + 2);
 		break;
@@ -599,7 +599,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		PRINT_TO_FILE(memory.getWord((memory.getWord(pc.getVal())) + (pc.getVal() + 2)), 1);
 		//Increment the PC by 2
 		pc.setval(pc.getVal() + 4);
-		break;
 		break;
 	case(SP_DEFERRED_CODE):
 		break;
@@ -963,11 +962,14 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 	return indexMemory;
 }
 
+///-----------------------------------------------
+/// Program Counter Addressing Mode
+///-----------------------------------------------
 //----------------------------------------------------------------------------------------------------
 //Function: PC_IMMEDIATE
-//Input:		(OctalWord) regValue -
-//				(int) reg -
-//Output:		(OctalWord)
+//Input:		(OctalWord) regValue - contents contained in the register (Not used for PC modes)
+//				(int) reg - pc register in immediate mode
+//Output:		(OctalWord) the contents contained in the memory
 //Description:	Equivalent to using the autoincrement mode with the PC. Providing time improvements for
 //				acessing constant operands by including the constant in the memory location immediately
 //				following the instruction word.
@@ -989,9 +991,9 @@ OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 
 //----------------------------------------------------------------------------------------------------
 //Function: PC_ABSOLUTE
-//Input:		(OctalWord) regValue -
-//				(int) reg -
-//Output:		(OctalWord)
+//Input:		(OctalWord) regValue - contents contained in the register (Not used for PC modes)
+//				(int) reg - pc register in absolute mode
+//Output:		(OctalWord) the contents contained in the memory
 //Description:	Equivalent of immediate deferred or autoincrement deferred mode using the PC. The 
 //				content of the location following the instruction are taken as the address of the 
 //				operand. Immediate data is interperted as an absolute address
@@ -1013,9 +1015,9 @@ OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 
 //----------------------------------------------------------------------------------------------------
 //Function: PC_RELATIVE
-//Input:		(OctalWord) regValue -
-//				(int) reg -
-//Output:		(OctalWord)
+//Input:		(OctalWord) regValue - contents contained in the register (Not used for PC modes)
+//				(int) reg - pc register in relative mode
+//Output:		(OctalWord) the contents contained in the memory
 //Description:	Equivalent to index mode using the PC. The operand's address is calculated by adding
 //				the word that follows the instruction to the updated contents of the PC. PC +2 directs
 //				the CPU to the offset that follows the instruction. PC + 4 is summed with this offset
@@ -1042,9 +1044,9 @@ OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 
 //----------------------------------------------------------------------------------------------------
 //Function: PC_RELATIVE_DEFERRED
-//Input:		(OctalWord) regValue -
-//				(int) reg -
-//Output:		(OctalWord)
+//Input:		(OctalWord) regValue - contents contained in the register (Not used for PC modes)
+//				(int) reg - pc register in relative deferred mode
+//Output:		(OctalWord) the contents contained in the memory
 //Description:	Equivalent to index deferred mode using the PC. A pointer to an operand's address is 
 //				calculated by adding an offest to the updated PC. The mode is simular to relative mode
 //				except one additional level of addressing to obtain the operand. The sum of the offset
@@ -1075,72 +1077,112 @@ OctalWord PDP11SimController::PC_RELATIVE_DEFERRED(OctalWord regValue, int reg)
 	return memory.getWord(memory.getWord(memoryOffset + pcOffset));
 }
 
+///---------------------------------------------------------------------------------
+/// Stack Addressing modes
+//	Note that the stack grows downward towards the lower addresses as items are push
+///---------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
-//Function: SP_DEFERRED
+//Function: SP_DEFERRED (SP)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Obtain the operand pointed to on the stack (on the top)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_DEFERRED(OctalWord regValue, int reg)
 {
+	//Obtain the operand on top of the stack
+	OctalWord topStack = memory.getWord(sp.getVal());
+
+	//Return the operand pointed to by the stack
+	return topStack;
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SP_AUTOINC
+//Function: SP_AUTOINC (SP)+
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Obtain the operand from the top of the stack and then pop the operand off the stack
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTOINC(OctalWord regValue, int reg)
 {
+	//Obtain the operand on top of the stack
+	OctalWord topStack = memory.getWord(sp.getVal());
+
+	//Pop the operand off the stack
+	sp.setval(sp.getVal() + 2);
+
+	//Return the operand pointed to by the stack
+	return topStack;
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SP_AUTOINC_DEFERRED
+//Function: SP_AUTOINC_DEFERRED @(SP)+
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Obtain the pointer to an operand from the top of the stack and then pop the pointer
+//				off the stack
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
+	//Obtain the pointer to an operand on top of the stack
+	OctalWord topStack = memory.getWord(sp.getVal());
+
+	//Pop the pointer to an operand off the stack
+	sp.setval(sp.getVal() + 2);
+
+	//Return the pointer to an operand pointed to by the stack
+	return memory.getWord(topStack);
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SP_AUTODEC
+//Function: SP_AUTODEC -(SP)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Push a value onto the stack
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTODEC(OctalWord regValue, int reg)
 {
+	//Push the item onto the stack
+	memory.setWord(sp.getVal(), regValue);
+
+	//Decrememt the stack pointer
+	sp.setval(sp.getVal() - 2);
+
+	//Return the operand pushed to the stack
+	return regValue;
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SP_INDEXED
+//Function: SP_INDEXED X(SP)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Reference any operand in the stack by its positive distance from the top of the stack
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_INDEXED(OctalWord regValue, int reg)
 {
+	//NOT WORKING YET!!!
+	return regValue;
 }
 
 //----------------------------------------------------------------------------------------------------
-//Function: SP_INDEX_DEFERRED
+//Function: SP_INDEX_DEFERRED @X(SP)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Reference any pointer to an operand in the stack by its positive distance from the
+//				top of the stack
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_INDEX_DEFERRED(OctalWord regValue, int reg)
 {
+	//NOT WORKKING YET!!!
+	return regValue;
 }
 #pragma endregion
+
 
 #pragma region DOUBLE_OPERAND_INSTRUCTIONS
 ///-----------------------------------------------
