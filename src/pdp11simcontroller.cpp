@@ -572,7 +572,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 	case(SP_INDEX_CODE):
 		break;
-	case(Sp_INDEX_DEFFERRED_CODE):
+	case(SP_INDEX_DEFFERRED_CODE):
 		break;
 	default:
 		break;
@@ -748,16 +748,16 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 		case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
 		case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
 		case INDEX_DEFFERRED_CODE: operand = INDEX_DEFERRED(r[reg].getVal().value, reg); break;
-		//case PC_IMMEDIATE_CODE:			(r[reg].getVal().value, reg); break;
-		//case PC_ABSOLUTE_CODE:				(r[reg].getVal().value, reg); break;
-		//case PC_RELATIVE_CODE:				(r[reg].getVal().value, reg); break;
-		//case PC_RELATIVE_DEFERRED_CODE:	(r[reg].getVal().value, reg); break;
-		//case SP_DEFERRED_CODE:				(r[reg].getVal().value, reg); break;
-		//case SP_AUTOINC_CODE:				(r[reg].getVal().value, reg); break;
-		//case SP_AUTOINC_DEFERRED_CODE:		(r[reg].getVal().value, reg); break;
-		//case SP_AUTODEC_CODE:				(r[reg].getVal().value, reg); break;
-		//case SP_INDEX_CODE:				(r[reg].getVal().value, reg); break;
-		//case Sp_INDEX_DEFFERRED_CODE:		(r[reg].getVal().value, reg); break;
+		case PC_IMMEDIATE_CODE: PC_IMMEDIATE(r[reg].getVal().value, reg); break;
+		case PC_ABSOLUTE_CODE: PC_ABSOLUTE(r[reg].getVal().value, reg); break;
+		case PC_RELATIVE_CODE: PC_RELATIVE(r[reg].getVal().value, reg); break;
+		case PC_RELATIVE_DEFERRED_CODE: PC_RELATIVE_DEFERRED(r[reg].getVal().value, reg); break;
+		case SP_DEFERRED_CODE: SP_DEFERRED(r[reg].getVal().value, reg); break;
+		case SP_AUTOINC_CODE: SP_AUTOINC(r[reg].getVal().value, reg); break;
+		case SP_AUTOINC_DEFERRED_CODE: SP_AUTOINC_DEFERRED(r[reg].getVal().value, reg); break;
+		case SP_AUTODEC_CODE: SP_AUTODEC(r[reg].getVal().value, reg); break;
+		case SP_INDEX_CODE: SP_INDEXED(r[reg].getVal().value, reg); break;
+		case SP_INDEX_DEFFERRED_CODE: SP_INDEX_DEFERRED(r[reg].getVal().value, reg); break;
 		default:
 			cerr << "";
 			break;
@@ -865,6 +865,46 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 
 	//Return the value from that the pointer points to
 	return indexMemory;
+}
+
+OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::PC_RELATIVE_DEFERRED(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_DEFERRED(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_AUTOINC(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_AUTOINC_DEFERRED(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_AUTODEC(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_INDEXED(OctalWord regValue, int reg)
+{
+}
+
+OctalWord PDP11SimController::SP_INDEX_DEFERRED(OctalWord regValue, int reg)
+{
 }
 #pragma endregion
 
