@@ -782,12 +782,26 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 	return operand;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: REGISTER
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::REGISTER(OctalWord regValue, int reg)
 {
 	//Obtain the value from the register
 	return regValue;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: REGISTER_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 {
 	//Print to the trace file (data read)
@@ -797,6 +811,13 @@ OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 	return memory.getWord(regValue);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTOINC
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 {
 	//Increment the value of the register
@@ -809,6 +830,13 @@ OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 	return memory.getWord(regValue);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTOINC_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
 	//Increment the value of the register
@@ -821,6 +849,13 @@ OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 	return memory.getWord(memory.getWord(regValue));
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTODEC
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
@@ -833,6 +868,13 @@ OctalWord PDP11SimController::AUTODEC(OctalWord regValue, int reg)
 	return memory.getWord(regValue - 2);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: AUTODEC_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 {
 	//Decrement the value of the register
@@ -845,6 +887,13 @@ OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 	return memory.getWord(memory.getWord(regValue - 2));
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: INDEX
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
 	//Obtain the pointer to the memory address
@@ -863,6 +912,13 @@ OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 	return indexMemory;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: INDEX_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
 	//Obtain the pointer to the memory address
@@ -884,42 +940,125 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 	return indexMemory;
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: PC_IMMEDIATE
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description:	Equivalent to using the autoincrement mode with the PC. Providing time improvements for
+//				acessing constant operands by including the constant in the memory location immediately
+//				following the instruction word.
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 {
+	//Obtain the value pointed to by the PC
+	OctalWord operand = pc.getVal();
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(operand, 0);
+
+	//Return the pointed to value
+	return memory.getWord(operand);
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: PC_ABSOLUTE
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: PC_RELATIVE
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: PC_RELATIVE_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_RELATIVE_DEFERRED(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_DEFERRED(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_AUTOINC
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTOINC(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_AUTOINC_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_AUTODEC
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_AUTODEC(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_INDEXED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_INDEXED(OctalWord regValue, int reg)
 {
 }
 
+//----------------------------------------------------------------------------------------------------
+//Function: SP_INDEX_DEFERRED
+//Input:		(OctalWord) regValue -
+//				(int) reg -
+//Output:		(OctalWord)
+//Description: 
+//----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::SP_INDEX_DEFERRED(OctalWord regValue, int reg)
 {
 }
