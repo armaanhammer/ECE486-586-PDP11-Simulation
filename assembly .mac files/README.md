@@ -8,4 +8,4 @@ As far as I understand it, the files work like so:
 
 Feeding _addc.mac_ into Faust's binary should produce _addc.ascii_
 
-Feeding _addc.ascii_ into our PDP-11 simulator should produce results that somehow relate to the two _PDP11_ text files.
+Feeding _addc.ascii_ into our PDP-11 simulator should produce results that somehow relate to the two _PDP11 text files_.
