@@ -45,10 +45,16 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
+	//First instruction fetch before while loop is for check for HALT
 	fetch();
 	while(ci != HALT_OPCODE)
 	{
+		//Second instruction fetch is to fetch the next instruction from memory
 		fetch();
+
+		//Print to the trace file (instruction fetch)
+		PRINT_TO_FILE(pc.getVal(), 2);
+
 		if (ci != NOP_OPCODE) 
 		{
 			if (!decode())
@@ -168,9 +174,6 @@ void PDP11SimController::fetch()
 {
 	//Fetch the current instruction
 	ci = memory.getWord(pc.getVal());
-
-	//Print to the trace file (instruction fetch)
-	PRINT_TO_FILE(pc.getVal(), 2);
 }
 
 #pragma region JUMP
