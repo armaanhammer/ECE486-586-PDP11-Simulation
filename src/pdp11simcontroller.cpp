@@ -490,6 +490,10 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 
 void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
+	if (destReg == 6 || destReg == 7)
+	{
+		am = (8 * am) + destReg;
+	}
 	switch (am)
 	{
 	//Basic addressing register mode
@@ -575,6 +579,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(SP_INDEX_DEFFERRED_CODE):
 		break;
 	default:
+		cerr << "bad addressing mode used in writeback()," << am << destReg << ", " << writenVal.asString() << endl;
 		break;
 	}
 }
