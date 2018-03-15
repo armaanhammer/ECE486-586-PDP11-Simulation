@@ -951,6 +951,9 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 {
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
 	//Obtain the value pointed to by the PC
 	OctalWord location = pc.getVal();
 
@@ -975,6 +978,9 @@ OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 {
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
 	//Obtain the pointer to the location
 	OctalWord pointer = memory.getWord(pc.getVal());
 
@@ -993,10 +999,34 @@ OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Equivalent to index mode using the PC. The operand's address is calculated by adding
+//				the word that follows the instruction to the updated contents of the PC. PC +2 directs
+//				the CPU to the offset that follows the instruction. PC + 4 is summed with this offset
+//				to provide the effective address of the operand. Note that PC + 4 is also represents
+//				the address of the next instruction in the program.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 {
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Obtain the offset value from memory
+	OctalWord memoryOffset = memory.getWord(pc.getVal());
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Obtain the offset value from pc
+	OctalWord pcOffset = pc.getVal();
+
+	//Print to the trace file (read data)
+	PRINT_TO_FILE(memoryOffset + pcOffset, 0);
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Return the pointed to locations value
+	return memory.getWord(memoryOffset + pcOffset);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1004,10 +1034,34 @@ OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Equivalent to index deferred mode using the PC. A pointer to an operand's address is 
+//				calculated by adding an offest to the updated PC. The mode is simular to relative mode
+//				except one additional level of addressing to obtain the operand. The sum of the offset
+//				and the updated PC (PC + 4) serves as a pointer to an address. When the address is
+//				retrieved, it can be used to locate the operand.
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_RELATIVE_DEFERRED(OctalWord regValue, int reg)
 {
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Obtain the offset value from memory
+	OctalWord memoryOffset = memory.getWord(pc.getVal());
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Obtain the offset value from pc
+	OctalWord pcOffset = pc.getVal();
+
+	//Print to the trace file (read data)
+	PRINT_TO_FILE(memory.getWord(memoryOffset + pcOffset), 0);
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Return the pointed to locations value
+	return memory.getWord(memory.getWord(memoryOffset + pcOffset));
 }
 
 //----------------------------------------------------------------------------------------------------
