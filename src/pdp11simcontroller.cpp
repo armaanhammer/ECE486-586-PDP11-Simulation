@@ -255,7 +255,7 @@ void PDP11SimController::RTS(OctalWord src)
 bool PDP11SimController::decode()
 {
 	// check for too long of word
-	if (ci > MAX_OCTAL_VALUE) 
+	if (((unsigned int) ci.value) > ((unsigned int ) MAX_OCTAL_VALUE)) 
 	{ 
 		return false; 
 	}
