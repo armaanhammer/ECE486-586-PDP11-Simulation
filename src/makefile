@@ -11,7 +11,7 @@ endif
 
 PDPSim: pdp11simcontroller.cpp mem.cpp register.cpp octalword.cpp main.cpp
 	make clean
-	$(CC) -o main main.cpp pdp11simcontroller.cpp mem.cpp register.cpp octalword.cpp $(CFLAGS)
+	$(CC) -o PDPSim main.cpp pdp11simcontroller.cpp mem.cpp register.cpp octalword.cpp $(CFLAGS)
 
 .PHONY: clean
 clean:
