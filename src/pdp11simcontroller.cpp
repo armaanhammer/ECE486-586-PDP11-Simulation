@@ -568,15 +568,46 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
+		//Write the result to the destination register
+		r[destReg].setval(writenVal);
+		//Increment the PC
+		pc.setval(pc.getVal() + 2);
 		break;
 	//PC register addressing absolute mode
 	case(PC_ABSOLUTE_CODE):
+		//Write to the location pointed to by the pc
+		memory.setWord(memory.getWord(pc.getVal()), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(pc.getVal), 1);
+		//Increment the PC
+		pc.setval(pc.getVal() + 2);
 		break;
 	//PC register addressing relative mode
 	case(PC_RELATIVE_CODE):
+		//Obtain the offset value from memory
+		OctalWord memoryOffset = memory.getWord(pc.getVal());
+		//Obtain the offset value from pc
+		OctalWord pcOffset = pc.getVal() + 2;
+		//Write to the location pointed to by the offset
+		memory.setWord(memoryOffset + pcOffset, writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memoryOffset + pcOffset, 1);
+		//Increment the PC by 2
+		pc.setval(pc.getVal() + 4);
 		break;
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
+		//Obtain the offset value from memory
+		OctalWord memoryOffset = memory.getWord(pc.getVal());
+		//Obtain the offset value from pc
+		OctalWord pcOffset = pc.getVal() + 2;
+		//Write to the location pointed to by the offset
+		memory.setWord(memory.getWord(memoryOffset + pcOffset), writenVal);
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(memoryOffset + pcOffset), 1);
+		//Increment the PC by 2
+		pc.setval(pc.getVal() + 4);
+		break;
 		break;
 	case(SP_DEFERRED_CODE):
 		break;
@@ -957,9 +988,6 @@ OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 	//Obtain the value pointed to by the PC
 	OctalWord location = pc.getVal();
 
-	//Increment the PC
-	pc.setval(pc.getVal() + 2);
-
 	//Print to the trace file (data read)
 	PRINT_TO_FILE(location, 0);
 
@@ -983,9 +1011,6 @@ OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 
 	//Obtain the pointer to the location
 	OctalWord pointer = memory.getWord(pc.getVal());
-
-	//Increment the PC
-	pc.setval(pc.getVal() + 2);
 
 	//Print to the trace file (data read)
 	PRINT_TO_FILE(memory.getWord(pointer), 0);
@@ -1013,17 +1038,11 @@ OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 	//Obtain the offset value from memory
 	OctalWord memoryOffset = memory.getWord(pc.getVal());
 
-	//Increment the PC
-	pc.setval(pc.getVal() + 2);
-
 	//Obtain the offset value from pc
-	OctalWord pcOffset = pc.getVal();
+	OctalWord pcOffset = pc.getVal() + 2;
 
 	//Print to the trace file (read data)
 	PRINT_TO_FILE(memoryOffset + pcOffset, 0);
-
-	//Increment the PC
-	pc.setval(pc.getVal() + 2);
 
 	//Return the pointed to locations value
 	return memory.getWord(memoryOffset + pcOffset);
