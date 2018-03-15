@@ -502,6 +502,7 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 
 void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 {
+	OctalWord relativeOffset;
 	if (destReg == 6 || destReg == 7)
 	{
 		am = (8 * am) + destReg;
@@ -584,21 +585,23 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 	//PC register addressing relative mode
 	case(PC_RELATIVE_CODE):
+		// increment pc
+		pc.setval(pc.getVal() + 2);
+		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
-		memory.setWord((memory.getWord(pc.getVal())) + (pc.getVal() + 2), writenVal);
+		memory.setWord(pc.getVal() + relativeOffset + 2, writenVal);
 		//Print to the trace file (data write)
-		PRINT_TO_FILE((memory.getWord(pc.getVal())) + (pc.getVal() + 2), 1);
-		//Increment the PC by 2
-		pc.setval(pc.getVal() + 4);
+		PRINT_TO_FILE(memory.getWord(pc.getVal() + relativeOffset), 1);
 		break;
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
+		// increment pc
+		pc.setval(pc.getVal() + 2);
+		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
-		memory.setWord(memory.getWord((memory.getWord(pc.getVal())) + (pc.getVal() + 2)), writenVal);
+		memory.setWord(memory.getWord(pc.getVal() + relativeOffset + 2), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord((memory.getWord(pc.getVal())) + (pc.getVal() + 2)), 1);
-		//Increment the PC by 2
-		pc.setval(pc.getVal() + 4);
 		break;
 	case(SP_DEFERRED_CODE):
 		break;
