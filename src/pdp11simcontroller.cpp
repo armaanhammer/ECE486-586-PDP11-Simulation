@@ -22,6 +22,7 @@ PDP11SimController::PDP11SimController(bool debugMem, bool debugReg)
 	instructionCount = 0;
 	pc = Register();
 	sp = Register();
+	sp.setval(OctalWord(MEMORYLENGTH / 2));
 	status = StatusRegister();
 	//memory = Mem();
 	ci = OctalWord(0);
@@ -223,7 +224,8 @@ void PDP11SimController::JSR(OctalWord src)
 	unsigned int destAddressMode = src[0].b;
 	OctalWord temp = getOperand(r[destNum].getVal(), destNum, destAddressMode);
 	// modify stack
-	sp.setval(r[regNum].getVal());
+	sp.setval(sp.getVal() - 2);
+	memory.setWord(sp.getVal(), r[regNum].getVal(), false, true);
 	r[regNum].setval(pc.getVal());
 	pc.setval(temp);
 }
@@ -241,7 +243,8 @@ void PDP11SimController::RTS(OctalWord src)
 	pc.setval(r[regNum].getVal());
 
 	//modify stack
-	r[regNum].setval(sp.getVal());
+	sp.setval(sp.getVal() + 2);
+	r[regNum].setval(memory.getWord(sp.getVal()));
 }
 #pragma endregion
 
