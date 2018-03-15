@@ -45,16 +45,13 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
-	//First instruction fetch before while loop is for check for HALT
-	fetch();
-	while(ci != HALT_OPCODE)
+	while(1)
 	{
-		//Second instruction fetch is to fetch the next instruction from memory
 		fetch();
+		if (ci == HALT_OPCODE) break;
 
 		//Print to the trace file (instruction fetch)
 		PRINT_TO_FILE(pc.getVal(), 2);
-
 		if (ci != NOP_OPCODE) 
 		{
 			if (!decode())
@@ -174,6 +171,8 @@ void PDP11SimController::fetch()
 {
 	//Fetch the current instruction
 	ci = memory.getWord(pc.getVal());
+	r[6].setval(sp.getVal());
+	r[7].setval(pc.getVal());
 }
 
 #pragma region JUMP
@@ -502,6 +501,25 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 			break;
 	}
 
+	if (srcAddressMode == 2 || srcAddressMode == 3)
+	{
+		//Increment the value of the register
+		switch (srcNum)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			r[srcNum].setval(r[srcNum].getVal() + 2);
+			break;
+		default:
+			break;
+		}
+
+	}
+
 	WriteBack(destAddressMode, destNum, result);
 }
 
@@ -530,6 +548,10 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(AUTOINC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal);
+
+		//Increment the value of the register
+		r[destReg].setval(r[destReg].getVal() + 2);
+
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
@@ -537,6 +559,10 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(AUTOINC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
+
+		//Increment the value of the register
+		r[destReg].setval(r[destReg].getVal() + 2);
+
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
@@ -781,7 +807,7 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 {
 	OctalWord operand = OctalWord(0);
 
-	if (reg == 6 || 7)
+	if (reg == 6 || reg == 7)
 	{
 		addressMode = 8 * addressMode + reg;
 	}
@@ -795,16 +821,16 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 		case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
 		case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
 		case INDEX_DEFFERRED_CODE: operand = INDEX_DEFERRED(r[reg].getVal().value, reg); break;
-		case PC_IMMEDIATE_CODE: PC_IMMEDIATE(r[reg].getVal().value, reg); break;
-		case PC_ABSOLUTE_CODE: PC_ABSOLUTE(r[reg].getVal().value, reg); break;
-		case PC_RELATIVE_CODE: PC_RELATIVE(r[reg].getVal().value, reg); break;
-		case PC_RELATIVE_DEFERRED_CODE: PC_RELATIVE_DEFERRED(r[reg].getVal().value, reg); break;
-		case SP_DEFERRED_CODE: SP_DEFERRED(r[reg].getVal().value, reg); break;
-		case SP_AUTOINC_CODE: SP_AUTOINC(r[reg].getVal().value, reg); break;
-		case SP_AUTOINC_DEFERRED_CODE: SP_AUTOINC_DEFERRED(r[reg].getVal().value, reg); break;
-		case SP_AUTODEC_CODE: SP_AUTODEC(r[reg].getVal().value, reg); break;
-		case SP_INDEX_CODE: SP_INDEXED(r[reg].getVal().value, reg); break;
-		case SP_INDEX_DEFFERRED_CODE: SP_INDEX_DEFERRED(r[reg].getVal().value, reg); break;
+		case PC_IMMEDIATE_CODE: operand = PC_IMMEDIATE(pc.getVal().value, reg); break;
+		case PC_ABSOLUTE_CODE: operand = PC_ABSOLUTE(pc.getVal().value, reg); break;
+		case PC_RELATIVE_CODE: operand = PC_RELATIVE(pc.getVal().value, reg); break;
+		case PC_RELATIVE_DEFERRED_CODE: operand = PC_RELATIVE_DEFERRED(pc.getVal().value, reg); break;
+		case SP_DEFERRED_CODE: operand = SP_DEFERRED(sp.getVal().value, reg); break;
+		case SP_AUTOINC_CODE: operand = SP_AUTOINC(sp.getVal().value, reg); break;
+		case SP_AUTOINC_DEFERRED_CODE: operand = SP_AUTOINC_DEFERRED(sp.getVal().value, reg); break;
+		case SP_AUTODEC_CODE: operand = SP_AUTODEC(sp.getVal().value, reg); break;
+		case SP_INDEX_CODE: operand = SP_INDEXED(sp.getVal().value, reg); break;
+		case SP_INDEX_DEFFERRED_CODE: operand = SP_INDEX_DEFERRED(sp.getVal().value, reg); break;
 		default:
 			cerr << "";
 			break;
@@ -850,9 +876,6 @@ OctalWord PDP11SimController::REGISTER_DEFERRED(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 {
-	//Increment the value of the register
-	r[reg].setval(regValue + 2);
-
 	//Print to the trace file (data read)
 	PRINT_TO_FILE(regValue + 2, 0);
 
@@ -1202,7 +1225,7 @@ OctalWord PDP11SimController::SP_INDEX_DEFERRED(OctalWord regValue, int reg)
 //Output: (OctalWord) Octal result of operation
 //Description: returns source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::MOV(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempDest = src;
@@ -1226,7 +1249,7 @@ OctalWord PDP11SimController::MOV(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::CMP(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempDest = dest;
@@ -1269,7 +1292,7 @@ OctalWord PDP11SimController::CMP(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodifeied value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::BIT(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempDest = dest;
@@ -1296,7 +1319,7 @@ OctalWord PDP11SimController::BIT(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value not(!) source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::BIC(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempSrc = src;
@@ -1323,7 +1346,7 @@ OctalWord PDP11SimController::BIC(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination unmodified value or(|) source unmodified value and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::BIS(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempDest = dest;
@@ -1350,7 +1373,7 @@ OctalWord PDP11SimController::BIS(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination + source and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord tempDest = dest;
@@ -1392,7 +1415,7 @@ OctalWord PDP11SimController::ADD(const OctalWord& dest, const OctalWord& src)
 //Output: (OctalWord) Octal result of operation
 //Description: return destination - source and modify flags
 //----------------------------------------------------------------------------------------------------
-OctalWord PDP11SimController::SUB(const OctalWord& dest, const OctalWord& src)
+OctalWord PDP11SimController::SUB(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
 	OctalWord result;
@@ -2038,7 +2061,7 @@ bool PDP11SimController::PRINT_TO_FILE(OctalWord address, char type)
 		traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
 
 		//Write to the end of the file
-		traceFile << (int)type << " " << tempAddr << endl;
+		traceFile << type << " " << tempAddr << endl;
 	}
 	catch (exception e)
 	{
