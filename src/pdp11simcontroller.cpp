@@ -952,16 +952,16 @@ OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 {
 	//Obtain the value pointed to by the PC
-	OctalWord operand = pc.getVal();
+	OctalWord location = pc.getVal();
 
 	//Increment the PC
 	pc.setval(pc.getVal() + 2);
 
 	//Print to the trace file (data read)
-	PRINT_TO_FILE(operand, 0);
+	PRINT_TO_FILE(location, 0);
 
 	//Return the pointed to value
-	return memory.getWord(operand);
+	return memory.getWord(location);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -969,10 +969,23 @@ OctalWord PDP11SimController::PC_IMMEDIATE(OctalWord regValue, int reg)
 //Input:		(OctalWord) regValue -
 //				(int) reg -
 //Output:		(OctalWord)
-//Description: 
+//Description:	Equivalent of immediate deferred or autoincrement deferred mode using the PC. The 
+//				content of the location following the instruction are taken as the address of the 
+//				operand. Immediate data is interperted as an absolute address
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 {
+	//Obtain the pointer to the location
+	OctalWord pointer = memory.getWord(pc.getVal());
+
+	//Increment the PC
+	pc.setval(pc.getVal() + 2);
+
+	//Print to the trace file (data read)
+	PRINT_TO_FILE(memory.getWord(pointer), 0);
+
+	//Return the pointed to locations value
+	return memory.getWord(pointer);
 }
 
 //----------------------------------------------------------------------------------------------------
