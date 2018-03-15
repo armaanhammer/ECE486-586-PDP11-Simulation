@@ -221,7 +221,11 @@ void PDP11SimController::JSR(OctalWord src)
 	unsigned int regNum = src[2].b;
 	unsigned int destNum = src[0].b;
 	unsigned int destAddressMode = src[0].b;
-	//OctalWord temp = (*(AM[destAddressMode])(r[destNum].getVal());
+	OctalWord temp = getOperand(r[destNum].getVal(), destNum, destAddressMode);
+	// modify stack
+	sp.setval(r[regNum].getVal());
+	r[regNum].setval(pc.getVal());
+	pc.setval(temp);
 }
 
 ///operation: PC = reg
@@ -233,6 +237,11 @@ void PDP11SimController::JSR(OctalWord src)
 ///may retrieve parameters with addressing modes (R5)+, X(R5), or @X(R5), and finally exits with an RTS R5.
 void PDP11SimController::RTS(OctalWord src)
 {
+	unsigned int regNum = src[0].b;
+	pc.setval(r[regNum].getVal());
+
+	//modify stack
+	r[regNum].setval(sp.getVal());
 }
 #pragma endregion
 
@@ -423,7 +432,7 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	int regAddressMode = w[1].b;
 	int opcode = w.value >> 6;
 
-	OctalWord operand = getOperand(r[regNum].getVal().value, regNum, regAddressMode);
+	OctalWord operand = getOperand(r[regNum].getVal(), regNum, regAddressMode);
 	OctalWord result = OctalWord(0);
 
 	switch(opcode)
@@ -464,9 +473,9 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	int opcode = w.value >> 12;
 
 	//Create octal word (6-bit value) for the source
-	OctalWord operandA = getOperand(r[srcNum].getVal().value, srcNum, srcAddressMode);
+	OctalWord operandA = getOperand(r[srcNum].getVal(), srcNum, srcAddressMode);
 	//Create octal word (6-bit value) for the destination
-	OctalWord operandB = getOperand(r[destNum].getVal().value, destNum, destAddressMode);
+	OctalWord operandB = getOperand(r[destNum].getVal(), destNum, destAddressMode);
 	OctalWord result = OctalWord(0);
 
 	switch(opcode)
