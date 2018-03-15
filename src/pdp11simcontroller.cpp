@@ -736,7 +736,7 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 
 	if (reg == 6 || 7)
 	{
-		addressMode += 8*reg;
+		reg += 8 * addressMode;
 	}
 	switch(addressMode)
 	{
