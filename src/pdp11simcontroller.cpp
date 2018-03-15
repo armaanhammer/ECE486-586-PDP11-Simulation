@@ -62,7 +62,7 @@ void PDP11SimController::run()
 				cerr << "pc is no longer word aligned.  Now terminating execution.  current instruction was: " << ci.print(true) << "\n";
 			}
 
-			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true);
+			if (debugMemory || debugRegisters) cout << "just executed " << ci.print(true) << endl;
 			if (debugMemory) memory.print();
 			if (debugRegisters) printRegs();
 			instructionCount++;
@@ -83,7 +83,9 @@ void PDP11SimController::printRegs()
 	cout << "   6   |  "; r[6].print(); cout << endl;
 	cout << "   7   |  "; r[7].print(); cout << endl;
 	cout << "   sp  |  "; sp.print(); cout << endl;
-	cout << "   pc  |  "; pc.print(); cout << endl;
+	cout << "   pc  |  "; pc.print(); cout << endl << endl;
+
+	status.print();
 }
 
 void PDP11SimController::printMem()
@@ -778,7 +780,7 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 
 	if (reg == 6 || 7)
 	{
-		reg += 8 * addressMode;
+		addressMode = 8 * addressMode + reg;
 	}
 	switch(addressMode)
 	{
