@@ -83,8 +83,6 @@ void PDP11SimController::printRegs()
 	cout << "   3   |  "; r[3].print(); cout << endl;
 	cout << "   4   |  "; r[4].print(); cout << endl;
 	cout << "   5   |  "; r[5].print(); cout << endl;
-	cout << "   6   |  "; r[6].print(); cout << endl;
-	cout << "   7   |  "; r[7].print(); cout << endl;
 	cout << "   sp  |  "; sp.print(); cout << endl;
 	cout << "   pc  |  "; pc.print(); cout << endl << endl;
 
