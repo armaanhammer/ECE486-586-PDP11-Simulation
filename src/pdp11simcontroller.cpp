@@ -257,7 +257,7 @@ void PDP11SimController::RTS(OctalWord src)
 bool PDP11SimController::decode()
 {
 	// check for too long of word
-	if (((unsigned int) ci.value) > ((unsigned int ) MAX_OCTAL_VALUE)) 
+	if (ci[5] > 2) 
 	{ 
 		return false; 
 	}
@@ -375,7 +375,7 @@ bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForBranch(int value)
 {
-	int opcode = value >> 8;
+	unsigned int opcode = (((unsigned int) ci.value) & 0xFF00) >> 8;
 
 	switch(opcode)
 	{
@@ -652,8 +652,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 
 void PDP11SimController::doBranchInstruction(OctalWord w)
 {
-	int value = w.value;
-	int opcode = value >> 8;
+	unsigned int opcode = (((unsigned int)w.value) & 0xFF00) >> 8;
 
 	OctalWord newpc = OctalWord(0);
 	
@@ -680,7 +679,7 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 			break;
 	}
 
-	WriteBack(0, 7, newpc);
+	pc.setval(newpc);
 }
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
@@ -1734,7 +1733,7 @@ OctalWord PDP11SimController::BR(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 
-	offset<<1;
+	offset<<=1;
 	OctalWord pcvalue = pc.getVal() + offset;
 	return pcvalue;
 }
@@ -1749,7 +1748,7 @@ OctalWord PDP11SimController::BGE(const OctalWord& src)
 
 	if(status.V == 0 || status.N == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1765,7 +1764,7 @@ OctalWord PDP11SimController::BNE(const OctalWord& src)
 
 	if(status.Z == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1781,7 +1780,7 @@ OctalWord PDP11SimController::BEQ(const OctalWord& src)
 
 	if(status.Z == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1798,7 +1797,7 @@ OctalWord PDP11SimController::BPL(const OctalWord& src)
 
 	if(status.N == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1816,7 +1815,7 @@ OctalWord PDP11SimController::BMI(const OctalWord& src)
 
 	if(status.N == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1833,7 +1832,7 @@ OctalWord PDP11SimController::BVC(const OctalWord& src)
 
 	if(status.V == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1851,7 +1850,7 @@ OctalWord PDP11SimController::BHIS(const OctalWord& src)
 
 	if(status.C == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1867,7 +1866,7 @@ OctalWord PDP11SimController::BLT(const OctalWord& src)
 
 	if(status.N == 1 || status.V == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1884,7 +1883,7 @@ OctalWord PDP11SimController::BGT(const OctalWord& src)
 
 	if(status.N == status.V)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1901,7 +1900,7 @@ OctalWord PDP11SimController::BLE(const OctalWord& src)
 
 	if(status.N != status.V)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1917,7 +1916,7 @@ OctalWord PDP11SimController::BVS(const OctalWord& src)
 
 	if(status.V == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1933,7 +1932,7 @@ OctalWord PDP11SimController::BLOS(const OctalWord& src)
 
 	if(status.Z == 1 || status.C == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1949,7 +1948,7 @@ OctalWord PDP11SimController::BCC(const OctalWord& src)
 
 	if(status.C == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1966,7 +1965,7 @@ OctalWord PDP11SimController::BCS(const OctalWord& src)
 
 	if(status.C == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1979,7 +1978,7 @@ OctalWord PDP11SimController::BLO(const OctalWord& src)
 
 	if(status.C == 1)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1992,7 +1991,7 @@ OctalWord PDP11SimController::BHI(const OctalWord& src)
 
 	if(status.Z == 0 || status.C == 0)
 	{
-		offset<<1;
+		offset<<=1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
