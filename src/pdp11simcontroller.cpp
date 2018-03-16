@@ -45,7 +45,7 @@ PDP11SimController::~PDP11SimController()
 
 void PDP11SimController::run()
 {
-	while(1)
+	while (1)
 	{
 		fetch();
 		if (ci == HALT_OPCODE)
@@ -59,7 +59,7 @@ void PDP11SimController::run()
 		//Print to the trace file (instruction fetch)
 		PRINT_TO_FILE(pc.getVal(), 2);
 
-		if (ci != NOP_OPCODE) 
+		if (ci != NOP_OPCODE)
 		{
 			if (!decode())
 			{
@@ -264,9 +264,9 @@ void PDP11SimController::RTS(OctalWord src)
 bool PDP11SimController::decode()
 {
 	// check for too long of word
-	if (ci[5] > 2) 
-	{ 
-		return false; 
+	if (ci[5] > 2)
+	{
+		return false;
 	}
 	if (ci[5] == 0 && ci[4] == 0 && ci[3] == 4)
 	{
@@ -280,32 +280,32 @@ bool PDP11SimController::decode()
 	}
 	// check to see if op is PSWI, if true exec op
 	if (checkForPSW(ci[3], ci[4], ci[5]))
-	{ 	
-		doPSWI(ci); 
-		return true; 
+	{
+		doPSWI(ci);
+		return true;
 	}
 	// check to see if op is Branch Instruction, if true exec Instruction
-	if (checkForBranch(ci.value)) 
-	{ 
-		doBranchInstruction(ci); 
-		return true; 
+	if (checkForBranch(ci.value))
+	{
+		doBranchInstruction(ci);
+		return true;
 	}
 	// check to see if single operand instruction, if true exec instruction
-	if (checkForSO(ci)) 
-	{ 	
+	if (checkForSO(ci))
+	{
 		doSingleOpInstruction(ci);
-		return true; 
+		return true;
 	}
 	// check to see if double operand instruction, if true exec instruction
-	if (checkForDO(ci)) 
+	if (checkForDO(ci))
 	{
-		doDoubleOpInstruction(ci); 
-		return true; 
+		doDoubleOpInstruction(ci);
+		return true;
 	}
-	if (checkUnimplementedDoubleOp(ci)) 
-	{ 
-		doUnimplementedDoubleOp(ci); 
-		return true; 
+	if (checkUnimplementedDoubleOp(ci))
+	{
+		doUnimplementedDoubleOp(ci);
+		return true;
 	}
 	cerr << "un reachable code segment end of bool PDP11SimController::decode(int octalVA) reached\n";
 	return false;
@@ -382,26 +382,26 @@ bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkForBranch(int value)
 {
-	unsigned int opcode = (((unsigned int) ci.value) & 0xFF00) >> 8;
+	unsigned int opcode = (((unsigned int)ci.value) & 0xFF00) >> 8;
 
-	switch(opcode)
+	switch (opcode)
 	{
-		case BR_OPCODE: return true;
-		case BNE_OPCODE: return true;
-		case BEQ_OPCODE: return true;
-		case BPL_OPCODE: return true;
-		case BMI_OPCODE: return true;
-		case BVC_OPCODE: return true;
-		case BVS_OPCODE: return true;
-		case BHIS_OPCODE: return true;
-		case BLO_OPCODE: return true;
-		case BGE_OPCODE: return true;
-		case BLT_OPCODE: return true;
-		case BGT_OPCODE: return true;
-		case BLE_OPCODE: return true;
-		case BHI_OPCODE: return true;
-		case BLOS_OPCODE: return true;
-		default: return false;
+	case BR_OPCODE: return true;
+	case BNE_OPCODE: return true;
+	case BEQ_OPCODE: return true;
+	case BPL_OPCODE: return true;
+	case BMI_OPCODE: return true;
+	case BVC_OPCODE: return true;
+	case BVS_OPCODE: return true;
+	case BHIS_OPCODE: return true;
+	case BLO_OPCODE: return true;
+	case BGE_OPCODE: return true;
+	case BLT_OPCODE: return true;
+	case BGT_OPCODE: return true;
+	case BLE_OPCODE: return true;
+	case BHI_OPCODE: return true;
+	case BLOS_OPCODE: return true;
+	default: return false;
 	}
 }
 
@@ -419,22 +419,22 @@ void PDP11SimController::doPSWI(OctalWord w)
 		opcode = SPL_OPCODE;
 	}
 	//find and exec op by opcode
-	switch(opcode)
+	switch (opcode)
 	{
-		case SPL_OPCODE: SPL(); break;
-		case CLC_OPCODE: CLC(); break;
-		case CLV_OPCODE: CLV(); break;
-		case CLZ_OPCODE: CLZ(); break;
-		case CLN_OPCODE: CLN(); break;
-		case SEC_OPCODE: SEC(); break;
-		case SEV_OPCODE: SEV(); break;
-		case SEZ_OPCODE: SEZ(); break;
-		case SEN_OPCODE: SEN(); break;
-		case CCC_OPCODE: CCC(); break;
-		case SCC_OPCODE: SCC(); break;
-		default:
-			cerr << "doPSWI() called with an invalid opcode: " << w.asString();
-			break;
+	case SPL_OPCODE: SPL(); break;
+	case CLC_OPCODE: CLC(); break;
+	case CLV_OPCODE: CLV(); break;
+	case CLZ_OPCODE: CLZ(); break;
+	case CLN_OPCODE: CLN(); break;
+	case SEC_OPCODE: SEC(); break;
+	case SEV_OPCODE: SEV(); break;
+	case SEZ_OPCODE: SEZ(); break;
+	case SEN_OPCODE: SEN(); break;
+	case CCC_OPCODE: CCC(); break;
+	case SCC_OPCODE: SCC(); break;
+	default:
+		cerr << "doPSWI() called with an invalid opcode: " << w.asString();
+		break;
 	}
 }
 
@@ -447,25 +447,25 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 	OctalWord operand = getOperand(r[regNum].getVal(), regNum, regAddressMode);
 	OctalWord result = OctalWord(0);
 
-	switch(opcode)
+	switch (opcode)
 	{
-		case CLR_OPCODE: result = CLR(operand); break;
-		case INC_OPCODE: result = INC(operand); break;
-		case COM_OPCODE: result = COM(operand); break;
-		case DEC_OPCODE: result = DEC(operand); break;
-		case NEG_OPCODE: result = NEG(operand); break;
-		case ADC_OPCODE: result = ADC(operand); break;
-		case SBC_OPCODE: result = SBC(operand); break;
-		case TST_OPCODE: result = TST(operand); break;
-		case ROR_OPCODE: result = ROR(operand); break;
-		case ROL_OPCODE: result = ROL(operand); break;
-		case ASR_OPCODE: result = ASR(operand); break;
-		case ASL_OPCODE: result = ASL(operand); break;
-		case SXT_OPCODE: result = SXT(operand); break;
-		default:
-			cerr << "doSingleOpInstruction() called with an invalid opcode: " << opcode
-				<< " and operand " << operand.asString() << endl;
-			break;
+	case CLR_OPCODE: result = CLR(operand); break;
+	case INC_OPCODE: result = INC(operand); break;
+	case COM_OPCODE: result = COM(operand); break;
+	case DEC_OPCODE: result = DEC(operand); break;
+	case NEG_OPCODE: result = NEG(operand); break;
+	case ADC_OPCODE: result = ADC(operand); break;
+	case SBC_OPCODE: result = SBC(operand); break;
+	case TST_OPCODE: result = TST(operand); break;
+	case ROR_OPCODE: result = ROR(operand); break;
+	case ROL_OPCODE: result = ROL(operand); break;
+	case ASR_OPCODE: result = ASR(operand); break;
+	case ASL_OPCODE: result = ASL(operand); break;
+	case SXT_OPCODE: result = SXT(operand); break;
+	default:
+		cerr << "doSingleOpInstruction() called with an invalid opcode: " << opcode
+			<< " and operand " << operand.asString() << endl;
+		break;
 	}
 
 	WriteBack(regAddressMode, regNum, result);
@@ -490,20 +490,20 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	OctalWord operandB = getOperand(r[destNum].getVal(), destNum, destAddressMode);
 	OctalWord result = OctalWord(0);
 
-	switch(opcode)
+	switch (opcode)
 	{
-		case MOV_OPCODE: result = MOV(operandA, operandB); break;
-		case CMP_OPCODE: result = CMP(operandA, operandB); break;
-		case BIT_OPCODE: result = BIT(operandA, operandB); break;
-		case BIC_OPCODE: result = BIC(operandA, operandB); break;
-		case BIS_OPCODE: result = BIS(operandA, operandB); break;
-		case ADD_OPCODE: result = ADD(operandA, operandB); break;
-		case SUB_OPCODE: result = SUB(operandA, operandB); break;
-		default:
-			cerr << "doDoubleOpInstruction() called with an invalid opcode: " << opcode
-				<< " and operands " << operandA.asString() << " " << operandB.asString()
-				<< endl;
-			break;
+	case MOV_OPCODE: result = MOV(operandA, operandB); break;
+	case CMP_OPCODE: result = CMP(operandA, operandB); break;
+	case BIT_OPCODE: result = BIT(operandA, operandB); break;
+	case BIC_OPCODE: result = BIC(operandA, operandB); break;
+	case BIS_OPCODE: result = BIS(operandA, operandB); break;
+	case ADD_OPCODE: result = ADD(operandA, operandB); break;
+	case SUB_OPCODE: result = SUB(operandA, operandB); break;
+	default:
+		cerr << "doDoubleOpInstruction() called with an invalid opcode: " << opcode
+			<< " and operands " << operandA.asString() << " " << operandB.asString()
+			<< endl;
+		break;
 	}
 
 	if (srcAddressMode == 2 || srcAddressMode == 3)
@@ -537,19 +537,19 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	}
 	switch (am)
 	{
-	//Basic addressing register mode
+		//Basic addressing register mode
 	case(REGISTER_CODE):
 		//Write the result to the destination register
 		r[destReg].setval(writenVal);
 		break;
-	//Indirect addressing register mode (deferred)
+		//Indirect addressing register mode (deferred)
 	case(REGISTER_DEFERRED_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal, false, true);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
-	//Basic addressing autoincrement mode
+		//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal, false, true);
@@ -560,7 +560,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
-	//Indirect addressing autoincrement mode (deferred)
+		//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal, false, true);
@@ -571,21 +571,21 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
-	//Basic addressing autodecrement mode
+		//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
 		//Write to the location pointed to by the register
 		memory.setWord(r[destReg].getVal(), writenVal, false, true);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
-	//Indirect addressing autodecrement mode (deferred)
+		//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal, false, true);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
-	//Basic addressing index
+		//Basic addressing index
 	case(INDEX_CODE):
 		//Update the PC
 		pc.setval(pc.getVal() + 2);
@@ -594,7 +594,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal() + memory.getWord(pc.getVal()), 1);
 		break;
-	//Indirect addressing 
+		//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
 		//Update the PC
 		pc.setval(pc.getVal() + 2);
@@ -603,14 +603,14 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), 1);
 		break;
-	//PC register addressing immediate mode
+		//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
 		//Write the result to the destination register
 		pc.setval(writenVal);
 		//Increment the PC
 		pc.setval(pc.getVal() + 2);
 		break;
-	//PC register addressing absolute mode
+		//PC register addressing absolute mode
 	case(PC_ABSOLUTE_CODE):
 		//Write to the location pointed to by the pc
 		memory.setWord(memory.getWord(pc.getVal()), writenVal, false, true);
@@ -619,7 +619,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Increment the PC
 		pc.setval(pc.getVal() + 2);
 		break;
-	//PC register addressing relative mode
+		//PC register addressing relative mode
 	case(PC_RELATIVE_CODE):
 		// increment pc
 		pc.setval(pc.getVal() + 2);
@@ -629,7 +629,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(pc.getVal() + relativeOffset + 2), 1);
 		break;
-	//PC register addressing relative deferred mode
+		//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
 		// increment pc
 		pc.setval(pc.getVal() + 2);
@@ -662,28 +662,28 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 	unsigned int opcode = (((unsigned int)w.value) & 0xFF00) >> 8;
 
 	OctalWord newpc = OctalWord(0);
-	
-	switch(opcode)
+
+	switch (opcode)
 	{
-		case BR_OPCODE: newpc = BR(w); break;
-		case BNE_OPCODE: newpc = BNE(w); break;
-		case BEQ_OPCODE: newpc = BEQ(w); break;
-		case BPL_OPCODE: newpc = BPL(w); break;
-		case BMI_OPCODE: newpc = BMI(w); break;
-		case BVC_OPCODE: newpc = BVC(w); break;
-		case BVS_OPCODE: newpc = BVS(w); break;
-		case BHIS_OPCODE: newpc = BHIS(w); break;
-		case BLO_OPCODE: newpc = BLO(w); break;
-		case BGE_OPCODE: newpc = BGE(w); break;
-		case BLT_OPCODE: newpc = BLT(w); break;
-		case BGT_OPCODE: newpc = BGT(w); break;
-		case BLE_OPCODE: newpc = BLE(w); break;
-		case BHI_OPCODE: newpc = BHI(w); break;
-		case BLOS_OPCODE: newpc = BLOS(w); break;
-		default:
-			cerr << "doBranchInstruction() called with an invalid opcode: " << opcode
-				<< endl;
-			break;
+	case BR_OPCODE: newpc = BR(w); break;
+	case BNE_OPCODE: newpc = BNE(w); break;
+	case BEQ_OPCODE: newpc = BEQ(w); break;
+	case BPL_OPCODE: newpc = BPL(w); break;
+	case BMI_OPCODE: newpc = BMI(w); break;
+	case BVC_OPCODE: newpc = BVC(w); break;
+	case BVS_OPCODE: newpc = BVS(w); break;
+	case BHIS_OPCODE: newpc = BHIS(w); break;
+	case BLO_OPCODE: newpc = BLO(w); break;
+	case BGE_OPCODE: newpc = BGE(w); break;
+	case BLT_OPCODE: newpc = BLT(w); break;
+	case BGT_OPCODE: newpc = BGT(w); break;
+	case BLE_OPCODE: newpc = BLE(w); break;
+	case BHI_OPCODE: newpc = BHI(w); break;
+	case BLOS_OPCODE: newpc = BLOS(w); break;
+	default:
+		cerr << "doBranchInstruction() called with an invalid opcode: " << opcode
+			<< endl;
+		break;
 	}
 
 	pc.setval(newpc);
@@ -815,29 +815,29 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 	{
 		addressMode = 8 * addressMode + reg;
 	}
-	switch(addressMode)
+	switch (addressMode)
 	{
-		case REGISTER_CODE:operand =  REGISTER(r[reg].getVal().value, reg); break;
-		case REGISTER_DEFERRED_CODE: operand = REGISTER_DEFERRED(r[reg].getVal().value, reg); break;
-		case AUTOINC_CODE: operand = AUTOINC(r[reg].getVal().value, reg); break;
-		case AUTOINC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
-		case AUTODEC_CODE: operand = AUTODEC(r[reg].getVal().value, reg); break;
-		case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
-		case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
-		case INDEX_DEFFERRED_CODE: operand = INDEX_DEFERRED(r[reg].getVal().value, reg); break;
-		case PC_IMMEDIATE_CODE: operand = PC_IMMEDIATE(pc.getVal().value, reg); break;
-		case PC_ABSOLUTE_CODE: operand = PC_ABSOLUTE(pc.getVal().value, reg); break;
-		case PC_RELATIVE_CODE: operand = PC_RELATIVE(pc.getVal().value, reg); break;
-		case PC_RELATIVE_DEFERRED_CODE: operand = PC_RELATIVE_DEFERRED(pc.getVal().value, reg); break;
-		case SP_DEFERRED_CODE: operand = SP_DEFERRED(sp.getVal().value, reg); break;
-		case SP_AUTOINC_CODE: operand = SP_AUTOINC(sp.getVal().value, reg); break;
-		case SP_AUTOINC_DEFERRED_CODE: operand = SP_AUTOINC_DEFERRED(sp.getVal().value, reg); break;
-		case SP_AUTODEC_CODE: operand = SP_AUTODEC(sp.getVal().value, reg); break;
-		case SP_INDEX_CODE: operand = SP_INDEXED(sp.getVal().value, reg); break;
-		case SP_INDEX_DEFFERRED_CODE: operand = SP_INDEX_DEFERRED(sp.getVal().value, reg); break;
-		default:
-			cerr << "";
-			break;
+	case REGISTER_CODE:operand = REGISTER(r[reg].getVal().value, reg); break;
+	case REGISTER_DEFERRED_CODE: operand = REGISTER_DEFERRED(r[reg].getVal().value, reg); break;
+	case AUTOINC_CODE: operand = AUTOINC(r[reg].getVal().value, reg); break;
+	case AUTOINC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
+	case AUTODEC_CODE: operand = AUTODEC(r[reg].getVal().value, reg); break;
+	case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
+	case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
+	case INDEX_DEFFERRED_CODE: operand = INDEX_DEFERRED(r[reg].getVal().value, reg); break;
+	case PC_IMMEDIATE_CODE: operand = PC_IMMEDIATE(pc.getVal().value, reg); break;
+	case PC_ABSOLUTE_CODE: operand = PC_ABSOLUTE(pc.getVal().value, reg); break;
+	case PC_RELATIVE_CODE: operand = PC_RELATIVE(pc.getVal().value, reg); break;
+	case PC_RELATIVE_DEFERRED_CODE: operand = PC_RELATIVE_DEFERRED(pc.getVal().value, reg); break;
+	case SP_DEFERRED_CODE: operand = SP_DEFERRED(sp.getVal().value, reg); break;
+	case SP_AUTOINC_CODE: operand = SP_AUTOINC(sp.getVal().value, reg); break;
+	case SP_AUTOINC_DEFERRED_CODE: operand = SP_AUTOINC_DEFERRED(sp.getVal().value, reg); break;
+	case SP_AUTODEC_CODE: operand = SP_AUTODEC(sp.getVal().value, reg); break;
+	case SP_INDEX_CODE: operand = SP_INDEXED(sp.getVal().value, reg); break;
+	case SP_INDEX_DEFFERRED_CODE: operand = SP_INDEX_DEFERRED(sp.getVal().value, reg); break;
+	default:
+		cerr << "";
+		break;
 	}
 	return operand;
 }
@@ -1238,7 +1238,7 @@ OctalWord PDP11SimController::MOV(const OctalWord& src, const OctalWord& dest)
 	OctalWord tempDest = src;
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(tempDest < 0) ? SEN() :CLN();
+	(tempDest < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(tempDest == 0) ? SEZ() : CLZ();
@@ -1266,7 +1266,7 @@ OctalWord PDP11SimController::CMP(const OctalWord& src, const OctalWord& dest)
 	OctalWord result = tempSrc + ((~tempDest) + 1);
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(result < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(result == 0) ? SEZ() : CLZ();
@@ -1279,7 +1279,7 @@ OctalWord PDP11SimController::CMP(const OctalWord& src, const OctalWord& dest)
 		//Otherwise clear the V bit
 		else CLV();
 	}
-	else 
+	else
 	{
 		CLV();
 	}
@@ -1308,7 +1308,7 @@ OctalWord PDP11SimController::BIT(const OctalWord& src, const OctalWord& dest)
 	OctalWord result = tempSrc & tempDest;
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(result < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(result == 0) ? SEZ() : CLZ();
@@ -1335,14 +1335,14 @@ OctalWord PDP11SimController::BIC(const OctalWord& src, const OctalWord& dest)
 	OctalWord result = ~tempSrc & tempDest;
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(result < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(result == 0) ? SEZ() : CLZ();
-	
+
 	//Clear the V bit
 	CLV();
-	
+
 	//Return the unmodifed destination register
 	return result;
 }
@@ -1362,14 +1362,14 @@ OctalWord PDP11SimController::BIS(const OctalWord& src, const OctalWord& dest)
 	OctalWord result = tempSrc | tempDest;
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(result < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(result == 0) ? SEZ() : CLZ();
-	
+
 	//Clear the V bit
 	CLV();
-	
+
 	//Return the unmodifed destination register
 	return result;
 }
@@ -1397,12 +1397,12 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 		//Check if arithmetic overflow occured and if true set the V bit
 		if (tempSrc[5] != tempResult[5])
 		{
-			result = (src.value > 0)? result & postiveMask : result | negativeMask;
+			result = (src.value > 0) ? result & postiveMask : result | negativeMask;
 		}
 	}
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() :CLN();
+	(result < 0) ? SEN() : CLN();
 
 	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
 	(result == 0) ? SEZ() : CLZ();
@@ -1461,7 +1461,7 @@ OctalWord PDP11SimController::CLR(const OctalWord& src)
 	SEZ();
 	CLV();
 	CLC();
-	
+
 	return OctalWord(0);
 }
 
@@ -1476,12 +1476,12 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 {
 	OctalWord tempDest = src;  // do the thing
 	tempDest = ~tempDest;
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
 	CLV();  // V: cleared
 	CLC();  // C: set
-	
+
 	return tempDest;
 }
 
@@ -1494,19 +1494,23 @@ OctalWord PDP11SimController::COM(const OctalWord& src)
 OctalWord PDP11SimController::INC(const OctalWord& src)
 {
 	OctalWord ts = src;
-	OctalWord tempDest = src;
-	OctalWord tempSrc = src;
-	++tempDest; // do the thing
-	
-	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
-	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
+	OctalWord result = src;
+	if (result == 077777)
+	{
+		result = OctalWord(0);
+		CLN();
+		SEZ();
+	}
+	else
+	{
+		++result; // do the thing
+		(result == 0) ? SEZ() : CLZ();
+		(result < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
+	}
 	(ts == 077777) ? SEV() : CLV(); // V: set if dest was 077777; cleared otherwise
-	// C: not affected
-	
-	//fix edge case: if most positive number, return 0
-	tempDest = (ts == 077777) ? 00 : tempDest;
-	
-	return tempDest;
+									// C: not affected
+
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1518,20 +1522,23 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 OctalWord PDP11SimController::DEC(const OctalWord& src)
 {
 	OctalWord ts = src;
-	OctalWord tempDest = src;
-	OctalWord tempSrc = src;
-	--tempDest; // do the thing
-	
-	(tempDest < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
-	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
-	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
-	// C: not affected
-	
-	//fix edge case: if most negative number, return -1
-	tempDest = (ts == 0100000) ? 0177777 : tempDest;
-	//(ts == 0100000) ? tempDest = 0177777 : ;
+	OctalWord result = src;
+	if (result == 0100000)
+	{
+		result = OctalWord(-1);
+		SEN();
+		CLZ();
+	}
+	else
+	{
+		--result; // do the thing
+		(result == 0) ? SEZ() : CLZ();
+		(result < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
+	}
+	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 077777; cleared otherwise
+									// C: not affected
 
-	return tempDest;
+	return result;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1546,7 +1553,7 @@ OctalWord PDP11SimController::NEG(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = -ts;  // do the thing
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
@@ -1567,15 +1574,14 @@ OctalWord PDP11SimController::ADC(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = ts + status.C;  // do the thing
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
 	(ts == 077777 && status.C == 1) ? SEV() : CLV(); // V: set if dest was 077777 and (C) was 1; cleared otherwise
 	(ts == 0177777 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
-	
+
 	//fix edge case: if most positive number, and if Carry asserted, return 0
-	tempDest = (ts == 077777 && status.C == 1) ? 00 : tempDest;
-	
+	tempDest = (ts == 077777 && status.C == 1) ? OctalWord(0) : tempDest;
 	return tempDest;
 }
 
@@ -1589,14 +1595,14 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = ts - status.C;  // do the thing
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
 	(ts == 0 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
-	
+
 	//fix edge case: if most negative number, and if Carry asserted, return -1
-	tempDest = (ts == 0177777 && status.C == 1) ? 0100000 : tempDest;
+	tempDest = (ts == 0100000 && status.C == 1) ? 0177777 : tempDest;
 	
 	return tempDest;
 }
@@ -1611,12 +1617,12 @@ OctalWord PDP11SimController::TST(const OctalWord& src)
 {
 	// do nothing
 	OctalWord test = src;
-	
+
 	(test < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(test == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
 	CLV(); // V: cleared
 	CLC(); // C: cleared
-	
+
 	return src;
 }
 
@@ -1632,15 +1638,15 @@ OctalWord PDP11SimController::ROR(const OctalWord& src)
 	OctalWord tempDest = ts >> 1;  // do the thing
 	int andMask = 077777;
 	bool overflow = tempDest.overflow;
-	tempDest = (tempDest & andMask) | ((overflow) ? 0100000: 0);
+	tempDest = (tempDest & andMask) | ((overflow) ? 0100000 : 0);
 
 	//tempDest[0] = tempSrc[BIT_WIDTH -1];  // rotate the bit shifted out
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
-	(overflow)? SEC() : CLC(); // C: loaded from low-order bit of the destination (interpreting as source instead)
+	(overflow) ? SEC() : CLC(); // C: loaded from low-order bit of the destination (interpreting as source instead)
 	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	
+
 	return tempDest;
 }
 
@@ -1660,9 +1666,9 @@ OctalWord PDP11SimController::ROL(const OctalWord& src)
 
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
-	(overflow)? SEC() : CLC(); // C: loaded from high-order bit of the destination
+	(overflow) ? SEC() : CLC(); // C: loaded from high-order bit of the destination
 	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	
+
 	return tempDest;
 }
 
@@ -1675,15 +1681,15 @@ OctalWord PDP11SimController::ROL(const OctalWord& src)
 //by two. 
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::ASR(const OctalWord& src)
-{	
+{
 	OctalWord ts = src;
 	OctalWord tempDest = ts >> 1;  // do the thing
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
 	(tempDest.overflow) ? SEC() : CLC(); // C: loaded from low-order bit of the destination (interpreting as source instead)
 	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	
+
 	return tempDest;
 }
 
@@ -1697,12 +1703,12 @@ OctalWord PDP11SimController::ASL(const OctalWord& src)
 {
 	OctalWord ts = src;
 	OctalWord tempDest = ts << 1;  // do the thing
-	
+
 	(tempDest < 0) ? SEN() : CLN(); // N: set if result < 0; cleared otherwise
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result = 0; cleared otherwise
 	(tempDest.overflow) ? SEC() : CLC(); // C: loaded from low-order bit of the destination (interpreting as source instead)
 	status.V = status.N ^ status.C;  //V: loaded from the Exclusive OR of the N-bit and C-bit (as set by the completion of the shift operation)
-	
+
 	return tempDest;
 }
 
@@ -1715,12 +1721,12 @@ OctalWord PDP11SimController::ASL(const OctalWord& src)
 OctalWord PDP11SimController::SXT(const OctalWord& src)
 {
 	OctalWord tempDest = (status.N == 0) ? OctalWord(0) : OctalWord(-1);  // do the thing
-	
-	// N: unaffected
+
+																		  // N: unaffected
 	status.Z = !status.N; // Z: set if N bit clear
 	status.V = 0; // V: cleared
-	// C: unaffected
-	
+				  // C: unaffected
+
 	return tempDest;
 }
 
@@ -1730,47 +1736,47 @@ OctalWord PDP11SimController::SXT(const OctalWord& src)
 ///-----------------------------------------------
 /// Branch Instruction Functions
 ///-----------------------------------------------
-/* Description:Provides a way of transferring program control within a 
-   range of -128 to +127 words with a one word instruction.
-   0 000 000 1xx xxx xxx BR
-   PC = PC + (2 * offset)
+/* Description:Provides a way of transferring program control within a
+range of -128 to +127 words with a one word instruction.
+0 000 000 1xx xxx xxx BR
+PC = PC + (2 * offset)
 */
 OctalWord PDP11SimController::BR(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 
-	offset<<=1;
+	offset <<= 1;
 	OctalWord pcvalue = pc.getVal() + offset;
 	return pcvalue;
 }
 
 /* Description: Causes a branch if N and V are either both clear or both set.
-   0 000 010 0xx xxx xxx BGE
-   PC = PC + (2 * offset) if N or V = 0 */
+0 000 010 0xx xxx xxx BGE
+PC = PC + (2 * offset) if N or V = 0 */
 OctalWord PDP11SimController::BGE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.V == 0 || status.N == 0)
+	if (status.V == 0 || status.N == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
 /* Description:	Tests the state of the Z-bit and causes a branch if the Z-bit is clear.
-   0 000 001 0xx xxx xxx  BNE
-   PC = PC + (2 * offset) if Z = 0 */
+0 000 001 0xx xxx xxx  BNE
+PC = PC + (2 * offset) if Z = 0 */
 OctalWord PDP11SimController::BNE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.Z == 0)
+	if (status.Z == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1784,194 +1790,194 @@ OctalWord PDP11SimController::BEQ(const OctalWord& src)
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.Z == 1)
+	if (status.Z == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description:Tests the state of the N-bit and causes a branch if N is clear. 
-   BPL is the complementary operation of BMI.
-   1 000 000 0xx xxx xxx  BPL
-   PC = PC + (2 * offset) if N = 0 */
+/* Description:Tests the state of the N-bit and causes a branch if N is clear.
+BPL is the complementary operation of BMI.
+1 000 000 0xx xxx xxx  BPL
+PC = PC + (2 * offset) if N = 0 */
 OctalWord PDP11SimController::BPL(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.N == 0)
+	if (status.N == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description: Tests the state of the N-bit and causes a branch if N is set. 
-   It is used to test the sign (most significant bit) of the result of the 
-   previous operation, branching if negative.
-   1 000 000 1xx xxx xxx BMI
-   PC = PC + (2 * offset) if N = 0 */
+/* Description: Tests the state of the N-bit and causes a branch if N is set.
+It is used to test the sign (most significant bit) of the result of the
+previous operation, branching if negative.
+1 000 000 1xx xxx xxx BMI
+PC = PC + (2 * offset) if N = 0 */
 OctalWord PDP11SimController::BMI(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.N == 1)
+	if (status.N == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description:Tests the state of the V bit and causes a branch if the V bit is clear. 
-   BVC is complementary operation to BVS.
-   1 000 010 0xx xxx xxx BVC
-   PC = PC + (2 * offset) if V = 0 */
+/* Description:Tests the state of the V bit and causes a branch if the V bit is clear.
+BVC is complementary operation to BVS.
+1 000 010 0xx xxx xxx BVC
+PC = PC + (2 * offset) if V = 0 */
 OctalWord PDP11SimController::BVC(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.V == 0)
+	if (status.V == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description: BHIS is the same instruction as BCC. 
-   This mnemonic is included only for convenience, 
-   used instead of BCC when performing unsigned comparisons, for documentation purposes.
-   1 000 011 0xx xxx xxx BHIS
-   PC = PC + (2 * offset) if C = 0 */
+/* Description: BHIS is the same instruction as BCC.
+This mnemonic is included only for convenience,
+used instead of BCC when performing unsigned comparisons, for documentation purposes.
+1 000 011 0xx xxx xxx BHIS
+PC = PC + (2 * offset) if C = 0 */
 OctalWord PDP11SimController::BHIS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.C == 0)
+	if (status.C == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
 /* Description: Causes a branch if the "Exclusive Or" of the N and V bits are 1.
-   0 000 010 1xx xxx xxx BLT
-   PC = PC + (2 * offset) if N or V = 1 */
+0 000 010 1xx xxx xxx BLT
+PC = PC + (2 * offset) if N or V = 1 */
 OctalWord PDP11SimController::BLT(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.N == 1 || status.V == 1)
+	if (status.N == 1 || status.V == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description:Operation of BGT is similar to BGE, 
-   except BGT will not cause a branch on a zero result.
-   0 000 011 0xx xxx xxx BGT
-   PC = PC + (2 * offset) if Z or(N xor V) = 0 */
+/* Description:Operation of BGT is similar to BGE,
+except BGT will not cause a branch on a zero result.
+0 000 011 0xx xxx xxx BGT
+PC = PC + (2 * offset) if Z or(N xor V) = 0 */
 OctalWord PDP11SimController::BGT(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.N == status.V)
+	if (status.N == status.V)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description:Operation is similar to BLT but in addition will 
-   cause a branch if the resul of the previous operation was zero.
-   0 000 011 1xx xxx xxx BLE
-   PC = PC + (2 * offset) if Z or(N xor V) = 1 */
+/* Description:Operation is similar to BLT but in addition will
+cause a branch if the resul of the previous operation was zero.
+0 000 011 1xx xxx xxx BLE
+PC = PC + (2 * offset) if Z or(N xor V) = 1 */
 OctalWord PDP11SimController::BLE(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.N != status.V)
+	if (status.N != status.V)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description: Tests the state of V bit (overflow) and causes a branch 
-   if the V bit is set. BVS is used to detect signed arithmetic overflow in the previous operation.
-   1 000 010 1xx xxx xxx   BVS */
+/* Description: Tests the state of V bit (overflow) and causes a branch
+if the V bit is set. BVS is used to detect signed arithmetic overflow in the previous operation.
+1 000 010 1xx xxx xxx   BVS */
 OctalWord PDP11SimController::BVS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.V == 1)
+	if (status.V == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
 /* Description:Causes a branch if the previous operation caused either a carry or a zero result.
-   1 000 001 1xx xxx xxx BLOS
-   PC = PC + (2 * offset) if C or Z = 1 */
+1 000 001 1xx xxx xxx BLOS
+PC = PC + (2 * offset) if C or Z = 1 */
 OctalWord PDP11SimController::BLOS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.Z == 1 || status.C == 1)
+	if (status.Z == 1 || status.C == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description:Tests the state of the C-bit and causes a branch if C is clear. 
-   BCC is the complementary operation to BCS
-   1 000 011 0xx xxx xxx BCC */
+/* Description:Tests the state of the C-bit and causes a branch if C is clear.
+BCC is the complementary operation to BCS
+1 000 011 0xx xxx xxx BCC */
 OctalWord PDP11SimController::BCC(const OctalWord& src)
-{   
+{
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.C == 0)
+	if (status.C == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
 }
 
-/* Description: Tests the state of the C-bit and causes a branch if C is set. 
-   It is used to test for a carry in the result of a previous operation.
-   1 000 011 1xx xxx xxx BCS
-   PC = PC + (2 * offset) if C = 1 */
+/* Description: Tests the state of the C-bit and causes a branch if C is set.
+It is used to test for a carry in the result of a previous operation.
+1 000 011 1xx xxx xxx BCS
+PC = PC + (2 * offset) if C = 1 */
 OctalWord PDP11SimController::BCS(const OctalWord& src)
 {
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.C == 1)
+	if (status.C == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1982,9 +1988,9 @@ OctalWord PDP11SimController::BLO(const OctalWord& src)
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.C == 1)
+	if (status.C == 1)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
@@ -1995,9 +2001,9 @@ OctalWord PDP11SimController::BHI(const OctalWord& src)
 	int offset = src.value & BRANCH_OFFSET_MASK;
 	OctalWord pcvalue = pc.getVal();
 
-	if(status.Z == 0 || status.C == 0)
+	if (status.Z == 0 || status.C == 0)
 	{
-		offset<<=1;
+		offset <<= 1;
 		pcvalue = pcvalue + offset;
 	}
 	return pcvalue;
