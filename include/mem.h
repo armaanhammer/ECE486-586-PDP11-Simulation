@@ -26,7 +26,7 @@ public:
 	~Mem();
 	OctalWord getWord(OctalWord address);
 	bool isTouched(OctalWord address);
-	void setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = false);
+	void setWord(OctalWord address, OctalWord value, bool isInstruction = false, bool touched = true);
 	void print();
 	
 private:
