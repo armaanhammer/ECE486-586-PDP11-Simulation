@@ -1439,39 +1439,8 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 OctalWord PDP11SimController::SUB(const OctalWord& src, const OctalWord& dest)
 {
 	//Declare octalword variables
-	OctalWord result;
 	OctalWord tempDest = dest;
-	OctalWord tempSrc = src;
-
-	//Add the source and destination together
-	result = tempSrc - tempDest;
-
-	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
-	(result < 0) ? SEN() : CLN();
-
-	//Check if the source is equal to zero and if true set the Z bit.  Otherwise clear the Z bit
-	(result==0) ? SEZ() : CLZ();
-
-	//Check if the operand signs are not equal
-	if (tempSrc[5] != tempDest[5])
-	{
-		//Check if arithmetic overflow occured and if true set the V bit
-		if (tempSrc[5] != result[5]) SEV();
-		//Otherwise clear the V bit
-		else CLV();
-	}
-	else
-	{
-		CLV();
-	}
-
-	//Check for carry from the most-significant bit of the result and if true set the C bit
-	if (status.V == 1) SEC();
-	//Otherwise clear the C bit
-	else CLC();
-	
-	//Return the unmodifed destination register
-	return result;
+	return ADD(src, -tempDest);
 }
 #pragma endregion
 
