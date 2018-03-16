@@ -945,20 +945,10 @@ OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
-	//Obtain the pointer to the memory address
-	OctalWord pointerToMemory = memory.getWord(regValue);
+	OctalWord location = memory.getWord(pc.getVal() + 2) + regValue;
+	OctalWord operand = memory.getWord(location);
 
-	//Obtain the value of the offset
-	OctalWord offset = pc.getVal() + 2;
-
-	//Add the offset to the memory address
-	OctalWord indexMemory = memory.getWord(pointerToMemory + offset);
-
-	//Print to the trace file (data read)
-	PRINT_TO_FILE(pointerToMemory + offset, 0);
-
-	//Return the value from that the pointer points to
-	return indexMemory;
+	return operand;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -970,23 +960,11 @@ OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
-	//Obtain the pointer to the memory address
-	OctalWord pointerToMemory = memory.getWord(regValue);
+	OctalWord location = memory.getWord(pc.getVal() + 2) + regValue;
+	OctalWord pointer = memory.getWord(location);
+	OctalWord operand = memory.getWord(pointer);
 
-	//Obtain the value of the offset
-	OctalWord offset = pc.getVal() + 2;
-
-	//Add the offset to the memory address that stores the pointer
-	OctalWord indexPointer = memory.getWord(pointerToMemory + offset);
-
-	//Obtain the pointer second pointer
-	OctalWord indexMemory = memory.getWord(indexPointer);
-
-	//Print to the trace file (data read)
-	PRINT_TO_FILE(indexPointer, 0);
-
-	//Return the value from that the pointer points to
-	return indexMemory;
+	return operand;
 }
 
 ///-----------------------------------------------
