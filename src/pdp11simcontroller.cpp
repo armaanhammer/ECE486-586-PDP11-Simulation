@@ -1573,6 +1573,9 @@ OctalWord PDP11SimController::ADC(const OctalWord& src)
 	(ts == 077777 && status.C == 1) ? SEV() : CLV(); // V: set if dest was 077777 and (C) was 1; cleared otherwise
 	(ts == 0177777 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
+	//fix edge case: if most positive number, and if Carry asserted, return 0
+	tempDest = (ts == 077777 && status.C == 1) ? 00 : tempDest;
+	
 	return tempDest;
 }
 
