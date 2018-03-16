@@ -442,7 +442,7 @@ void PDP11SimController::doSingleOpInstruction(OctalWord w)
 {
 	int regNum = w[0].b;
 	int regAddressMode = w[1].b;
-	int opcode = w.value >> 6;
+	int opcode = (w.value & 0xFFC0) >> 6;
 
 	OctalWord operand = getOperand(r[regNum].getVal(), regNum, regAddressMode);
 	OctalWord result = OctalWord(0);
@@ -482,7 +482,7 @@ void PDP11SimController::doDoubleOpInstruction(OctalWord w)
 	//Obtain the source addressing mode octal value
 	int srcAddressMode = w[3].b;
 	//Obtain the opcode octal value
-	int opcode = w.value >> 12;
+	int opcode = (w.value & 0xF000) >> 12;
 
 	//Create octal word (6-bit value) for the source
 	OctalWord operandA = getOperand(r[srcNum].getVal(), srcNum, srcAddressMode);
@@ -607,8 +607,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	case(PC_IMMEDIATE_CODE):
 		//Write the result to the destination register
 		pc.setval(writenVal);
-		//Increment the PC
-		pc.setval(pc.getVal() + 2);
 		break;
 		//PC register addressing absolute mode
 	case(PC_ABSOLUTE_CODE):
@@ -616,13 +614,9 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		memory.setWord(memory.getWord(pc.getVal()), writenVal, false, true);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(pc.getVal()), 1);
-		//Increment the PC
-		pc.setval(pc.getVal() + 2);
 		break;
 		//PC register addressing relative mode
 	case(PC_RELATIVE_CODE):
-		// increment pc
-		pc.setval(pc.getVal() + 2);
 		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
 		memory.setWord(pc.getVal() + relativeOffset + 2, writenVal, false, true);
@@ -631,8 +625,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 		//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
-		// increment pc
-		pc.setval(pc.getVal() + 2);
 		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
 		memory.setWord(memory.getWord(pc.getVal() + relativeOffset + 2), writenVal, false, true);
