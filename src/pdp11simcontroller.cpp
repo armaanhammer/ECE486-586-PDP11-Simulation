@@ -1530,6 +1530,9 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 	(tempDest == 0) ? SEZ() : CLZ(); // Z: set if result is 0; cleared otherwise
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
 	// C: not affected
+	
+	//fix edge case: if most negative number, return -1
+	(ts == 0100000) ? tempDest = 0177777 : ;
 
 	return tempDest;
 }
