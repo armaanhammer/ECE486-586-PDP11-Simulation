@@ -1595,6 +1595,9 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
 	(ts == 0 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 	
+	//fix edge case: if most negative number, and if Carry asserted, return -1
+	tempDest = (ts == 0177777 && status.C == 1) ? 0100000 : tempDest;
+	
 	return tempDest;
 }
 
