@@ -230,7 +230,7 @@ void PDP11SimController::JSR(OctalWord src)
 {
 	unsigned int regNum = src[2].b;
 	unsigned int destNum = src[0].b;
-	unsigned int destAddressMode = src[0].b;
+	unsigned int destAddressMode = src[1].b;
 	OctalWord temp = getOperand(r[destNum].getVal(), destNum, destAddressMode);
 	// modify stack
 	sp.setval(sp.getVal() - 2);
@@ -367,7 +367,7 @@ bool PDP11SimController::checkForDO(OctalWord w)
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
-	if (w.octbit[4] == 7)
+	if (w.octbit[5] == 7)
 	{
 		return true;
 	}
