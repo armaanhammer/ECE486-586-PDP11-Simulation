@@ -1,0 +1,39 @@
+       1                                ;    **************************************
+       2                                ;    * Test Addressing Modes              *
+       3                                ;    **************************************
+       4                                ; 
+       5 000000 000000                  A:      .WORD     0              ; 0
+       6 000002 000004                  B:      .WORD     4              ; 2
+       7 000004 000012                  N:      .WORD     12             ; 4
+       8 000006 000000                  P:		.WORD     0 			 ; 6
+       9 000010 000000                  Q:		.WORD	  0 			 ; 10
+      10 000012 000007                  R:		.WORD	  7				 ; 12
+      11 000014 000000                  S:		.WORD	  0				 ; 14
+      12                                
+      13                                START:                             ;program starts executing here
+      14 000016 005000                            CLR		%0
+      15 000020 005200                            INC		%0
+      16 000022 010001                            MOV		%0, %1			; register mode -- should have 1 in R1
+      17 000024 012700  000002                    MOV		#2, %0			; now have pointer to B
+      18 000030 011001                            MOV		(%0), %1		; register deferred should have 2 in R1
+      19 000032 012002                            MOV		(%0)+, %2		; auto-increment.  R2 should be 2, R0 should be 4
+      20 000034 012700  000002                    MOV		#B, %0			; put address of B (2) in R0
+      21 000040 013003                            MOV		@(%0)+, %3		; auto-increment deferred should put 12 in R3 and R0 should be 4
+      22 000042 005000                            CLR		%0				;
+      23 000044 017001  000004                    MOV		@4(%0),%1		; index mode should put 7 in R1 
+      24                                          							;
+      25 000050 005200                            INC		%0				; R0 now 1
+      26 000052 012737  000012  000002            MOV		#12, @#2		; put pointer to (octal) location 12 in absolute location 2
+      27 000060 012737  000014  000004            MOV		#14, @#4		; put pointer to (octal) location 14 in absolute location 4
+      28 000066 012737  000006  000012            MOV		#6, @#12		; put octal 6 in absolute location 12
+      29 000074 012737  000007  000014            MOV		#7, @#14		; put octal 7 in absolute location 14
+      30 000102 012701  000002                    MOV		#2, %1			; make R1 point to location 2
+      31 000106 060031                            ADD		%0, @(%1)+		; ensure destination increment done only once
+      32                                          							; should see octal 7 in location 12
+      33                                          							; location 14 unchanged (7)
+      34                                          							; locations 2, 4 unchanged (12, 14)
+      35                                          							; R1 now 4
+      36                                ;          MOV		@#1, %1			; error -- odd address
+      37 000110 000000                  WEND:     HALT						;
+      38                                          .END      START
+      38                                
