@@ -48,10 +48,17 @@ void PDP11SimController::run()
 	while(1)
 	{
 		fetch();
-		if (ci == HALT_OPCODE) break;
+		if (ci == HALT_OPCODE)
+		{
+			//Print to the trace file (instruction fetch)
+			PRINT_TO_FILE(pc.getVal(), 2);
+
+			break;
+		}
 
 		//Print to the trace file (instruction fetch)
 		PRINT_TO_FILE(pc.getVal(), 2);
+
 		if (ci != NOP_OPCODE) 
 		{
 			if (!decode())
@@ -545,7 +552,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	//Basic addressing autoincrement mode
 	case(AUTOINC_CODE):
 		//Write to the location pointed to by the register
-		memory.setWord(r[destReg].getVal(), writenVal, false, true);
+		memory.setWord(r[destReg].getVal(), writenVal);
 
 		//Increment the value of the register
 		r[destReg].setval(r[destReg].getVal() + 2);
@@ -556,7 +563,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	//Indirect addressing autoincrement mode (deferred)
 	case(AUTOINC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
-		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal, false, true);
+		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
 
 		//Increment the value of the register
 		r[destReg].setval(r[destReg].getVal() + 2);
@@ -567,14 +574,14 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 	//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
 		//Write to the location pointed to by the register
-		memory.setWord(r[destReg].getVal(), writenVal, false, true);
+		memory.setWord(r[destReg].getVal(), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal(), 1);
 		break;
 	//Indirect addressing autodecrement mode (deferred)
 	case(AUTODEC_DEFERRED_CODE):
 		//Write to the location pointed to by the memory pointed to by the register
-		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal, false, true);
+		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
@@ -583,7 +590,7 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Update the PC
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
-		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal, false, true);
+		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(r[destReg].getVal() + memory.getWord(pc.getVal()), 1);
 		break;
@@ -592,39 +599,45 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Update the PC
 		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
-		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal, false, true);
+		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), 1);
 		break;
 	//PC register addressing immediate mode
 	case(PC_IMMEDIATE_CODE):
 		//Write the result to the destination register
-		pc.setval(writenVal);
+		r[destReg].setval(writenVal);
 		//Increment the PC
 		pc.setval(pc.getVal() + 2);
 		break;
 	//PC register addressing absolute mode
 	case(PC_ABSOLUTE_CODE):
 		//Write to the location pointed to by the pc
-		memory.setWord(memory.getWord(pc.getVal()), writenVal, false, true);
+		memory.setWord(memory.getWord(pc.getVal()), writenVal);
 		//Print to the trace file (data write)
 		PRINT_TO_FILE(memory.getWord(pc.getVal()), 1);
+		//Increment the PC
+		pc.setval(pc.getVal() + 2);
 		break;
 	//PC register addressing relative mode
 	case(PC_RELATIVE_CODE):
+		// increment pc
+		pc.setval(pc.getVal() + 2);
 		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
-		memory.setWord(pc.getVal() + relativeOffset + 2, writenVal, false, true);
+		memory.setWord(pc.getVal() + relativeOffset + 2, writenVal);
 		//Print to the trace file (data write)
-		PRINT_TO_FILE(memory.getWord(pc.getVal() + relativeOffset + 2), 1);
+		PRINT_TO_FILE(memory.getWord(pc.getVal() + relativeOffset), 1);
 		break;
 	//PC register addressing relative deferred mode
 	case(PC_RELATIVE_DEFERRED_CODE):
+		// increment pc
+		pc.setval(pc.getVal() + 2);
 		relativeOffset = memory.getWord(pc.getVal());
 		//Write to the location pointed to by the offset
-		memory.setWord(memory.getWord(pc.getVal() + relativeOffset + 2), writenVal, false, true);
+		memory.setWord(memory.getWord(pc.getVal() + relativeOffset + 2), writenVal);
 		//Print to the trace file (data write)
-		PRINT_TO_FILE(memory.getWord((memory.getWord(pc.getVal())) + (pc.getVal()) + 2), 1);
+		PRINT_TO_FILE(memory.getWord((memory.getWord(pc.getVal())) + (pc.getVal() + 2)), 1);
 		break;
 	case(SP_DEFERRED_CODE):
 		break;
@@ -1054,6 +1067,9 @@ OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 	//Obtain the offset value from memory
 	OctalWord memoryOffset = memory.getWord(pc.getVal());
 
+	//Print to the trace file (read data)
+	PRINT_TO_FILE(pc.getVal(), 0);
+
 	//Obtain the offset value from pc
 	OctalWord pcOffset = pc.getVal() + 2;
 
@@ -1369,8 +1385,21 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 	//Declare octalword variables
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
+	OctalWord postiveMask = 32767;
+	OctalWord negativeMask = 32768;
 	//Add the source and destination together
 	OctalWord result = tempSrc + tempDest;
+	OctalWord tempResult = result;
+
+	//Check if the operand signs are not equal
+	if (tempSrc[5] == tempDest[5])
+	{
+		//Check if arithmetic overflow occured and if true set the V bit
+		if (tempSrc[5] != tempResult[5])
+		{
+			result = (src.value > 0)? result & postiveMask : result | negativeMask;
+		}
+	}
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
 	(result < 0) ? SEN() :CLN();
@@ -1379,12 +1408,13 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 	(result == 0) ? SEZ() : CLZ();
 
 	//Check if the operand signs are not equal
-	if (tempSrc[5] != tempDest[5])
+	if (tempSrc[5] == tempDest[5])
 	{
 		//Check if arithmetic overflow occured and if true set the V bit
-		if (tempSrc[5] != result[5]) SEV();
+		if (tempSrc[5] != tempResult[5]) SEV();
 		//Otherwise clear the V bit
 		else CLV();
+
 	}
 	else
 	{
@@ -2052,7 +2082,7 @@ bool PDP11SimController::PRINT_TO_FILE(OctalWord address, char type)
 		traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
 
 		//Write to the end of the file
-		traceFile << type << " " << tempAddr << endl;
+		traceFile << (int)type << " " << tempAddr << endl;
 	}
 	catch (exception e)
 	{
