@@ -1534,6 +1534,9 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 	(ts == 077777) ? SEV() : CLV(); // V: set if dest was 077777; cleared otherwise
 	// C: not affected
 	
+	//fix edge case: if most positive number, return 0
+	tempDest = (ts == 077777) ? 00 : tempDest;
+	
 	return tempDest;
 }
 
