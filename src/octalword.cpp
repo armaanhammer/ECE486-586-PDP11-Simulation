@@ -181,7 +181,7 @@ OctalWord OctalWord::operator>>(const int shiftAmount)
 	bool overflowflag = false;
 	for (int i = 0; i < shiftAmount; i++)
 	{
-		overflowflag = (OctalWord().octbit[0].b % 2 > 0) ? true : false;
+		overflowflag = (OctalWord(result).octbit[0].b % 2 > 0) ? true : false;
 		result = result >> 1;
 	}
 	OctalWord ret = OctalWord(result);
