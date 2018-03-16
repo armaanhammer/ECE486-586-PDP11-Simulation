@@ -367,7 +367,7 @@ bool PDP11SimController::checkForDO(OctalWord w)
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
-	if (w.octbit[5] == 7)
+	if (w.octbit[4] == 7)
 	{
 		return true;
 	}
@@ -679,7 +679,7 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
 {
-	int opnum = w.octbit[4].b;
+	int opnum = w.octbit[3].b;
 	switch (opnum)
 	{
 	case 0:
