@@ -367,7 +367,7 @@ bool PDP11SimController::checkForDO(OctalWord w)
 //----------------------------------------------------------------------------------------------------
 bool PDP11SimController::checkUnimplementedDoubleOp(OctalWord w)
 {
-	if (w.octbit[4] == 7)
+	if (w.octbit[5] == 7)
 	{
 		return true;
 	}
@@ -679,7 +679,22 @@ void PDP11SimController::doBranchInstruction(OctalWord w)
 
 void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
 {
-	int opnum = w.octbit[3].b;
+	//Obtain the destination register octal value
+	int destNum = w[0].b;
+	//Obtain the destination addressing mode octal value
+	int destAddressMode = w[1].b;
+	//Obtain the source register octal value
+	int srcNum = w[2].b;
+	//Obtain the source addressing mode octal value
+	int srcAddressMode = w[3].b;
+	int opnum = w.octbit[4].b;
+
+	//Create octal word (6-bit value) for the source
+	OctalWord operandA = getOperand(r[srcNum].getVal(), srcNum, srcAddressMode);
+	//Create octal word (6-bit value) for the destination
+	OctalWord operandB = getOperand(r[destNum].getVal(), destNum, destAddressMode);
+	OctalWord result = OctalWord(0);
+
 	switch (opnum)
 	{
 	case 0:
@@ -709,6 +724,27 @@ void PDP11SimController::doUnimplementedDoubleOp(OctalWord w)
 	default:
 		break;
 	}
+
+	if (srcAddressMode == 2 || srcAddressMode == 3)
+	{
+		//Increment the value of the register
+		switch (srcNum)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			r[srcNum].setval(r[srcNum].getVal() + 2);
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	WriteBack(destAddressMode, destNum, result);
 }
 #pragma endregion
 
