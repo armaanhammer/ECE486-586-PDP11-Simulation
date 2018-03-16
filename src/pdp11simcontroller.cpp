@@ -52,7 +52,7 @@ void PDP11SimController::run()
 		{
 			//Print to the trace file (instruction fetch)
 			PRINT_TO_FILE(pc.getVal(), 2);
-
+			instructionCount++;
 			break;
 		}
 
@@ -844,7 +844,7 @@ OctalWord PDP11SimController::getOperand(OctalWord regValue, int reg, int addres
 	case REGISTER_CODE:operand = REGISTER(r[reg].getVal().value, reg); break;
 	case REGISTER_DEFERRED_CODE: operand = REGISTER_DEFERRED(r[reg].getVal().value, reg); break;
 	case AUTOINC_CODE: operand = AUTOINC(r[reg].getVal().value, reg); break;
-	case AUTOINC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
+	case AUTOINC_DEFERRED_CODE: operand = AUTOINC_DEFERRED(r[reg].getVal().value, reg); break;
 	case AUTODEC_CODE: operand = AUTODEC(r[reg].getVal().value, reg); break;
 	case AUTODEC_DEFERRED_CODE: operand = AUTODEC_DEFERRED(r[reg].getVal().value, reg); break;
 	case INDEX_CODE: operand = INDEX(r[reg].getVal().value, reg); break;
@@ -1507,7 +1507,7 @@ OctalWord PDP11SimController::INC(const OctalWord& src)
 	}
 	else
 	{
-		++result; // do the thing
+		result = result + 1; // do the thing
 		(result == 0) ? SEZ() : CLZ();
 		(result < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
 	}
@@ -1535,7 +1535,7 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 	}
 	else
 	{
-		--result; // do the thing
+		result = result - 1; // do the thing
 		(result == 0) ? SEZ() : CLZ();
 		(result < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
 	}
