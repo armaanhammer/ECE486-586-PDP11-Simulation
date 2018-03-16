@@ -1532,7 +1532,8 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 	// C: not affected
 	
 	//fix edge case: if most negative number, return -1
-	(ts == 0100000) ? tempDest = 0177777 : ;
+	tempDest = (ts == 0100000) ? 0177777 : tempDest;
+	//(ts == 0100000) ? tempDest = 0177777 : ;
 
 	return tempDest;
 }
