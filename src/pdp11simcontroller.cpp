@@ -48,10 +48,17 @@ void PDP11SimController::run()
 	while(1)
 	{
 		fetch();
-		if (ci == HALT_OPCODE) break;
+		if (ci == HALT_OPCODE)
+		{
+			//Print to the trace file (instruction fetch)
+			PRINT_TO_FILE(pc.getVal(), 2);
+
+			break;
+		}
 
 		//Print to the trace file (instruction fetch)
 		PRINT_TO_FILE(pc.getVal(), 2);
+
 		if (ci != NOP_OPCODE) 
 		{
 			if (!decode())
@@ -1060,6 +1067,9 @@ OctalWord PDP11SimController::PC_RELATIVE(OctalWord regValue, int reg)
 	//Obtain the offset value from memory
 	OctalWord memoryOffset = memory.getWord(pc.getVal());
 
+	//Print to the trace file (read data)
+	PRINT_TO_FILE(pc.getVal(), 0);
+
 	//Obtain the offset value from pc
 	OctalWord pcOffset = pc.getVal() + 2;
 
@@ -1375,8 +1385,13 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 	//Declare octalword variables
 	OctalWord tempDest = dest;
 	OctalWord tempSrc = src;
+	OctalWord mask = 32767;
 	//Add the source and destination together
 	OctalWord result = tempSrc + tempDest;
+	OctalWord tempResult = result;
+
+	//Mask the result
+	result = result.operator&(mask);
 
 	//Check if the result is negative and if true set the N bit.  Otherwise clear the N bit
 	(result < 0) ? SEN() :CLN();
@@ -1385,12 +1400,13 @@ OctalWord PDP11SimController::ADD(const OctalWord& src, const OctalWord& dest)
 	(result == 0) ? SEZ() : CLZ();
 
 	//Check if the operand signs are not equal
-	if (tempSrc[5] != tempDest[5])
+	if (tempSrc[5] == tempDest[5])
 	{
 		//Check if arithmetic overflow occured and if true set the V bit
-		if (tempSrc[5] != result[5]) SEV();
+		if (tempSrc[5] != tempResult[5]) SEV();
 		//Otherwise clear the V bit
 		else CLV();
+
 	}
 	else
 	{
@@ -2058,7 +2074,7 @@ bool PDP11SimController::PRINT_TO_FILE(OctalWord address, char type)
 		traceFile.open("trace_file.txt", ofstream::out | ofstream::app);
 
 		//Write to the end of the file
-		traceFile << type << " " << tempAddr << endl;
+		traceFile << (int)type << " " << tempAddr << endl;
 	}
 	catch (exception e)
 	{
