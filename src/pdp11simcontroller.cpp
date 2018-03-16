@@ -587,8 +587,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 		//Basic addressing index
 	case(INDEX_CODE):
-		//Update the PC
-		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(r[destReg].getVal() + memory.getWord(pc.getVal()), writenVal, false, true);
 		//Print to the trace file (data write)
@@ -596,8 +594,6 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		break;
 		//Indirect addressing 
 	case(INDEX_DEFFERRED_CODE):
-		//Update the PC
-		pc.setval(pc.getVal() + 2);
 		//Write to the location pointed to by the sum of the register and the offset
 		memory.setWord(memory.getWord(r[destReg].getVal() + memory.getWord(pc.getVal())), writenVal, false, true);
 		//Print to the trace file (data write)
@@ -945,7 +941,8 @@ OctalWord PDP11SimController::AUTODEC_DEFERRED(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 {
-	OctalWord location = memory.getWord(pc.getVal() + 2) + regValue;
+	pc.setval(pc.getVal() + 2);
+	OctalWord location = memory.getWord(pc.getVal()) + regValue;
 	OctalWord operand = memory.getWord(location);
 
 	return operand;
@@ -960,7 +957,8 @@ OctalWord PDP11SimController::INDEX(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::INDEX_DEFERRED(OctalWord regValue, int reg)
 {
-	OctalWord location = memory.getWord(pc.getVal() + 2) + regValue;
+	pc.setval(pc.getVal() + 2);
+	OctalWord location = memory.getWord(pc.getVal()) + regValue;
 	OctalWord pointer = memory.getWord(location);
 	OctalWord operand = memory.getWord(pointer);
 
@@ -1506,7 +1504,7 @@ OctalWord PDP11SimController::DEC(const OctalWord& src)
 		(result < 0) ? SEN() : CLN(); // N: set if most significant bit of result is set; cleared otherwise
 	}
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 077777; cleared otherwise
-									// C: not affected
+									 // C: not affected
 
 	return result;
 }
@@ -1550,7 +1548,7 @@ OctalWord PDP11SimController::ADC(const OctalWord& src)
 	(ts == 077777 && status.C == 1) ? SEV() : CLV(); // V: set if dest was 077777 and (C) was 1; cleared otherwise
 	(ts == 0177777 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 
-	//fix edge case: if most positive number, and if Carry asserted, return 0
+													  //fix edge case: if most positive number, and if Carry asserted, return 0
 	tempDest = (ts == 077777 && status.C == 1) ? OctalWord(0) : tempDest;
 	return tempDest;
 }
@@ -1571,9 +1569,9 @@ OctalWord PDP11SimController::SBC(const OctalWord& src)
 	(ts == 0100000) ? SEV() : CLV(); // V: set if dest was 100000; cleared otherwise
 	(ts == 0 && status.C == 1) ? SEC() : CLC(); // C: set if dest was 177777 and (C) was 1; cleared otherise
 
-	//fix edge case: if most negative number, and if Carry asserted, return -1
+												//fix edge case: if most negative number, and if Carry asserted, return -1
 	tempDest = (ts == 0100000 && status.C == 1) ? 0177777 : tempDest;
-	
+
 	return tempDest;
 }
 
