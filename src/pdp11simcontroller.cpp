@@ -565,11 +565,14 @@ void PDP11SimController::WriteBack(int am, int destReg, OctalWord writenVal)
 		//Write to the location pointed to by the memory pointed to by the register
 		memory.setWord(memory.getWord(r[destReg].getVal()), writenVal, false, true);
 
+		//Print to the trace file (data write)
+		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
+
 		//Increment the value of the register
 		r[destReg].setval(r[destReg].getVal() + 2);
 
 		//Print to the trace file (data write)
-		PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
+		//PRINT_TO_FILE(memory.getWord(r[destReg].getVal()), 1);
 		break;
 		//Basic addressing autodecrement mode
 	case(AUTODEC_CODE):
