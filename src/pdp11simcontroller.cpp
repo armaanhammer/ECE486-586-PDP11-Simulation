@@ -1041,9 +1041,11 @@ OctalWord PDP11SimController::PC_ABSOLUTE(OctalWord regValue, int reg)
 
 	//Obtain the pointer to the location
 	OctalWord pointer = memory.getWord(pc.getVal());
+	OctalWord tempLocation = pc.getVal();
 
 	//Print to the trace file (data read)
-	PRINT_TO_FILE(memory.getWord(pointer), 0);
+	PRINT_TO_FILE(tempLocation, 0);
+	//PRINT_TO_FILE(memory.getWord(pointer), 0);
 
 	//Return the pointed to locations value
 	return memory.getWord(pointer);
