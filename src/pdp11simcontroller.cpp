@@ -920,9 +920,6 @@ OctalWord PDP11SimController::AUTOINC(OctalWord regValue, int reg)
 //----------------------------------------------------------------------------------------------------
 OctalWord PDP11SimController::AUTOINC_DEFERRED(OctalWord regValue, int reg)
 {
-	//Increment the value of the register
-	r[reg].setval(regValue + 2);
-
 	//Print to the trace file (data read)
 	PRINT_TO_FILE(memory.getWord(regValue + 2), 0);
 
