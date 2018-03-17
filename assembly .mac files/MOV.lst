@@ -1,3 +1,6 @@
+     //**Test case for moving operands within different registers and memory locations**//
+     
+     
        1 000000 030071                  A:	.WORD 012345.        //assigns the word value 030071 (octal) as a variable A
        2 000002 002322                  B:	.WORD 001234.        //assigns the word value 2322 (octal) as a variable B
        3                                
