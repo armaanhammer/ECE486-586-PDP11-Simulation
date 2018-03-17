@@ -1,13 +1,13 @@
-       1 000000 030071                  A:	.WORD 012345.
-       2 000002 002322                  B:	.WORD 001234.
+       1 000000 030071                  A:	.WORD 012345.        //assigns the word value 030071 (octal) as a variable A
+       2 000002 002322                  B:	.WORD 001234.        //assigns the word value 2322 (octal) as a variable B
        3                                
-       4                                START:	
-       5 000004 012701  000010          	MOV #10, R1 
-       6 000010 012702  000000          	MOV #0, R2
-       7 000014 010102                  	MOV R1, R2
-       8 000016 016703  177756          	MOV A, R3
-       9 000022 010267  177752          	MOV R2, A
-      10 000026 016767  177746  177746  	MOV A, B
+       4                                START:	                     //indicates the starting location of the code
+       5 000004 012701  000010          	MOV #10, R1                 //moves the value 10 to R1
+       6 000010 012702  000000          	MOV #0, R2                  //moves the value 0 to R2
+       7 000014 010102                  	MOV R1, R2                  //moves the contents of R1 to R2
+       8 000016 016703  177756          	MOV A, R3                   //moves the value of variable A to R3
+       9 000022 010267  177752          	MOV R2, A                   //variable A gets replaced with the contents of R2
+      10 000026 016767  177746  177746  	MOV A, B                    //variable B gets replaced with the value of variable B
       11                                	
-      12 000034 000000                  	HALT
+      12 000034 000000                  	HALT                        //ends execution of the code
       12                                	.END START
