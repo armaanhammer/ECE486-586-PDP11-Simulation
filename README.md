@@ -1,7 +1,6 @@
 # ECE486-586-PDP11-Simulation
 
-navigate to `/src/` 
-run make which generates the PDPSim executable
+navigate to `/src/` and run `make` which generates the PDPSim executable
 
 in `/src/` run:
 ```
