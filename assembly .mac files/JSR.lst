@@ -1,25 +1,25 @@
        1                                ; performs an unconditional jump to a subroutine
        2                                
        3                                
-       4 000000 000001                  A:	.WORD 1
-       5 000002 000002                  B:	.WORD 2
+       4 000000 000001                  A:	.WORD 1              //assings the value 1 (octal) as variable A
+       5 000002 000002                  B:	.WORD 2              //assings the value 2 (octal) as variable B
        6                                
-       7 000004                         .BLKW 50
+       7 000004                         .BLKW 50                      //directs the assembler to reserve 50 sequential blocks of words in the program
        8                                
        9                                
       10                                START:
-      11 000124 000250                  		CLN
-      12 000126 000244                  		CLZ
-      13 000130 000242                  		CLV
-      14 000132 000241                  		CLC
-      15 000134 004167  000012          		JSR R1, LABEL1
-      16 000140 000270                  		SEN
-      17 000142 000264                  		SEZ
-      18 000144 000262                  		SEV
-      19 000146 000261                  		SEC
-      20 000150 000000                  		HALT
-      21 000152 016702  177622          LABEL1:	MOV A, R2
-      22 000156 016703  177620          		MOV B, R3
-      23 000162 060102                  		ADD R1, R2
-      24 000164 000201                  		RTS R1
+      11 000124 000250                  		CLN                  //clears the N flag 
+      12 000126 000244                  		CLZ                  //clears the Z flag
+      13 000130 000242                  		CLV                  //clears the V flag
+      14 000132 000241                  		CLC                  //clears the C flag
+      15 000134 004167  000012          		JSR R1, LABEL1       //performs a jump to the target "LABEL1" and saves the return address in R1
+      16 000140 000270                  		SEN                  // this section
+      17 000142 000264                  		SEZ                  // of the code
+      18 000144 000262                  		SEV                  // is executed after 
+      19 000146 000261                  		SEC                  // the subroutine call
+      20 000150 000000                  		HALT                 
+      21 000152 016702  177622          LABEL1:	MOV A, R2            //moves the value of variable A to R2
+      22 000156 016703  177620          		MOV B, R3            //moves the value of variable B to R3
+      23 000162 060102                  		ADD R1, R2           //adds the contents of both registers and stores result in R2
+      24 000164 000201                  		RTS R1               //returns control of the program
       24                                		.END START
